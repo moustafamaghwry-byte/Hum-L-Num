@@ -749,14 +749,16 @@
             }
 
             // 2. Validation: 48 Hours Advance
-            if (deliveryTime) {
-                const selectedTime = new Date(deliveryTime).getTime();
-                const minTime = new Date(getMinDeliveryDateTime()).getTime();
-                if (selectedTime < minTime) {
-                    errBox.textContent = `يجب أن يكون موعد الاستلام بعد ${CONFIG.advanceOrderHours} ساعة على الأقل من الآن.`;
-                    return;
-                }
-            }
+          if (deliveryTime) {
+    const selectedTime = new Date(deliveryTime).getTime();
+    const now = new Date().getTime();
+    const twoDaysInMs = 2 * 24 * 60 * 60 * 1000;
+    
+    if (selectedTime < (now + twoDaysInMs)) {
+        errBox.textContent = 'يجب أن يكون موعد الاستلام بعد يومين (48 ساعة) على الأقل من الآن.';
+        return;
+    }
+}
 
             orderSubmitting = true;
             const submitBtn = document.getElementById('submitOrderBtn');
