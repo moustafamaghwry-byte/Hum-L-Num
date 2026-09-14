@@ -1,629 +1,626 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تتبع الطلب | Order Tracking</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --noir:#3B5878; --gold:#F0796B; --gold-soft:#F5988D;
-    --ivory:#FDEEDD; --paper:#FFFBF5; --ink:#4A3226; --ink-soft:#8A7364;
-    --line-gold:rgba(240,121,107,.35); --line-ink:#F1DFCB;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{background:var(--paper);color:var(--ink);font-family:'Cairo',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;}
-  h1,h2{margin:0;font-weight:800;}
-  .nums{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;}
-  :focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
-  @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important;}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتبع الطلب | هَمَّ النَّمَّ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1F4D34;
+            --primary-light: #2D6A4F;
+            --primary-dark: #081C15;
+            --accent: #C9A227;
+            --accent-soft: #e0b840;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-300: #DEE2E6;
+            --gray-600: #868E96;
+            --gray-800: #343A40;
+            --danger: #C0453A;
+            --radius-md: 12px;
+            --radius-xl: 24px;
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Cairo', sans-serif; background: var(--gray-50); color: var(--gray-800); line-height: 1.6; min-height: 100vh; }
+        .nums { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  header{background:var(--noir);padding:22px 20px;text-align:center;display:flex;align-items:center;justify-content:center;gap:10px;}
-  .brand-logo{width:34px;height:34px;border-radius:50%;overflow:hidden;flex:none;}
-  .brand-logo img{width:100%;height:100%;object-fit:cover;}
-  .brand-name{color:var(--ivory);font-weight:700;font-size:1.1rem;}
-  .lang-btn{
-    position:fixed;top:16px;inset-inline-end:16px;z-index:10;
-    background:transparent;border:1px solid var(--gold);color:var(--gold-soft);
-    padding:7px 14px;border-radius:14px;font-weight:600;font-size:.82rem;cursor:pointer;font-family:inherit;
-  }
+        /* Header */
+        .header { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .header-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+        .header-logo { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
+        .header-title { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+        .header-title span { color: var(--primary-light); font-weight: 400; font-size: 0.85rem; display: block; }
+        
+        .lang-btn { background: transparent; border: 1.5px solid var(--accent); color: var(--primary); padding: 6px 16px; border-radius: 99px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; transition: var(--transition); }
+        .lang-btn:hover { background: var(--accent); color: var(--white); }
 
-  main{max-width:560px;margin:0 auto;padding:40px 20px 70px;}
-  .state-box{text-align:center;padding:60px 20px;color:var(--ink-soft);}
+        /* Main Layout */
+        .main-content { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+        .tracking-card { background: var(--white); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; }
+        
+        /* Header Banner */
+        .tracking-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: var(--white); padding: 2.5rem 2rem; text-align: center; }
+        .tracking-header-icon { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.8rem; backdrop-filter: blur(4px); }
+        .tracking-header h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .tracking-header p { opacity: 0.9; font-size: 1rem; }
 
-  .order-head{text-align:center;margin-bottom:36px;}
-  .order-id{color:var(--ink-soft);font-size:.82rem;margin-top:6px;}
-  .order-head h1{font-size:1.6rem;margin-bottom:6px;}
+        .tracking-body { padding: 2rem; }
+        
+        /* Order Info Grid */
+        .order-info { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2.5rem; }
+        .info-item { padding: 1.2rem; background: var(--gray-50); border-radius: var(--radius-md); border: 1px solid var(--gray-200); text-align: center; }
+        .info-label { font-size: 0.8rem; color: var(--gray-600); margin-bottom: 0.4rem; font-weight: 600; }
+        .info-value { font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); }
+        
+        /* Progress Steps */
+        .progress-steps { position: relative; padding: 1.5rem 0 2.5rem; }
+        .progress-line { position: absolute; top: 24px; right: 40px; left: 40px; height: 4px; background: var(--gray-200); border-radius: 2px; z-index: 1; }
+        .progress-line-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 2px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); width: 0%; }
+        .steps-container { display: flex; justify-content: space-between; position: relative; z-index: 2; }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; flex: 1; }
+        .step-icon { width: 50px; height: 50px; border-radius: 50%; background: var(--white); border: 3px solid var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--gray-300); transition: var(--transition); }
+        .step.completed .step-icon { background: var(--primary); border-color: var(--primary); color: var(--white); }
+        .step.active .step-icon { background: var(--accent); border-color: var(--accent); color: var(--white); box-shadow: 0 0 0 6px rgba(201, 162, 39, 0.15); }
+        .step-label { font-weight: 700; color: var(--gray-600); text-align: center; font-size: 0.8rem; transition: var(--transition); }
+        .step.completed .step-label, .step.active .step-label { color: var(--primary-dark); }
+        
+        /* Order Details */
+        .order-details { margin-top: 1rem; padding-top: 1.5rem; border-top: 2px dashed var(--gray-200); }
+        .details-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+        .details-list { list-style: none; }
+        .details-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid var(--gray-100); }
+        .details-item-name { font-weight: 700; color: var(--gray-800); font-size: 0.95rem; }
+        .details-item-qty { color: var(--gray-600); font-size: 0.85rem; }
+        .details-item-price { font-weight: 800; color: var(--primary); font-size: 0.95rem; }
+        
+        .details-total { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 0 0; margin-top: 0.5rem; border-top: 2px solid var(--gray-200); font-size: 1.2rem; font-weight: 900; color: var(--primary-dark); }
+        .details-total span:last-child { color: var(--accent); font-size: 1.3rem; }
 
-  .stepper{display:flex;justify-content:space-between;position:relative;margin:0 0 44px;padding:0 6px;}
-  .stepper::before{
-    content:"";position:absolute;top:17px;inset-inline-start:6%;inset-inline-end:6%;height:2px;background:var(--line-ink);z-index:0;
-  }
-  .stepper .fill{
-    position:absolute;top:17px;inset-inline-start:6%;height:2px;background:var(--gold);z-index:1;
-    transition:width .5s ease;width:0%;
-  }
-  .step{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;}
-  .dot{width:34px;height:34px;border-radius:50%;background:var(--paper);border:2px solid var(--line-ink);
-    display:flex;align-items:center;justify-content:center;font-size:.95rem;color:var(--ink-soft);transition:all .3s;}
-  .step.done .dot{border-color:var(--gold);background:var(--gold);color:var(--noir);}
-  .step.current .dot{border-color:var(--gold);background:var(--paper);color:var(--gold);box-shadow:0 0 0 4px rgba(198,161,91,.18);}
-  .step-label{font-size:.72rem;text-align:center;color:var(--ink-soft);max-width:80px;font-weight:600;}
-  .step.done .step-label, .step.current .step-label{color:var(--ink);}
+        /* Action Buttons */
+        .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 2rem; }
+        .btn { padding: 12px; border-radius: 99px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; border: 1.5px solid transparent; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-primary:hover { background: var(--primary-light); }
+        .btn-accent { background: var(--accent); color: var(--white); }
+        .btn-accent:hover { background: var(--accent-soft); }
+        .btn-outline { background: transparent; border-color: var(--gray-300); color: var(--gray-800); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--gray-50); }
+        .btn-danger { background: transparent; border-color: var(--danger); color: var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: var(--white); }
+        .btn-full { grid-column: 1 / -1; }
 
-  .status-banner{
-    background:var(--noir);border-radius:16px;padding:22px;text-align:center;margin-bottom:28px;
-  }
-  .status-banner .label{color:rgba(244,238,223,.6);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
-  .status-banner .value{color:var(--gold-soft);font-size:1.25rem;font-weight:700;}
+        /* Edit Form Styles */
+        .edit-container { display: none; padding: 2rem; }
+        .efield { margin-bottom: 1rem; text-align: start; }
+        .efield label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark); }
+        .efield input, .efield textarea, .efield select { width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1.5px solid var(--gray-200); font-family: inherit; font-size: 0.9rem; color: var(--gray-800); background: var(--white); transition: var(--transition); }
+        .efield input:focus, .efield textarea:focus, .efield select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1); }
+        .edit-item-row { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+        .qty-ctrl { display: flex; align-items: center; gap: 8px; background: var(--gray-50); padding: 4px; border-radius: 8px; }
+        .qty-ctrl button { width: 28px; height: 28px; border-radius: 6px; border: none; background: var(--white); font-weight: 800; cursor: pointer; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .remove-item-btn { background: none; border: none; color: var(--danger); font-size: 1.1rem; cursor: pointer; padding: 4px; }
 
-  .cancel-btn{
-    display:block;width:100%;background:none;border:1.5px solid #C0453A;color:#C0453A;
-    padding:13px;border-radius:999px;font-weight:700;font-size:.88rem;cursor:pointer;
-    font-family:'Cairo',sans-serif;margin-top:6px;
-  }
-  .cancel-btn:hover{background:#C0453A;color:#fff;}
-  .edit-btn{border-color:var(--gold) !important;color:var(--gold-soft) !important;}
-  .edit-btn:hover{background:var(--gold) !important;color:var(--noir) !important;}
-  .order-actions{display:flex;gap:10px;margin-top:6px;}
-  .order-actions .cancel-btn{margin-top:0;}
-  .cancelled-banner{
-    background:#FBEAE7;border:1px solid #E7B9AF;border-radius:16px;padding:24px;
-    text-align:center;margin-bottom:24px;
-  }
-  .cancelled-banner .value{color:#C0453A;font-size:1.15rem;font-weight:800;}
+        /* Rating Styles */
+        .rating-stars { font-size: 1.8rem; letter-spacing: 4px; cursor: pointer; color: var(--gray-200); transition: var(--transition); }
+        .rating-stars span.active { color: var(--accent); }
+        
+        /* Loading & States */
+        .loading { text-align: center; padding: 4rem 2rem; }
+        .loading-spinner { width: 50px; height: 50px; border: 4px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-box { color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 10px; font-weight: 600; }
 
-  .card{background:var(--paper);border:1px solid var(--line-ink);border-radius:16px;padding:20px;margin-bottom:16px;}
-  .card h3{font-size:.95rem;margin-bottom:14px;color:var(--ink);}
-  .row{display:flex;justify-content:space-between;font-size:.88rem;padding:6px 0;color:var(--ink-soft);border-bottom:1px dotted var(--line-ink);}
-  .row:last-child{border-bottom:none;}
-  .row span:first-child{color:var(--ink);}
-  .row.grand{font-weight:700;color:var(--gold);font-size:1rem;border-top:1px solid var(--line-ink);margin-top:6px;padding-top:12px;border-bottom:none;}
-  .item-line{display:flex;justify-content:space-between;font-size:.88rem;padding:5px 0;}
-
-  footer{text-align:center;padding:30px;color:var(--ink-soft);font-size:.8rem;}
-
-  /* ===== Edit order view ===== */
-  .edit-item-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line-ink);}
-  .edit-item-row:last-child{border-bottom:none;}
-  .edit-item-info{flex:1;min-width:0;}
-  .edit-item-info b{font-size:.88rem;display:block;color:var(--ink);}
-  .edit-item-info span{font-size:.78rem;color:var(--gold);}
-  .qty-ctrl{display:flex;align-items:center;gap:6px;}
-  .qty-ctrl button{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line-ink);background:var(--paper);font-weight:800;cursor:pointer;color:var(--ink);}
-  .qty-ctrl b{min-width:16px;text-align:center;font-size:.86rem;color:var(--ink);}
-  .remove-item-btn{background:none;border:none;color:#C0453A;font-size:.95rem;cursor:pointer;padding:4px 6px;}
-  .add-item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:.85rem;border-bottom:1px dotted var(--line-ink);}
-  .add-item-row:last-child{border-bottom:none;}
-  .mini-add-btn{background:var(--noir);color:var(--gold-soft);border:none;border-radius:999px;padding:5px 14px;font-weight:700;font-size:.78rem;cursor:pointer;}
-  .mini-add-btn:hover{background:var(--gold);color:var(--noir);}
-  .efield{margin-bottom:14px;text-align:start;}
-  .efield label{display:block;font-weight:700;font-size:.8rem;margin-bottom:5px;color:var(--ink);}
-  .efield input, .efield textarea, .efield select{
-    width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line-ink);font-family:inherit;font-size:.88rem;color:var(--ink);background:var(--paper);
-  }
-  .efield textarea{min-height:56px;resize:vertical;}
-  .edit-actions{display:flex;gap:10px;margin-top:18px;}
-  .edit-save-btn{flex:1;background:var(--gold);color:var(--noir);border:none;padding:13px;border-radius:999px;font-weight:800;font-size:.9rem;cursor:pointer;font-family:'Cairo',sans-serif;}
-  .edit-save-btn:hover{background:var(--gold-soft);}
-  .edit-back-btn{background:none;border:1.5px solid var(--line-ink);color:var(--ink-soft);padding:13px 20px;border-radius:999px;font-weight:700;font-size:.88rem;cursor:pointer;font-family:'Cairo',sans-serif;}
-</style>
+        /* Responsive */
+        @media (max-width: 600px) {
+            .order-info { grid-template-columns: 1fr; }
+            .steps-container { flex-direction: column; gap: 1.5rem; padding-right: 20px; }
+            .progress-line { display: none; }
+            .step { flex-direction: row; text-align: right; gap: 1rem; }
+            .step-icon { width: 45px; height: 45px; font-size: 1rem; flex-shrink: 0; }
+            .actions-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
-<button class="lang-btn" id="langToggle" type="button">EN</button>
-<header>
-  <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
-    <div class="brand-logo"><img src="logo.png" alt="مطبخ إيمي"></div>
-    <div class="brand-name" id="businessName">مطبخ إيمي</div>
-  </a>
+<header class="header">
+    <a href="index.html" class="header-brand">
+        <img src="logo.png" alt="هَمَّ النَّمَّ" class="header-logo">
+        <div class="header-title">هَمَّ النَّمَّ <span id="brandSub">Hum L Num</span></div>
+    </a>
+    <button class="lang-btn" id="langToggle" type="button">EN</button>
 </header>
 
-<main id="main">
-  <div class="state-box" id="loadingBox" data-ar="جاري تحميل بيانات الطلب..." data-en="Loading your order...">جاري تحميل بيانات الطلب...</div>
-</main>
+<main class="main-content">
+    <div class="tracking-card">
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="loading-spinner"></div>
+            <p data-ar="جاري تحميل بيانات الطلب..." data-en="Loading your order...">جاري تحميل بيانات الطلب...</p>
+        </div>
 
-<footer data-ar="شكرًا لطلبك من مطبخ إيمي 🏡" data-en="Thank you for ordering from Emmie's Kitchen 🏡">شكرًا لطلبك من مطبخ إيمي 🏡</footer>
+        <!-- Lookup Form (if no ID) -->
+        <div id="lookupState" class="loading" style="display: none;">
+            <h3 style="margin-bottom: 1rem; color: var(--primary);" data-ar="تابع طلبك" data-en="Track your order">تابع طلبك</h3>
+            <input id="lookupInput" type="text" inputmode="numeric" placeholder="#1001" style="width: 100%; max-width: 300px; padding: 12px; border-radius: var(--radius-md); border: 1.5px solid var(--gray-200); font-size: 1.1rem; text-align: center; margin-bottom: 12px; font-family: 'IBM Plex Mono', monospace;">
+            <div id="lookupError" class="error-box"></div>
+            <button id="lookupBtn" class="btn btn-accent" style="width: 100%; max-width: 300px;" data-ar="بحث" data-en="Search">بحث</button>
+        </div>
+
+        <!-- Main Tracking Content -->
+        <div id="trackingContent" style="display: none;">
+            <div class="tracking-header">
+                <div class="tracking-header-icon"><i class="fas fa-check"></i></div>
+                <h1 id="headerTitle" data-ar="شكرًا لطلبك من هَمَّ النَّمَّ 🏡" data-en="Thank you for ordering from Hum L Num 🏡">شكرًا لطلبك من هَمَّ النَّمَّ 🏡</h1>
+                <p id="headerSub" data-ar="يمكنك متابعة حالة طلبك أولاً بأول" data-en="You can track your order status in real-time">يمكنك متابعة حالة طلبك أولاً بأول</p>
+            </div>
+
+            <div class="tracking-body">
+                <div class="order-info">
+                    <div class="info-item">
+                        <div class="info-label" data-ar="رقم الطلب" data-en="Order Number">رقم الطلب</div>
+                        <div class="info-value nums" id="orderNumber">#0000</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label" data-ar="الحالة الحالية" data-en="Current Status">الحالة الحالية</div>
+                        <div class="info-value" id="currentStatus" style="color: var(--accent);">-</div>
+                    </div>
+                </div>
+
+                <div class="progress-steps" id="progressSteps">
+                    <div class="progress-line">
+                        <div class="progress-line-fill" id="progressFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="steps-container" id="stepsContainer">
+                        <!-- Steps injected by JS -->
+                    </div>
+                </div>
+
+                <div id="deliveryTimeBox" style="display:none; background: #FDECEA; border: 1px solid #F0C4BC; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; text-align: center;">
+                    <div style="font-weight: 800; color: #8A2E22; font-size: 0.9rem;"><i class="far fa-clock"></i> <span data-ar="موعد التسليم المطلوب" data-en="Requested delivery time">موعد التسليم المطلوب</span></div>
+                    <div style="color: #8A2E22; font-size: 0.95rem; margin-top: 4px;" id="deliveryTimeValue"></div>
+                </div>
+
+                <div class="order-details">
+                    <h3 class="details-title"><i class="fas fa-receipt"></i> <span data-ar="تفاصيل الطلب" data-en="Order Details">تفاصيل الطلب</span></h3>
+                    <ul class="details-list" id="orderItems"></ul>
+                    <div class="details-total">
+                        <span data-ar="الإجمالي الكلي" data-en="Total">الإجمالي الكلي</span>
+                        <span class="nums" id="orderTotal">0.00 ج.م</span>
+                    </div>
+                </div>
+
+                <!-- Dynamic Actions -->
+                <div class="actions-grid" id="actionButtons"></div>
+            </div>
+        </div>
+
+        <!-- Edit Form Container -->
+        <div id="editContainer" class="edit-container">
+            <h2 class="details-title" style="margin-bottom: 1.5rem;" data-ar="تعديل الطلب" data-en="Edit Order">تعديل الطلب</h2>
+            <div id="editItemsWrap" style="margin-bottom: 1.5rem;"></div>
+            <div id="addItemsWrap" style="margin-bottom: 1.5rem;"></div>
+            
+            <div class="efield">
+                <label data-ar="رقم الموبايل" data-en="Phone number">رقم الموبايل</label>
+                <input type="tel" id="e-phone">
+            </div>
+            <div class="efield">
+                <label data-ar="العنوان" data-en="Address">العنوان</label>
+                <textarea id="e-address" rows="2"></textarea>
+            </div>
+            <div class="efield">
+                <label data-ar="تاريخ ووقت الاستلام المطلوب" data-en="Required delivery time">تاريخ ووقت الاستلام المطلوب</label>
+                <input type="datetime-local" id="e-time">
+            </div>
+            <div class="efield">
+                <label data-ar="ملاحظة على الطلب" data-en="Order note">ملاحظة على الطلب</label>
+                <textarea id="e-note" rows="2"></textarea>
+            </div>
+
+            <div class="order-details" style="margin-top: 1rem;">
+                <div class="details-total">
+                    <span data-ar="الإجمالي الجديد" data-en="New Total">الإجمالي الجديد</span>
+                    <span class="nums" id="editTotal">0.00 ج.م</span>
+                </div>
+            </div>
+            <div id="editError" class="error-box"></div>
+            <div class="actions-grid" style="margin-top: 1.5rem;">
+                <button class="btn btn-outline" id="editBackBtn" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
+                <button class="btn btn-primary" id="editSaveBtn" data-ar="حفظ التعديلات" data-en="Save Changes">حفظ التعديلات</button>
+            </div>
+        </div>
+
+        <!-- Rating Container -->
+        <div id="ratingContainer" class="edit-container" style="text-align: center;">
+            <h2 class="details-title" style="justify-content: center;" data-ar="قيّم طلبك" data-en="Rate your order">قيّم طلبك</h2>
+            <div id="starPicker" class="rating-stars" style="margin: 1rem 0;">
+                <span data-star="1">★</span><span data-star="2">★</span><span data-star="3">★</span><span data-star="4">★</span><span data-star="5">★</span>
+            </div>
+            <textarea id="ratingComment" placeholder="تعليق (اختياري)" style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1.5px solid var(--gray-200); font-family: inherit; margin-bottom: 1rem;" rows="3"></textarea>
+            <label for="ratingPhotoInput" style="display: inline-block; border: 2px dashed var(--gray-300); border-radius: var(--radius-md); padding: 1rem 2rem; cursor: pointer; color: var(--gray-600); font-weight: 600; margin-bottom: 1rem;">
+                <i class="fas fa-camera"></i> <span data-ar="إضافة صورة" data-en="Add Photo">إضافة صورة</span>
+            </label>
+            <input type="file" id="ratingPhotoInput" accept="image/*" style="display: none;">
+            <img id="ratingPhotoPreview" style="max-width: 150px; border-radius: var(--radius-md); margin: 0 auto 1rem; display: none;">
+            <br>
+            <button class="btn btn-accent btn-full" id="submitRatingBtn" disabled data-ar="إرسال التقييم" data-en="Submit Rating">إرسال التقييم</button>
+            <button class="btn btn-outline btn-full" id="ratingBackBtn" style="margin-top: 10px;" data-ar="رجوع" data-en="Back">رجوع</button>
+        </div>
+
+    </div>
+</main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA8h_w_JvoPV1PA5QFHJg_nAInFLCSEw9Y",
-  authDomain: "emmie-s-kitchen.firebaseapp.com",
-  databaseURL: "https://emmie-s-kitchen-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "emmie-s-kitchen",
-  storageBucket: "emmie-s-kitchen.firebasestorage.app",
-  messagingSenderId: "381764506540",
-  appId: "1:381764506540:web:58ee94ef5992661f1aa009"
+    apiKey: "AIzaSyA8h_w_JvoPV1PA5QFHJg_nAInFLCSEw9Y",
+    authDomain: "emmie-s-kitchen.firebaseapp.com",
+    databaseURL: "https://emmie-s-kitchen-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "emmie-s-kitchen",
+    storageBucket: "emmie-s-kitchen.firebasestorage.app",
+    messagingSenderId: "381764506540",
+    appId: "1:381764506540:web:58ee94ef5992661f1aa009"
 };
-const fbApp = initializeApp(firebaseConfig);
-const db = getDatabase(fbApp);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-const CONFIG = { businessNameAr: "مطبخ إيمي", businessNameEn: "Emmie's Kitchen", currencyAr: "ج.م", currencyEn: "EGP", taxRate: 0.14, minOrderLimit: 150 };
+const CONFIG = { businessNameAr: "هَمَّ النَّمَّ", businessNameEn: "Hum L Num", currencyAr: "ج.م", currencyEn: "EGP", taxRate: 0.14, minOrderLimit: 150 };
 
 let MENU_ALL = [];
-onValue(ref(db, 'menu'), (snapshot)=>{
-  const data = snapshot.val() || {};
-  MENU_ALL = Object.entries(data)
-    .map(([id, item])=>({ id, ...item }))
-    .filter(item => item.available !== false);
+onValue(ref(db, 'menu'), (snapshot) => {
+    const data = snapshot.val() || {};
+    MENU_ALL = Object.entries(data).map(([id, item]) => ({ id, ...item })).filter(item => item.available !== false);
 });
 
 const STAGES = [
-  { key:'received', ar:"تم الاستلام", en:"Received", icon:"✓" },
-  { key:'preparing', ar:"جاري التحضير", en:"Preparing", icon:"🍳" },
-  { key:'out_for_delivery', ar:"خرج للتوصيل", en:"Out for delivery", icon:"🛵" },
-  { key:'delivered', ar:"تم التوصيل", en:"Delivered", icon:"🏠" }
+    { key: 'received', ar: "تم الاستلام", en: "Received", icon: "fa-clipboard-check" },
+    { key: 'preparing', ar: "جاري التحضير", en: "Preparing", icon: "fa-fire" },
+    { key: 'out_for_delivery', ar: "خرج للتوصيل", en: "Out for delivery", icon: "fa-motorcycle" },
+    { key: 'delivered', ar: "تم التوصيل", en: "Delivered", icon: "fa-home" }
 ];
 
 let lang = 'ar';
 const params = new URLSearchParams(window.location.search);
 let orderId = params.get('id');
-const orderNumberParam = params.get('order');
+let currentOrder = null;
 
-function applyLang(){
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-  document.getElementById('langToggle').textContent = lang === 'ar' ? 'EN' : 'AR';
-  document.getElementById('businessName').textContent = lang==='ar' ? CONFIG.businessNameAr : CONFIG.businessNameEn;
-  document.querySelectorAll('[data-ar]').forEach(el=>{
-    const val = lang === 'ar' ? el.getAttribute('data-ar') : el.getAttribute('data-en');
-    if(val !== null) el.textContent = val;
-  });
-  if(window.__lastOrder) render(window.__lastOrder);
-  else if(window.__showingLookup) showLookupForm();
-}
-document.getElementById('langToggle').onclick = ()=>{ lang = lang==='ar'?'en':'ar'; applyLang(); };
-
-function fmtDeliveryTime(val, lang){
-  if(!val) return '';
-  const d = new Date(val);
-  if(isNaN(d.getTime())) return val;
-  return d.toLocaleString(lang==='ar' ? 'ar-EG' : 'en-GB', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-}
-
-function renderRatingBlock(order){
-  if(order.rating){
-    const stars = '★'.repeat(order.rating) + '☆'.repeat(5-order.rating);
-    return `
-      <div class="card" style="text-align:center;">
-        <div style="font-size:1.4rem;color:var(--gold);letter-spacing:.1em;">${stars}</div>
-        ${order.ratingPhoto ? `<img src="${order.ratingPhoto}" alt="food photo" style="max-width:180px;border-radius:12px;margin:10px auto 0;display:block;">` : ''}
-        <p style="color:var(--ink-soft);font-size:.85rem;margin-top:6px;">${lang==='ar'?'شكراً لتقييمك! 🙏':'Thanks for your rating! 🙏'}</p>
-      </div>`;
-  }
-  return `
-    <div class="card" style="text-align:center;">
-      <h3 style="margin-bottom:10px;">${lang==='ar'?'قيّم طلبك':'Rate your order'}</h3>
-      <div id="starPicker" style="font-size:1.8rem;letter-spacing:.08em;cursor:pointer;margin-bottom:12px;">
-        ${[1,2,3,4,5].map(n=>`<span data-star="${n}" style="color:var(--line-ink);">★</span>`).join('')}
-      </div>
-      <textarea id="ratingComment" placeholder="${lang==='ar'?'تعليق (اختياري)':'Comment (optional)'}"
-        style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line-ink);font-family:inherit;font-size:.85rem;min-height:50px;margin-bottom:10px;"></textarea>
-      <label for="ratingPhotoInput" style="display:block;border:1.5px dashed var(--line-ink);border-radius:10px;padding:14px;font-size:.82rem;color:var(--ink-soft);cursor:pointer;margin-bottom:10px;">
-        📷 <span id="ratingPhotoLabel">${lang==='ar'?'إضافة صورة للأكل (اختياري)':'Add a food photo (optional)'}</span>
-      </label>
-      <input type="file" id="ratingPhotoInput" accept="image/*" style="display:none;">
-      <img id="ratingPhotoPreview" style="max-width:140px;border-radius:10px;margin:0 auto 10px;display:none;">
-      <button id="submitRatingBtn" class="edit-save-btn" style="width:100%;" disabled>${lang==='ar'?'إرسال التقييم':'Submit rating'}</button>
-    </div>`;
-}
-
-function render(order){
-  window.__lastOrder = order;
-  const main = document.getElementById('main');
-  const currency = lang === 'ar' ? CONFIG.currencyAr : CONFIG.currencyEn;
-  const isCancelled = order.status === 'cancelled';
-  const stageIndex = Math.max(0, STAGES.findIndex(s=>s.key === order.status));
-  const fillPct = stageIndex === 0 ? 0 : (stageIndex / (STAGES.length - 1)) * 100;
-
-  const stepsHtml = STAGES.map((s, i)=>{
-    const cls = i < stageIndex ? 'done' : (i === stageIndex ? 'current' : '');
-    return `<div class="step ${cls}">
-      <div class="dot">${i <= stageIndex ? '✓' : (i+1)}</div>
-      <div class="step-label">${lang==='ar'?s.ar:s.en}</div>
-    </div>`;
-  }).join('');
-
-  const itemsHtml = (order.items||[]).map(it=>
-    `<div class="item-line"><span>${it.qty} × ${lang==='ar'?it.ar:it.en}</span><span class="nums">${(it.price*it.qty).toFixed(2)} ${currency}</span></div>`
-  ).join('');
-
-  const statusBlockHtml = isCancelled ? `
-    <div class="cancelled-banner">
-      <div class="value">${lang==='ar'?'❌ تم إلغاء الطلب':'❌ Order cancelled'}</div>
-    </div>
-  ` : `
-    <div class="stepper">
-      <div class="fill" style="width:${fillPct}%"></div>
-      ${stepsHtml}
-    </div>
-    <div class="status-banner">
-      <div class="label" data-ar="الحالة الحالية" data-en="Current status">${lang==='ar'?'الحالة الحالية':'Current status'}</div>
-      <div class="value">${lang==='ar'?STAGES[stageIndex].ar:STAGES[stageIndex].en}</div>
-    </div>
-    ${order.status === 'received' ? `
-      <div class="order-actions">
-        <button class="cancel-btn edit-btn" id="editOrderBtn">${lang==='ar'?'تعديل الطلب':'Edit order'}</button>
-        <button class="cancel-btn" id="cancelOrderBtn">${lang==='ar'?'إلغاء الطلب':'Cancel order'}</button>
-      </div>
-    ` : ''}
-    ${order.status === 'delivered' ? renderRatingBlock(order) : ''}
-  `;
-
-  main.innerHTML = `
-    <div class="order-head">
-      <h1 data-ar="حالة طلبك" data-en="Your order status">${lang==='ar'?'حالة طلبك':'Your order status'}</h1>
-      <div class="order-id nums">#${order.orderNumber || orderId.slice(-6).toUpperCase()}</div>
-    </div>
-
-    ${statusBlockHtml}
-
-    ${order.deliveryTimeTarget ? `
-    <div class="card" style="background:#FDECEA;border-color:#F0C4BC;">
-      <div style="font-weight:800;color:#8A2E22;font-size:.9rem;">🕒 ${lang==='ar'?'موعد التسليم المطلوب':'Requested delivery time'}</div>
-      <div style="color:#8A2E22;font-size:.88rem;margin-top:4px;">${fmtDeliveryTime(order.deliveryTimeTarget, lang)}</div>
-    </div>` : ''}
-
-    <div class="card">
-      <h3 data-ar="تفاصيل الطلب" data-en="Order details">${lang==='ar'?'تفاصيل الطلب':'Order details'}</h3>
-      ${itemsHtml}
-      ${order.mapsUrl ? `<p style="margin-top:10px;font-size:.85rem;"><a href="${order.mapsUrl}" target="_blank" style="color:var(--gold)">🗺️ ${lang==='ar'?'لوكيشن التوصيل اللي بعتّه':'The delivery location you shared'} ↗</a></p>` : ''}
-    </div>
-
-    <div class="card">
-      <div class="row"><span>${lang==='ar'?'الإجمالي الفرعي':'Subtotal'}</span><span class="nums">${(order.subtotal||0).toFixed(2)} ${currency}</span></div>
-      <div class="row"><span>${lang==='ar'?'رسوم التوصيل':'Delivery'}</span><span class="nums">${(order.deliveryFee||0).toFixed(2)} ${currency}</span></div>
-      <div class="row"><span>${lang==='ar'?'الضريبة':'Tax'}</span><span class="nums">${(order.tax||0).toFixed(2)} ${currency}</span></div>
-      <div class="row grand"><span>${lang==='ar'?'الإجمالي الكلي':'Total'}</span><span class="nums">${(order.total||0).toFixed(2)} ${currency}</span></div>
-    </div>
-
-    ${order.note ? `<div class="card"><h3 data-ar="ملاحظتك" data-en="Your note">${lang==='ar'?'ملاحظتك':'Your note'}</h3><p style="font-size:.88rem;color:var(--ink-soft)">${order.note}</p></div>` : ''}
-
-    <button class="cancel-btn edit-btn" id="reorderBtn" style="width:100%;">${lang==='ar'?'🔄 اطلب نفس الطلب تاني':'🔄 Order this again'}</button>
-  `;
-
-  const reorderBtn = document.getElementById('reorderBtn');
-  if(reorderBtn){
-    reorderBtn.onclick = ()=>{
-      try{
-        localStorage.setItem('emmie_reorder_items', JSON.stringify(order.items||[]));
-      }catch(e){ console.warn(e); }
-      window.location.href = 'index.html';
-    };
-  }
-
-  const starPicker = document.getElementById('starPicker');
-  if(starPicker){
-    let selectedRating = 0;
-    let selectedPhotoBase64 = null;
-    const stars = starPicker.querySelectorAll('[data-star]');
-    const submitBtn = document.getElementById('submitRatingBtn');
-    stars.forEach(s=>{
-      s.onclick = ()=>{
-        selectedRating = parseInt(s.dataset.star, 10);
-        stars.forEach(x=> x.style.color = parseInt(x.dataset.star,10) <= selectedRating ? 'var(--gold)' : 'var(--line-ink)');
-        submitBtn.disabled = false;
-      };
+function applyLang() {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.getElementById('langToggle').textContent = lang === 'ar' ? 'EN' : 'AR';
+    document.getElementById('brandSub').textContent = lang === 'ar' ? 'Hum L Num' : 'هم النم';
+    document.querySelectorAll('[data-ar]').forEach(el => {
+        el.textContent = lang === 'ar' ? el.getAttribute('data-ar') : el.getAttribute('data-en');
     });
+    if (currentOrder) render(currentOrder);
+}
+document.getElementById('langToggle').onclick = () => { lang = lang === 'ar' ? 'en' : 'ar'; applyLang(); };
 
-    const photoInput = document.getElementById('ratingPhotoInput');
-    const photoPreview = document.getElementById('ratingPhotoPreview');
-    const photoLabel = document.getElementById('ratingPhotoLabel');
-    photoInput.addEventListener('change', (e)=>{
-      const file = e.target.files[0];
-      if(!file) return;
-      const img = new Image();
-      const reader = new FileReader();
-      reader.onload = (ev)=>{
-        img.onload = ()=>{
-          const maxW = 480;
-          const scale = Math.min(1, maxW / img.width);
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          selectedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
-          photoPreview.src = selectedPhotoBase64;
-          photoPreview.style.display = 'block';
-          photoLabel.textContent = lang==='ar' ? 'تم اختيار صورة ✓' : 'Photo selected ✓';
-        };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
+function fmtDeliveryTime(val) {
+    if (!val) return '';
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? val : d.toLocaleString(lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
 
-    submitBtn.onclick = async ()=>{
-      if(selectedRating === 0) return;
-      submitBtn.disabled = true;
-      submitBtn.textContent = lang==='ar' ? 'جاري الإرسال...' : 'Sending...';
-      const comment = document.getElementById('ratingComment').value.trim();
-      const payload = { rating: selectedRating, ratingComment: comment };
-      if(selectedPhotoBase64) payload.ratingPhoto = selectedPhotoBase64;
-      try{
-        await update(ref(db, 'orders/' + orderId), payload);
-      }catch(err){
-        console.error(err);
-        submitBtn.disabled = false;
-        submitBtn.textContent = lang==='ar' ? 'إرسال التقييم' : 'Submit rating';
-        alert(lang==='ar' ? 'حصل خطأ، حاول تاني' : 'Something went wrong, try again');
-      }
+function render(order) {
+    currentOrder = order;
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('trackingContent').style.display = 'block';
+    document.getElementById('editContainer').style.display = 'none';
+    document.getElementById('ratingContainer').style.display = 'none';
+
+    const currency = lang === 'ar' ? CONFIG.currencyAr : CONFIG.currencyEn;
+    const isCancelled = order.status === 'cancelled';
+    
+    document.getElementById('orderNumber').textContent = '#' + (order.orderNumber || orderId.slice(-6).toUpperCase());
+    
+    if (isCancelled) {
+        document.getElementById('currentStatus').textContent = lang === 'ar' ? '❌ تم إلغاء الطلب' : '❌ Order cancelled';
+        document.getElementById('currentStatus').style.color = 'var(--danger)';
+        document.getElementById('progressSteps').style.display = 'none';
+    } else {
+        const stageIndex = Math.max(0, STAGES.findIndex(s => s.key === order.status));
+        document.getElementById('currentStatus').textContent = lang === 'ar' ? STAGES[stageIndex].ar : STAGES[stageIndex].en;
+        document.getElementById('currentStatus').style.color = 'var(--accent)';
+        document.getElementById('progressSteps').style.display = 'block';
+
+        const stepsContainer = document.getElementById('stepsContainer');
+        stepsContainer.innerHTML = STAGES.map((s, i) => {
+            const cls = i < stageIndex ? 'completed' : (i === stageIndex ? 'active' : '');
+            return `<div class="step ${cls}">
+                <div class="step-icon"><i class="fas ${s.icon}"></i></div>
+                <div class="step-label">${lang === 'ar' ? s.ar : s.en}</div>
+            </div>`;
+        }).join('');
+
+        const progress = stageIndex === 0 ? 0 : (stageIndex / (STAGES.length - 1)) * 100;
+        document.getElementById('progressFill').style.width = progress + '%';
+    }
+
+    if (order.deliveryTimeTarget) {
+        document.getElementById('deliveryTimeBox').style.display = 'block';
+        document.getElementById('deliveryTimeValue').textContent = fmtDeliveryTime(order.deliveryTimeTarget);
+    } else {
+        document.getElementById('deliveryTimeBox').style.display = 'none';
+    }
+
+    const itemsList = document.getElementById('orderItems');
+    itemsList.innerHTML = (order.items || []).map(it => `
+        <li class="details-item">
+            <div>
+                <div class="details-item-name">${lang === 'ar' ? it.ar : it.en}</div>
+                <div class="details-item-qty">x ${it.qty}</div>
+            </div>
+            <div class="details-item-price nums">${(it.price * it.qty).toFixed(2)} ${currency}</div>
+        </li>
+    `).join('');
+
+    document.getElementById('orderTotal').textContent = (order.total || 0).toFixed(2) + ' ' + currency;
+
+    // Render Actions
+    const actionsDiv = document.getElementById('actionButtons');
+    actionsDiv.innerHTML = '';
+    
+    if (!isCancelled && order.status === 'received') {
+        actionsDiv.innerHTML += `<button class="btn btn-outline" id="editOrderBtn"><i class="fas fa-edit"></i> <span data-ar="تعديل الطلب" data-en="Edit Order">تعديل الطلب</span></button>`;
+        actionsDiv.innerHTML += `<button class="btn btn-danger" id="cancelOrderBtn"><i class="fas fa-times"></i> <span data-ar="إلغاء الطلب" data-en="Cancel Order">إلغاء الطلب</span></button>`;
+    }
+    
+    if (order.status === 'delivered' && !order.rating) {
+        actionsDiv.innerHTML += `<button class="btn btn-accent btn-full" id="rateOrderBtn"><i class="fas fa-star"></i> <span data-ar="قيّم طلبك" data-en="Rate your order">قيّم طلبك</span></button>`;
+    } else if (order.rating) {
+        actionsDiv.innerHTML += `<div class="btn-full" style="text-align:center; padding: 1rem; background: var(--gray-50); border-radius: var(--radius-md); color: var(--accent); font-weight: 700;">
+            ${'★'.repeat(order.rating)}${'☆'.repeat(5 - order.rating)} <span style="color: var(--gray-600); font-size: 0.85rem; display:block; margin-top:4px;">${lang === 'ar' ? 'شكراً لتقييمك!' : 'Thanks for rating!'}</span>
+        </div>`;
+    }
+
+    actionsDiv.innerHTML += `<button class="btn btn-primary btn-full" id="reorderBtn"><i class="fas fa-redo"></i> <span data-ar="إعادة نفس الطلب" data-en="Reorder">إعادة نفس الطلب</span></button>`;
+
+    // Attach Event Listeners
+    if (document.getElementById('editOrderBtn')) document.getElementById('editOrderBtn').onclick = () => showEditForm(order);
+    if (document.getElementById('cancelOrderBtn')) document.getElementById('cancelOrderBtn').onclick = cancelOrder;
+    if (document.getElementById('rateOrderBtn')) document.getElementById('rateOrderBtn').onclick = showRatingForm;
+    document.getElementById('reorderBtn').onclick = () => {
+        localStorage.setItem('humlnum_reorder', JSON.stringify(order.items || []));
+        window.location.href = 'index.html';
     };
-  }
-
-  const cancelBtn = document.getElementById('cancelOrderBtn');
-  if(cancelBtn){
-    cancelBtn.onclick = async ()=>{
-      const confirmMsg = lang==='ar' ? 'متأكد إنك عايز تلغي الطلب ده؟' : 'Are you sure you want to cancel this order?';
-      if(!confirm(confirmMsg)) return;
-      cancelBtn.disabled = true;
-      cancelBtn.textContent = lang==='ar' ? 'جاري الإلغاء...' : 'Cancelling...';
-      try{
-        await update(ref(db, 'orders/' + orderId), { status: 'cancelled' });
-      }catch(err){
-        console.error(err);
-        alert(lang==='ar' ? 'حصل خطأ، حاول تاني' : 'Something went wrong, please try again');
-        cancelBtn.disabled = false;
-        cancelBtn.textContent = lang==='ar' ? 'إلغاء الطلب' : 'Cancel order';
-      }
-    };
-  }
-
-  const editBtn = document.getElementById('editOrderBtn');
-  if(editBtn){
-    editBtn.onclick = ()=> showEditForm(order);
-  }
 }
 
 let editItems = {};
+function showEditForm(order) {
+    document.getElementById('trackingContent').style.display = 'none';
+    document.getElementById('editContainer').style.display = 'block';
+    editItems = {};
+    (order.items || []).forEach(it => { editItems[it.id] = { ...it }; });
 
-function minDeliveryDateTime(){
-  const d = new Date();
-  d.setDate(d.getDate() + 2);
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 16);
+    function renderEdit() {
+        const currency = lang === 'ar' ? CONFIG.currencyAr : CONFIG.currencyEn;
+        const entries = Object.values(editItems);
+        const subtotal = entries.reduce((s, it) => s + it.price * it.qty, 0);
+        const deliveryFee = order.deliveryFee || 0;
+        const tax = subtotal > 0 ? (subtotal + deliveryFee) * CONFIG.taxRate : 0;
+        const grand = subtotal > 0 ? subtotal + deliveryFee + tax : 0;
+
+        document.getElementById('editItemsWrap').innerHTML = entries.length === 0 ? 
+            `<p style="text-align:center; color: var(--gray-600); padding: 1rem;">${lang === 'ar' ? 'السلة فارغة' : 'Cart is empty'}</p>` :
+            entries.map(it => `
+            <div class="edit-item-row">
+                <div style="flex:1;">
+                    <div style="font-weight:700; font-size:0.9rem;">${lang === 'ar' ? it.ar : it.en}</div>
+                    <div style="color:var(--accent); font-size:0.85rem;" class="nums">${it.price} ${currency}</div>
+                </div>
+                <div class="qty-ctrl">
+                    <button type="button" data-act="minus" data-id="${it.id}">−</button>
+                    <span class="nums" style="min-width:20px; text-align:center; font-weight:700;">${it.qty}</span>
+                    <button type="button" data-act="plus" data-id="${it.id}">+</button>
+                </div>
+                <button class="remove-item-btn" data-act="remove" data-id="${it.id}"><i class="fas fa-trash"></i></button>
+            </div>`).join('');
+
+        const addable = MENU_ALL.filter(m => !editItems[m.id]);
+        document.getElementById('addItemsWrap').innerHTML = addable.length ? `<h4 style="margin-bottom:0.5rem; color:var(--primary);">${lang === 'ar' ? 'إضافة أصناف أخرى' : 'Add more items'}</h4>` + 
+            addable.map(m => `
+            <div class="edit-item-row" style="justify-content: space-between;">
+                <div>
+                    <div style="font-weight:600; font-size:0.9rem;">${lang === 'ar' ? m.ar : m.en}</div>
+                    <div style="color:var(--gray-600); font-size:0.8rem;" class="nums">${m.price} ${currency}</div>
+                </div>
+                <button class="btn btn-primary" style="padding: 6px 16px; font-size: 0.8rem;" data-act="add" data-id="${m.id}">+</button>
+            </div>`).join('') : '';
+
+        document.getElementById('editTotal').textContent = grand.toFixed(2) + ' ' + currency;
+        document.getElementById('e-phone').value = order.customerPhone || '';
+        document.getElementById('e-address').value = order.customerAddress || '';
+        document.getElementById('e-time').value = order.deliveryTimeTarget || '';
+        document.getElementById('e-note').value = order.note || '';
+        
+        const saveBtn = document.getElementById('editSaveBtn');
+        saveBtn.disabled = subtotal < CONFIG.minOrderLimit;
+        saveBtn.style.opacity = subtotal < CONFIG.minOrderLimit ? '0.5' : '1';
+
+        document.querySelectorAll('[data-act="plus"]').forEach(b => b.onclick = () => { editItems[b.dataset.id].qty++; renderEdit(); });
+        document.querySelectorAll('[data-act="minus"]').forEach(b => b.onclick = () => {
+            editItems[b.dataset.id].qty--;
+            if (editItems[b.dataset.id].qty <= 0) delete editItems[b.dataset.id];
+            renderEdit();
+        });
+        document.querySelectorAll('[data-act="remove"]').forEach(b => b.onclick = () => { delete editItems[b.dataset.id]; renderEdit(); });
+        document.querySelectorAll('[data-act="add"]').forEach(b => b.onclick = () => {
+            const m = MENU_ALL.find(x => x.id === b.dataset.id);
+            if (m) editItems[m.id] = { id: m.id, ar: m.ar, en: m.en, price: m.price, qty: 1 };
+            renderEdit();
+        });
+    }
+    renderEdit();
 }
 
-function showEditForm(order){
-  const main = document.getElementById('main');
-  editItems = {};
-  (order.items||[]).forEach(it=>{ editItems[it.id] = { ...it }; });
-
-  function itemsRowsHtml(){
-    const currency = lang === 'ar' ? CONFIG.currencyAr : CONFIG.currencyEn;
-    const entries = Object.values(editItems);
-    if(entries.length === 0) return `<p style="color:var(--ink-soft);font-size:.85rem;text-align:center;padding:14px 0">${lang==='ar'?'السلة فاضية':'Your cart is empty'}</p>`;
-    return entries.map(it=>`
-      <div class="edit-item-row">
-        <div class="edit-item-info">
-          <b>${lang==='ar'?it.ar:it.en}</b>
-          <span class="nums">${it.price} ${currency}</span>
-        </div>
-        <div class="qty-ctrl">
-          <button type="button" data-act="minus" data-id="${it.id}">−</button>
-          <b class="nums">${it.qty}</b>
-          <button type="button" data-act="plus" data-id="${it.id}">+</button>
-        </div>
-        <button class="remove-item-btn" data-act="remove" data-id="${it.id}">🗑</button>
-      </div>`).join('');
-  }
-
-  function addableRowsHtml(){
-    const currency = lang === 'ar' ? CONFIG.currencyAr : CONFIG.currencyEn;
-    const addable = MENU_ALL.filter(m => !editItems[m.id]);
-    if(addable.length === 0) return '';
-    return addable.map(m=>`
-      <div class="add-item-row">
-        <span>${lang==='ar'?m.ar:m.en} <span class="nums" style="color:var(--ink-soft)">— ${m.price} ${currency}</span></span>
-        <button class="mini-add-btn" data-act="add" data-id="${m.id}">${lang==='ar'?'+ إضافة':'+ Add'}</button>
-      </div>`).join('');
-  }
-
-  function computeTotals(){
-    const subtotal = Object.values(editItems).reduce((s,it)=> s + it.price*it.qty, 0);
-    const deliveryFee = order.deliveryFee || 0;
-    const tax = subtotal > 0 ? (subtotal + deliveryFee) * CONFIG.taxRate : 0;
-    const grand = subtotal > 0 ? subtotal + deliveryFee + tax : 0;
-    return { subtotal, deliveryFee, tax, grand };
-  }
-
-  function renderEdit(){
-    const currency = lang === 'ar' ? CONFIG.currencyAr : CONFIG.currencyEn;
-    const t = computeTotals();
-    main.innerHTML = `
-      <div class="order-head">
-        <h1 data-ar="تعديل الطلب" data-en="Edit order">${lang==='ar'?'تعديل الطلب':'Edit order'}</h1>
-        <div class="order-id nums">#${order.orderNumber || orderId.slice(-6).toUpperCase()}</div>
-      </div>
-
-      <div class="card">
-        <h3 data-ar="أصناف طلبك" data-en="Your items">${lang==='ar'?'أصناف طلبك':'Your items'}</h3>
-        <div id="editItemsWrap">${itemsRowsHtml()}</div>
-      </div>
-
-      ${addableRowsHtml() ? `<div class="card">
-        <h3 data-ar="أضف من المنيو" data-en="Add from the menu">${lang==='ar'?'أضف من المنيو':'Add from the menu'}</h3>
-        <div id="addItemsWrap">${addableRowsHtml()}</div>
-      </div>` : ''}
-
-      <div class="card">
-        <div class="efield">
-          <label data-ar="تاريخ ووقت الاستلام المطلوب" data-en="Required delivery time">${lang==='ar'?'تاريخ ووقت الاستلام المطلوب':'Required delivery time'}</label>
-          <input type="datetime-local" id="e-time" value="${order.deliveryTimeTarget||''}" min="${minDeliveryDateTime()}">
-        </div>
-        <div class="efield">
-          <label data-ar="ملاحظة على الطلب" data-en="Order note">${lang==='ar'?'ملاحظة على الطلب':'Order note'}</label>
-          <textarea id="e-note">${order.note||''}</textarea>
-        </div>
-        <div class="efield">
-          <label data-ar="رقم الموبايل" data-en="Phone number">${lang==='ar'?'رقم الموبايل':'Phone number'}</label>
-          <input type="tel" id="e-phone" value="${order.customerPhone||''}">
-        </div>
-        <div class="efield">
-          <label data-ar="العنوان" data-en="Address">${lang==='ar'?'العنوان':'Address'}</label>
-          <textarea id="e-address">${order.customerAddress||''}</textarea>
-        </div>
-        <div class="efield" style="margin-bottom:0">
-          <label data-ar="طريقة الدفع" data-en="Payment method">${lang==='ar'?'طريقة الدفع':'Payment method'}</label>
-          <select id="e-pay">
-            <option value="cash" ${order.payMethod==='cash'?'selected':''}>${lang==='ar'?'كاش عند الاستلام':'Cash on delivery'}</option>
-            <option value="card" ${order.payMethod==='card'?'selected':''}>${lang==='ar'?'فيزا عند الاستلام':'Card on delivery'}</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="row"><span>${lang==='ar'?'الإجمالي الفرعي':'Subtotal'}</span><span class="nums">${t.subtotal.toFixed(2)} ${currency}</span></div>
-        <div class="row"><span>${lang==='ar'?'رسوم التوصيل':'Delivery'}</span><span class="nums">${t.deliveryFee.toFixed(2)} ${currency}</span></div>
-        <div class="row"><span>${lang==='ar'?'الضريبة':'Tax'}</span><span class="nums">${t.tax.toFixed(2)} ${currency}</span></div>
-        <div class="row grand"><span>${lang==='ar'?'الإجمالي الكلي':'Total'}</span><span class="nums">${t.grand.toFixed(2)} ${currency}</span></div>
-      </div>
-
-      ${t.subtotal < CONFIG.minOrderLimit ? `<div style="color:#C0453A;font-size:.82rem;text-align:center;margin-bottom:14px;font-weight:700;">
-        ${lang==='ar'
-          ? `⚠️ الحد الأدنى للطلب ${CONFIG.minOrderLimit} ${currency}، باقي لك ${(CONFIG.minOrderLimit - t.subtotal).toFixed(2)} ${currency}`
-          : `⚠️ Minimum order is ${CONFIG.minOrderLimit} ${currency}, add ${(CONFIG.minOrderLimit - t.subtotal).toFixed(2)} ${currency} more`}
-      </div>` : ''}
-
-      <div id="editError" style="color:#C0453A;font-size:.8rem;text-align:center;min-height:1em;margin-bottom:8px;"></div>
-      <div class="edit-actions">
-        <button class="edit-back-btn" id="editBackBtn" type="button">${lang==='ar'?'رجوع':'Back'}</button>
-        <button class="edit-save-btn" id="editSaveBtn" type="button" ${t.subtotal < CONFIG.minOrderLimit ? 'disabled style="opacity:.5;cursor:not-allowed;"' : ''}>${lang==='ar'?'حفظ التعديلات':'Save changes'}</button>
-      </div>
-    `;
-
-    document.querySelectorAll('[data-act="plus"]').forEach(b=> b.onclick = ()=>{ editItems[b.dataset.id].qty++; renderEdit(); });
-    document.querySelectorAll('[data-act="minus"]').forEach(b=> b.onclick = ()=>{
-      editItems[b.dataset.id].qty--;
-      if(editItems[b.dataset.id].qty <= 0) delete editItems[b.dataset.id];
-      renderEdit();
-    });
-    document.querySelectorAll('[data-act="remove"]').forEach(b=> b.onclick = ()=>{ delete editItems[b.dataset.id]; renderEdit(); });
-    document.querySelectorAll('[data-act="add"]').forEach(b=> b.onclick = ()=>{
-      const m = MENU_ALL.find(x=>x.id === b.dataset.id);
-      if(m) editItems[m.id] = { id:m.id, ar:m.ar, en:m.en, price:m.price, qty:1 };
-      renderEdit();
-    });
-    document.getElementById('editBackBtn').onclick = ()=> render(order);
-    document.getElementById('editSaveBtn').onclick = saveEdit;
-  }
-
-  async function saveEdit(){
+async function saveEdit() {
     const errBox = document.getElementById('editError');
     const phone = document.getElementById('e-phone').value.trim();
     const address = document.getElementById('e-address').value.trim();
-    const note = document.getElementById('e-note').value.trim();
-    const payMethod = document.getElementById('e-pay').value;
-    const deliveryTimeTarget = document.getElementById('e-time').value;
     const items = Object.values(editItems);
+    const subtotal = items.reduce((s, it) => s + it.price * it.qty, 0);
 
-    if(items.length === 0){
-      errBox.textContent = lang==='ar' ? 'لازم يكون في صنف واحد على الأقل' : 'You need at least one item';
-      return;
-    }
-    const t0 = computeTotals();
-    if(t0.subtotal < CONFIG.minOrderLimit){
-      const diff = CONFIG.minOrderLimit - t0.subtotal;
-      errBox.textContent = lang==='ar'
-        ? `⚠️ الحد الأدنى للطلب ${CONFIG.minOrderLimit} ج.م، باقي لك ${diff.toFixed(2)} ج.م`
-        : `⚠️ Minimum order is ${CONFIG.minOrderLimit} EGP, add ${diff.toFixed(2)} EGP more`;
-      return;
-    }
-    if(!phone || !address || !deliveryTimeTarget){
-      errBox.textContent = lang==='ar' ? 'من فضلك اكمل كل البيانات' : 'Please fill in all fields';
-      return;
-    }
+    if (items.length === 0) { errBox.textContent = lang === 'ar' ? 'يجب إضافة صنف واحد على الأقل' : 'At least one item required'; return; }
+    if (subtotal < CONFIG.minOrderLimit) { errBox.textContent = lang === 'ar' ? `الحد الأدنى للطلب ${CONFIG.minOrderLimit} ج.م` : `Minimum order is ${CONFIG.minOrderLimit} EGP`; return; }
+    if (!phone || !address) { errBox.textContent = lang === 'ar' ? 'يرجى إكمال رقم الموبايل والعنوان' : 'Please fill phone and address'; return; }
 
-    const t = computeTotals();
     const saveBtn = document.getElementById('editSaveBtn');
     saveBtn.disabled = true;
-    saveBtn.textContent = lang==='ar' ? 'جاري الحفظ...' : 'Saving...';
-    try{
-      await update(ref(db, 'orders/' + orderId), {
-        items, note, customerPhone: phone, customerAddress: address, payMethod, deliveryTimeTarget,
-        subtotal: t.subtotal, tax: t.tax, total: t.grand,
-        status: 'received'
-      });
-    }catch(err){
-      console.error(err);
-      errBox.textContent = lang==='ar' ? 'حصل خطأ، حاول تاني' : 'Something went wrong, try again';
-      saveBtn.disabled = false;
-      saveBtn.textContent = lang==='ar' ? 'حفظ التعديلات' : 'Save changes';
-    }
-  }
+    saveBtn.textContent = lang === 'ar' ? 'جاري الحفظ...' : 'Saving...';
 
-  renderEdit();
+    const deliveryFee = currentOrder.deliveryFee || 0;
+    const tax = (subtotal + deliveryFee) * CONFIG.taxRate;
+    const grand = subtotal + deliveryFee + tax;
+
+    try {
+        await update(ref(db, 'orders/' + orderId), {
+            items, customerPhone: phone, customerAddress: address,
+            deliveryTimeTarget: document.getElementById('e-time').value,
+            note: document.getElementById('e-note').value,
+            subtotal, tax, total: grand, status: 'received'
+        });
+        alert(lang === 'ar' ? 'تم حفظ التعديلات بنجاح!' : 'Changes saved successfully!');
+        startTracking(orderId);
+    } catch (err) {
+        console.error(err);
+        errBox.textContent = lang === 'ar' ? 'حدث خطأ، حاول مرة أخرى' : 'Error occurred, try again';
+        saveBtn.disabled = false;
+        saveBtn.textContent = lang === 'ar' ? 'حفظ التعديلات' : 'Save Changes';
+    }
 }
 
-function startTracking(id){
-  window.__showingLookup = false;
-  orderId = id;
-  const orderRef = ref(db, 'orders/' + orderId);
-  onValue(orderRef, (snapshot)=>{
-    const data = snapshot.val();
-    if(!data){
-      document.getElementById('main').innerHTML = `<div class="state-box">${lang==='ar' ? 'الطلب ده مش موجود' : 'This order could not be found'}</div>`;
-      return;
+document.getElementById('editBackBtn').onclick = () => render(currentOrder);
+document.getElementById('editSaveBtn').onclick = saveEdit;
+
+async function cancelOrder() {
+    if (!confirm(lang === 'ar' ? 'هل أنت متأكد من إلغاء هذا الطلب؟' : 'Are you sure you want to cancel this order?')) return;
+    const btn = document.getElementById('cancelOrderBtn');
+    btn.disabled = true;
+    try {
+        await update(ref(db, 'orders/' + orderId), { status: 'cancelled' });
+        startTracking(orderId);
+    } catch (err) {
+        alert(lang === 'ar' ? 'حدث خطأ' : 'Error occurred');
+        btn.disabled = false;
     }
-    render(data);
-  }, (err)=>{
-    console.error(err);
-    document.getElementById('main').innerHTML = `<div class="state-box">${lang==='ar' ? 'حصل خطأ في تحميل الطلب' : 'Something went wrong loading the order'}</div>`;
-  });
 }
 
-function showLookupForm(errorMsg){
-  window.__showingLookup = true;
-  const main = document.getElementById('main');
-  main.innerHTML = `
-    <div class="card" style="max-width:360px;margin:40px auto 0;text-align:center;">
-      <h3 style="margin-bottom:14px" data-ar="تابع طلبك" data-en="Track your order">${lang==='ar'?'تابع طلبك':'Track your order'}</h3>
-      <p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:16px" data-ar="اكتب رقم الطلب اللي وصلك بعد الطلب مباشرة" data-en="Enter the order number you received right after ordering">${lang==='ar'?'اكتب رقم الطلب اللي وصلك بعد الطلب مباشرة':'Enter the order number you received right after ordering'}</p>
-      <input id="lookupInput" type="text" inputmode="numeric" placeholder="#1001" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line-ink);font-size:1rem;text-align:center;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;">
-      <div id="lookupError" style="color:#C0453A;font-size:.8rem;min-height:1em;margin-bottom:10px;">${errorMsg||''}</div>
-      <button id="lookupBtn" type="button" style="width:100%;background:var(--gold);color:#fff;border:none;padding:12px;border-radius:999px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:'Cairo',sans-serif;">${lang==='ar'?'تابع الطلب':'Track order'}</button>
-    </div>`;
+function showRatingForm() {
+    document.getElementById('trackingContent').style.display = 'none';
+    document.getElementById('ratingContainer').style.display = 'block';
+    let selectedRating = 0;
+    let selectedPhotoBase64 = null;
 
-  const doLookup = async ()=>{
-    const raw = document.getElementById('lookupInput').value.trim().replace('#','');
-    const errBox = document.getElementById('lookupError');
-    if(!raw){
-      errBox.textContent = lang==='ar' ? 'اكتب رقم الطلب الأول' : 'Please enter an order number';
-      return;
-    }
-    errBox.textContent = lang==='ar' ? 'جاري البحث...' : 'Searching...';
-    try{
-      const snap = await get(ref(db, 'orderLookup/' + raw));
-      if(!snap.exists()){
-        errBox.textContent = lang==='ar' ? 'مفيش طلب بالرقم ده' : 'No order found with this number';
-        return;
-      }
-      const id = snap.val();
-      history.replaceState(null, '', '?id=' + id);
-      startTracking(id);
-    }catch(err){
-      console.error(err);
-      errBox.textContent = lang==='ar' ? 'حصل خطأ، حاول تاني' : 'Something went wrong, try again';
-    }
-  };
-  document.getElementById('lookupBtn').onclick = doLookup;
-  document.getElementById('lookupInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLookup(); });
+    document.querySelectorAll('#starPicker span').forEach(s => {
+        s.onclick = () => {
+            selectedRating = parseInt(s.dataset.star, 10);
+            document.querySelectorAll('#starPicker span').forEach(x => x.classList.toggle('active', parseInt(x.dataset.star, 10) <= selectedRating));
+            document.getElementById('submitRatingBtn').disabled = false;
+        };
+    });
+
+    document.getElementById('ratingPhotoInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const scale = Math.min(1, 480 / img.width);
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                selectedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                document.getElementById('ratingPhotoPreview').src = selectedPhotoBase64;
+                document.getElementById('ratingPhotoPreview').style.display = 'block';
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('submitRatingBtn').onclick = async () => {
+        if (selectedRating === 0) return;
+        const btn = document.getElementById('submitRatingBtn');
+        btn.disabled = true;
+        btn.textContent = lang === 'ar' ? 'جاري الإرسال...' : 'Sending...';
+        
+        const payload = { rating: selectedRating, ratingComment: document.getElementById('ratingComment').value.trim() };
+        if (selectedPhotoBase64) payload.ratingPhoto = selectedPhotoBase64;
+        
+        try {
+            await update(ref(db, 'orders/' + orderId), payload);
+            startTracking(orderId);
+        } catch (err) {
+            alert(lang === 'ar' ? 'حدث خطأ' : 'Error');
+            btn.disabled = false;
+        }
+    };
+    document.getElementById('ratingBackBtn').onclick = () => render(currentOrder);
 }
 
-if(orderId){
-  startTracking(orderId);
-} else if(orderNumberParam){
-  get(ref(db, 'orderLookup/' + orderNumberParam)).then(snap=>{
-    if(snap.exists()) startTracking(snap.val());
-    else showLookupForm(lang==='ar' ? 'مفيش طلب بالرقم ده' : 'No order found with this number');
-  }).catch(()=> showLookupForm());
+function startTracking(id) {
+    orderId = id;
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('trackingContent').style.display = 'none';
+    document.getElementById('lookupState').style.display = 'none';
+    
+    onValue(ref(db, 'orders/' + orderId), (snapshot) => {
+        if (snapshot.exists()) {
+            render(snapshot.val());
+        } else {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('trackingContent').style.display = 'block';
+            document.getElementById('trackingContent').innerHTML = `<div class="loading"><p style="color:var(--danger);">${lang === 'ar' ? 'لم يتم العثور على هذا الطلب' : 'Order not found'}</p></div>`;
+        }
+    }, (err) => {
+        console.error(err);
+        document.getElementById('loadingState').innerHTML = `<p style="color:var(--danger);">Error loading order</p>`;
+    });
+}
+
+function showLookupForm(errorMsg) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('trackingContent').style.display = 'none';
+    document.getElementById('lookupState').style.display = 'block';
+    if (errorMsg) document.getElementById('lookupError').textContent = errorMsg;
+
+    const doLookup = async () => {
+        const raw = document.getElementById('lookupInput').value.trim().replace('#', '');
+        if (!raw) return;
+        document.getElementById('lookupError').textContent = lang === 'ar' ? 'جاري البحث...' : 'Searching...';
+        try {
+            const snap = await get(ref(db, 'orderLookup/' + raw));
+            if (snap.exists()) {
+                history.replaceState(null, '', '?id=' + snap.val());
+                startTracking(snap.val());
+            } else {
+                document.getElementById('lookupError').textContent = lang === 'ar' ? 'لم يتم العثور على طلب بهذا الرقم' : 'No order found with this number';
+            }
+        } catch (err) {
+            document.getElementById('lookupError').textContent = lang === 'ar' ? 'حدث خطأ' : 'Error occurred';
+        }
+    };
+    document.getElementById('lookupBtn').onclick = doLookup;
+    document.getElementById('lookupInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLookup(); });
+}
+
+if (orderId) {
+    startTracking(orderId);
 } else {
-  showLookupForm();
+    showLookupForm();
 }
 
 applyLang();

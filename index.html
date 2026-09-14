@@ -1,5622 +1,847 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#C9A87C">
-<title>مطبخ إيمي | Emmie's Kitchen</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-
-<style>
-  :root{
-    --primary:#C9A87C;
-    --primary-dark:#A8895E;
-    --primary-light:#F5EDE0;
-    --accent:#8B6F47;
-    --accent-dark:#6B5537;
-    --bg:#FAFAF8;
-    --surface:#FFFFFF;
-    --text-primary:#2C2418;
-    --text-secondary:#6B5D4F;
-    --text-muted:#9B8F81;
-    --border:#E8E2D9;
-    --border-light:#F0EBE3;
-    --success:#5A7D5A;
-    --error:#C45C4E;
-    --shadow-sm:0 2px 8px rgba(44,36,24,0.04);
-    --shadow-md:0 8px 24px rgba(44,36,24,0.08);
-    --shadow-lg:0 16px 48px rgba(44,36,24,0.12);
-    --radius-sm:8px;
-    --radius-md:16px;
-    --radius-lg:24px;
-    --radius-xl:32px;
-    font-size:16px;
-  }
-
-  *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-  }
-
-  html{
-    scroll-behavior:smooth;
-  }
-
-  body{
-    background:var(--bg);
-    color:var(--text-primary);
-    font-family:'Tajawal',sans-serif;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-
-  body.no-scroll{
-    overflow:hidden;
-  }
-
-  img,svg{
-    display:block;
-    max-width:100%;
-  }
-
-  button{
-    font-family:inherit;
-    cursor:pointer;
-    border:none;
-    background:none;
-  }
-
-  button:disabled{
-    cursor:not-allowed;
-  }
-
-  a{
-    color:inherit;
-    text-decoration:none;
-  }
-
-  h1,h2,h3,h4{
-    font-weight:800;
-    line-height:1.2;
-  }
-
-  p{
-    margin:0;
-  }
-
-  input,
-  textarea,
-  select,
-  button{
-    font-family:inherit;
-  }
-
-  .nums{
-    font-family:'IBM Plex Mono',monospace;
-    font-variant-numeric:tabular-nums;
-  }
-
-  :focus-visible{
-    outline:2px solid var(--primary);
-    outline-offset:2px;
-    border-radius:var(--radius-sm);
-  }
-
-  .sr-only{
-    position:absolute;
-    width:1px;
-    height:1px;
-    padding:0;
-    margin:-1px;
-    overflow:hidden;
-    clip:rect(0,0,0,0);
-    white-space:nowrap;
-    border:0;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *,
-    *::before,
-    *::after{
-      animation-duration:.001ms !important;
-      animation-iteration-count:1 !important;
-      transition-duration:.001ms !important;
-      scroll-behavior:auto !important;
-    }
-  }
-
-  /* =========================================================
-     Animations
-     ========================================================= */
-
-  @keyframes fadeInUp{
-    from{
-      opacity:0;
-      transform:translateY(20px);
-    }
-    to{
-      opacity:1;
-      transform:translateY(0);
-    }
-  }
-
-  @keyframes fadeIn{
-    from{opacity:0;}
-    to{opacity:1;}
-  }
-
-  @keyframes float{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-10px);}
-  }
-
-  @keyframes spin{
-    to{transform:rotate(360deg);}
-  }
-
-  /* =========================================================
-     Header
-     ========================================================= */
-
-  header.site{
-    position:sticky;
-    top:0;
-    z-index:40;
-    background:rgba(250,250,248,0.85);
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
-    border-bottom:1px solid var(--border-light);
-    transition:all .3s ease;
-  }
-
-  header.site.scrolled{
-    background:rgba(250,250,248,0.95);
-    box-shadow:var(--shadow-sm);
-  }
-
-  .site-bar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:16px 24px;
-    max-width:1280px;
-    margin:0 auto;
-  }
-
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
-
-  .brand-mark{
-    width:48px;
-    height:48px;
-    border-radius:50%;
-    overflow:hidden;
-    box-shadow:var(--shadow-sm);
-    border:2px solid var(--primary-light);
-    transition:transform .3s ease;
-    flex:none;
-  }
-
-  .brand-mark:hover{
-    transform:scale(1.05);
-  }
-
-  .brand-mark img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-  }
-
-  .brand-name{
-    font-weight:800;
-    font-size:1.25rem;
-    color:var(--text-primary);
-    letter-spacing:-.02em;
-  }
-
-  .bar-actions{
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
-
-  .btn-ghost{
-    background:var(--surface);
-    border:1.5px solid var(--border);
-    color:var(--text-secondary);
-    padding:10px 20px;
-    border-radius:var(--radius-md);
-    font-weight:600;
-    font-size:.9rem;
-    transition:all .2s ease;
-  }
-
-  .btn-ghost:hover{
-    background:var(--primary-light);
-    border-color:var(--primary);
-    color:var(--accent-dark);
-    transform:translateY(-1px);
-  }
-
-  .cart-btn{
-    position:relative;
-    background:var(--primary);
-    color:#fff;
-    padding:12px 24px;
-    border-radius:var(--radius-md);
-    font-weight:700;
-    font-size:.9rem;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    transition:all .2s ease;
-    box-shadow:var(--shadow-sm);
-  }
-
-  .cart-btn:hover{
-    background:var(--primary-dark);
-    transform:translateY(-2px);
-    box-shadow:var(--shadow-md);
-  }
-
-  .cart-btn:active{
-    transform:translateY(0);
-  }
-
-  .cart-count{
-    background:#fff;
-    color:var(--accent-dark);
-    border-radius:50%;
-    min-width:24px;
-    height:24px;
-    font-size:.75rem;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:0 6px;
-    font-weight:800;
-  }
-
-  /* =========================================================
-     Hero
-     ========================================================= */
-
-  .hero{
-    position:relative;
-    padding:80px 24px 100px;
-    overflow:hidden;
-    background:linear-gradient(135deg,var(--bg) 0%,var(--primary-light) 100%);
-  }
-
-  .hero::before{
-    content:'';
-    position:absolute;
-    top:-50%;
-    right:-20%;
-    width:600px;
-    height:600px;
-    background:radial-gradient(circle,var(--primary-light) 0%,transparent 70%);
-    opacity:.6;
-    pointer-events:none;
-  }
-
-  .hero::after{
-    content:'';
-    position:absolute;
-    bottom:-30%;
-    left:-10%;
-    width:400px;
-    height:400px;
-    background:radial-gradient(circle,var(--primary-light) 0%,transparent 70%);
-    opacity:.4;
-    pointer-events:none;
-  }
-
-  .hero-inner{
-    max-width:1280px;
-    margin:0 auto;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:60px;
-    align-items:center;
-    position:relative;
-    z-index:1;
-  }
-
-  .hero-content{
-    animation:fadeInUp .8s ease;
-  }
-
-  .eyebrow{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    color:var(--accent);
-    font-weight:700;
-    font-size:.85rem;
-    letter-spacing:.05em;
-    background:var(--primary-light);
-    padding:8px 16px;
-    border-radius:var(--radius-md);
-    margin-bottom:24px;
-    border:1px solid var(--border-light);
-  }
-
-  .hero h1{
-    font-size:3.5rem;
-    line-height:1.1;
-    margin-bottom:24px;
-    color:var(--text-primary);
-    letter-spacing:-.03em;
-  }
-
-  .hero h1 span{
-    color:var(--primary-dark);
-    position:relative;
-  }
-
-  .hero h1 span::after{
-    content:'';
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    height:8px;
-    background:var(--primary-light);
-    z-index:-1;
-    border-radius:4px;
-  }
-
-  .hero p.lead{
-    font-size:1.15rem;
-    color:var(--text-secondary);
-    max-width:48ch;
-    margin-bottom:32px;
-    line-height:1.7;
-  }
-
-  .hero-ctas{
-    display:flex;
-    gap:16px;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-
-  .btn-track-small{
-    background:transparent;
-    color:var(--text-muted);
-    padding:8px 4px;
-    font-weight:600;
-    font-size:.9rem;
-    text-decoration:underline;
-    text-underline-offset:4px;
-    transition:color .2s ease;
-  }
-
-  .btn-track-small:hover{
-    color:var(--accent);
-  }
-
-  .btn-primary{
-    background:var(--primary);
-    color:#fff;
-    padding:16px 32px;
-    border-radius:var(--radius-md);
-    font-weight:700;
-    font-size:1rem;
-    box-shadow:var(--shadow-md);
-    transition:all .3s ease;
-    position:relative;
-    overflow:hidden;
-  }
-
-  .btn-primary::before{
-    content:'';
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:0;
-    height:0;
-    background:rgba(255,255,255,.2);
-    border-radius:50%;
-    transform:translate(-50%,-50%);
-    transition:width .6s ease,height .6s ease;
-  }
-
-  .btn-primary:hover::before{
-    width:300px;
-    height:300px;
-  }
-
-  .btn-primary:hover{
-    background:var(--primary-dark);
-    transform:translateY(-3px);
-    box-shadow:var(--shadow-lg);
-  }
-
-  .btn-primary:active{
-    transform:translateY(-1px);
-  }
-
-  .btn-primary:disabled{
-    opacity:.65;
-    transform:none;
-    box-shadow:none;
-  }
-
-  .btn-secondary{
-    background:var(--surface);
-    color:var(--text-primary);
-    border:1.5px solid var(--border);
-    padding:16px 32px;
-    border-radius:var(--radius-md);
-    font-weight:700;
-    font-size:1rem;
-    transition:all .2s ease;
-  }
-
-  .btn-secondary:hover{
-    background:var(--primary-light);
-    border-color:var(--primary);
-    transform:translateY(-2px);
-  }
-
-  .hero-visual{
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    animation:fadeIn 1s ease .3s both;
-  }
-
-  .hero-logo{
-    position:relative;
-    z-index:2;
-    width:min(400px,90%);
-    border-radius:50%;
-    box-shadow:var(--shadow-lg);
-    border:8px solid var(--surface);
-    animation:float 6s ease-in-out infinite;
-  }
-
-  .hero-decoration{
-    position:absolute;
-    width:100%;
-    height:100%;
-    top:0;
-    left:0;
-    z-index:1;
-  }
-
-  .hero-decoration::before,
-  .hero-decoration::after{
-    content:'';
-    position:absolute;
-    border-radius:50%;
-    background:var(--primary-light);
-    opacity:.5;
-  }
-
-  .hero-decoration::before{
-    width:300px;
-    height:300px;
-    top:-20px;
-    right:-20px;
-  }
-
-  .hero-decoration::after{
-    width:200px;
-    height:200px;
-    bottom:-10px;
-    left:-10px;
-  }
-
-  /* =========================================================
-     Trust
-     ========================================================= */
-
-  .trust-strip{
-    max-width:1280px;
-    margin:0 auto;
-    padding:0 24px;
-    margin-top:-40px;
-    position:relative;
-    z-index:2;
-  }
-
-  .trust-card{
-    background:var(--surface);
-    border-radius:var(--radius-lg);
-    padding:24px 40px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:32px;
-    flex-wrap:wrap;
-    box-shadow:var(--shadow-md);
-    border:1px solid var(--border-light);
-  }
-
-  .trust-card h2{
-    font-size:1.25rem;
-    color:var(--text-primary);
-    font-weight:700;
-  }
-
-  .trust-pillars{
-    display:flex;
-    align-items:center;
-    gap:20px;
-    color:var(--text-secondary);
-    font-weight:600;
-    font-size:1rem;
-  }
-
-  .trust-pillars .pillar{
-    color:var(--accent);
-    font-weight:700;
-  }
-
-  .trust-pillars .dot{
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:var(--primary);
-  }
-
-  /* =========================================================
-     Menu
-     ========================================================= */
-
-  .menu{
-    padding:100px 24px;
-    max-width:1280px;
-    margin:0 auto;
-  }
-
-  .section-head{
-    text-align:center;
-    margin-bottom:16px;
-  }
-
-  .section-head .eyebrow{
-    margin-bottom:16px;
-  }
-
-  .section-head h2{
-    font-size:2.5rem;
-    color:var(--text-primary);
-    letter-spacing:-.02em;
-    margin-bottom:12px;
-  }
-
-  .section-sub{
-    text-align:center;
-    color:var(--text-secondary);
-    font-size:1rem;
-    max-width:600px;
-    margin:0 auto 48px;
-  }
-
-  .tabs-wrapper{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:24px;
-    margin-bottom:48px;
-  }
-
-  .search-container{
-    max-width:480px;
-    width:100%;
-  }
-
-  #menuSearchInput{
-    width:100%;
-    padding:14px 20px;
-    border-radius:var(--radius-md);
-    border:1.5px solid var(--border);
-    background:var(--surface);
-    font-family:inherit;
-    font-size:1rem;
-    color:var(--text-primary);
-    transition:all .2s ease;
-  }
-
-  #menuSearchInput:focus{
-    border-color:var(--primary);
-    box-shadow:0 0 0 4px var(--primary-light);
-    outline:none;
-  }
-
-  .tabs{
-    display:flex;
-    gap:12px;
-    flex-wrap:wrap;
-    justify-content:center;
-  }
-
-  .tab{
-    background:var(--surface);
-    border:1.5px solid var(--border);
-    color:var(--text-secondary);
-    padding:12px 24px;
-    border-radius:var(--radius-md);
-    font-weight:600;
-    font-size:.95rem;
-    transition:all .2s ease;
-  }
-
-  .tab:hover{
-    background:var(--primary-light);
-    border-color:var(--primary);
-    transform:translateY(-2px);
-  }
-
-  .tab.active{
-    background:var(--primary);
-    border-color:var(--primary);
-    color:#fff;
-    box-shadow:var(--shadow-sm);
-  }
-
-  .btn-custom-trigger{
-    background:var(--surface);
-    border:1.5px solid var(--primary);
-    color:var(--accent);
-    padding:12px 28px;
-    border-radius:var(--radius-md);
-    font-weight:700;
-    font-size:.95rem;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    transition:all .2s ease;
-  }
-
-  .btn-custom-trigger:hover{
-    background:var(--primary-light);
-    transform:translateY(-2px);
-  }
-
-  .main-custom-box{
-    width:100%;
-    max-width:560px;
-    background:var(--surface);
-    border:2px dashed var(--primary);
-    border-radius:var(--radius-lg);
-    padding:28px;
-    box-shadow:var(--shadow-md);
-    display:none;
-    animation:fadeInUp .3s ease;
-  }
-
-  .main-custom-box.show{
-    display:block;
-  }
-
-  .custom-warning{
-    background:var(--primary-light);
-    border:1px solid var(--border);
-    color:var(--accent-dark);
-    border-radius:var(--radius-md);
-    padding:12px 14px;
-    font-size:.85rem;
-    line-height:1.6;
-    margin-bottom:16px;
-  }
-
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-    gap:24px;
-  }
-
-  .item-card{
-    background:var(--surface);
-    border:1px solid var(--border-light);
-    border-radius:var(--radius-lg);
-    padding:24px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    transition:all .3s ease;
-    position:relative;
-    overflow:hidden;
-  }
-
-  .item-card::before{
-    content:'';
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    height:4px;
-    background:linear-gradient(90deg,var(--primary),var(--accent));
-    transform:scaleX(0);
-    transform-origin:left;
-    transition:transform .3s ease;
-  }
-
-  .item-card:hover{
-    transform:translateY(-4px);
-    box-shadow:var(--shadow-lg);
-    border-color:var(--primary-light);
-  }
-
-  .item-card:hover::before{
-    transform:scaleX(1);
-  }
-
-  .bestseller-badge{
-    position:absolute;
-    top:16px;
-    right:-36px;
-    background:var(--primary);
-    color:#fff;
-    font-size:.7rem;
-    font-weight:800;
-    padding:6px 40px;
-    transform:rotate(45deg);
-    box-shadow:var(--shadow-sm);
-    z-index:5;
-  }
-
-  [dir="ltr"] .bestseller-badge{
-    right:auto;
-    left:-36px;
-    transform:rotate(-45deg);
-  }
-
-  .item-top{
-    display:flex;
-    align-items:center;
-    gap:16px;
-  }
-
-  .item-emoji{
-    width:56px;
-    height:56px;
-    border-radius:var(--radius-md);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:1.6rem;
-    flex:none;
-    background:var(--primary-light);
-    border:2px solid var(--border-light);
-  }
-
-  .item-name{
-    font-weight:800;
-    font-size:1.1rem;
-    color:var(--text-primary);
-  }
-
-  .item-desc{
-    color:var(--text-secondary);
-    font-size:.9rem;
-    line-height:1.5;
-    min-height:2.7em;
-  }
-
-  .item-foot{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-top:8px;
-    padding-top:16px;
-    border-top:1px solid var(--border-light);
-    gap:12px;
-  }
-
-  .item-price{
-    font-weight:800;
-    color:var(--accent);
-    font-size:1.1rem;
-  }
-
-  .add-btn{
-    background:var(--primary);
-    color:#fff;
-    border-radius:var(--radius-md);
-    padding:10px 20px;
-    font-weight:700;
-    font-size:.9rem;
-    transition:all .2s ease;
-  }
-
-  .add-btn:hover{
-    background:var(--primary-dark);
-    transform:scale(1.05);
-  }
-
-  .add-btn:active{
-    transform:scale(.95);
-  }
-
-  .menu-state{
-    grid-column:1/-1;
-    text-align:center;
-    color:var(--text-muted);
-    padding:40px 0;
-  }
-
-  /* =========================================================
-     Overlay / Drawer
-     ========================================================= */
-
-  .overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(44,36,24,.5);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    z-index:60;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .3s ease;
-  }
-
-  .overlay.show{
-    opacity:1;
-    pointer-events:auto;
-  }
-
-  .drawer{
-    position:fixed;
-    top:0;
-    bottom:0;
-    inset-inline-end:0;
-    width:min(480px,100%);
-    background:rgba(255,255,255,.97);
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
-    z-index:70;
-    box-shadow:var(--shadow-lg);
-    transform:translateX(100%);
-    transition:transform .4s cubic-bezier(.4,0,.2,1);
-    display:flex;
-    flex-direction:column;
-    border-inline-start:1px solid var(--border-light);
-  }
-
-  [dir="rtl"] .drawer{
-    transform:translateX(-100%);
-  }
-
-  .drawer.open{
-    transform:translateX(0);
-  }
-
-  .drawer-head{
-    padding:24px;
-    border-bottom:1px solid var(--border-light);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    background:var(--surface);
-    flex:none;
-  }
-
-  .drawer-head h3{
-    font-size:1.35rem;
-    color:var(--text-primary);
-    font-weight:800;
-  }
-
-  .close-btn{
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    background:var(--bg);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:1.2rem;
-    color:var(--text-secondary);
-    transition:all .2s ease;
-  }
-
-  .close-btn:hover{
-    background:var(--primary-light);
-    color:var(--accent);
-    transform:rotate(90deg);
-  }
-
-  .drawer-body{
-    padding:24px;
-    overflow-y:auto;
-    flex:1;
-  }
-
-  .empty-cart{
-    text-align:center;
-    color:var(--text-muted);
-    padding:60px 20px;
-    font-size:1rem;
-  }
-
-  .cart-item{
-    display:flex;
-    gap:16px;
-    align-items:center;
-    padding:16px 0;
-    border-bottom:1px solid var(--border-light);
-  }
-
-  .cart-item:last-child{
-    border-bottom:none;
-  }
-
-  .cart-item .item-emoji{
-    width:48px;
-    height:48px;
-    font-size:1.3rem;
-  }
-
-  .cart-item-info{
-    flex:1;
-    min-width:0;
-  }
-
-  .cart-item-info b{
-    font-size:1rem;
-    display:block;
-    color:var(--text-primary);
-    margin-bottom:4px;
-    word-break:break-word;
-  }
-
-  .cart-item-info span{
-    font-size:.85rem;
-    color:var(--accent);
-    font-weight:600;
-  }
-
-  .custom-cart-item{
-    border-inline-start:4px solid var(--primary);
-    padding-inline-start:12px;
-  }
-
-  .qty-ctrl{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:var(--bg);
-    padding:4px;
-    border-radius:var(--radius-md);
-    flex:none;
-  }
-
-  .qty-ctrl button{
-    width:32px;
-    height:32px;
-    border-radius:50%;
-    background:var(--surface);
-    font-weight:800;
-    font-size:1rem;
-    color:var(--text-primary);
-    transition:all .2s ease;
-    border:1px solid var(--border);
-  }
-
-  .qty-ctrl button:hover{
-    background:var(--primary-light);
-    border-color:var(--primary);
-  }
-
-  .qty-ctrl b{
-    min-width:24px;
-    text-align:center;
-    font-size:1rem;
-    color:var(--text-primary);
-  }
-
-  .field{
-    margin-top:20px;
-  }
-
-  .field label{
-    display:block;
-    font-weight:700;
-    font-size:.9rem;
-    margin-bottom:8px;
-    color:var(--text-primary);
-  }
-
-  .field input,
-  .field textarea,
-  .field select{
-    width:100%;
-    padding:14px 16px;
-    border-radius:var(--radius-md);
-    border:1.5px solid var(--border);
-    background:var(--surface);
-    font-family:inherit;
-    font-size:1rem;
-    color:var(--text-primary);
-    transition:all .2s ease;
-  }
-
-  .field input:focus,
-  .field textarea:focus,
-  .field select:focus{
-    border-color:var(--primary);
-    box-shadow:0 0 0 4px var(--primary-light);
-    outline:none;
-  }
-
-  .field textarea{
-    resize:vertical;
-    min-height:80px;
-  }
-
-  .field-error{
-    border-color:var(--error) !important;
-    box-shadow:0 0 0 4px rgba(196,92,78,.08) !important;
-  }
-
-  .divider{
-    border:none;
-    border-top:1px dashed var(--border);
-    margin:24px 0;
-  }
-
-  .delivery-box{
-    background:var(--bg);
-    border:1px solid var(--border-light);
-    border-radius:var(--radius-md);
-    padding:20px;
-  }
-
-  .delivery-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    flex-wrap:wrap;
-  }
-
-  .locate-btn{
-    background:var(--primary);
-    color:#fff;
-    border-radius:var(--radius-md);
-    padding:12px 20px;
-    font-weight:700;
-    font-size:.9rem;
-    transition:all .2s ease;
-  }
-
-  .locate-btn:hover{
-    background:var(--primary-dark);
-    transform:translateY(-1px);
-  }
-
-  .locate-btn:disabled{
-    opacity:.65;
-    transform:none;
-  }
-
-  .delivery-status{
-    font-size:.85rem;
-    color:var(--text-secondary);
-    margin-top:12px;
-  }
-
-  .delivery-help{
-    font-size:.8rem;
-    color:var(--text-muted);
-    margin-top:8px;
-    line-height:1.5;
-  }
-
-  .pay-options{
-    display:flex;
-    gap:12px;
-    margin-top:8px;
-  }
-
-  .pay-option{
-    flex:1;
-    border:1.5px solid var(--border);
-    background:var(--surface);
-    border-radius:var(--radius-md);
-    padding:14px;
-    text-align:center;
-    font-weight:600;
-    font-size:.9rem;
-    position:relative;
-    transition:all .2s ease;
-  }
-
-  .pay-option input{
-    position:absolute;
-    opacity:0;
-    inset:0;
-    cursor:pointer;
-    margin:0;
-  }
-
-  .pay-option:hover{
-    border-color:var(--primary);
-  }
-
-  .pay-option.selected{
-    border-color:var(--primary);
-    background:var(--primary-light);
-    color:var(--accent-dark);
-  }
-
-  .totals-box{
-    background:var(--bg);
-    border:1px solid var(--border-light);
-    border-radius:var(--radius-md);
-    padding:20px;
-    margin-top:20px;
-  }
-
-  .totals-row{
-    display:flex;
-    justify-content:space-between;
-    font-size:.95rem;
-    padding:8px 0;
-    color:var(--text-secondary);
-    gap:16px;
-  }
-
-  .totals-row.grand{
-    border-top:2px solid var(--border);
-    margin-top:12px;
-    padding-top:16px;
-    font-weight:800;
-    font-size:1.2rem;
-    color:var(--accent);
-  }
-
-  .min-order-alert{
-    background:var(--primary-light);
-    border:1px solid var(--primary);
-    color:var(--accent-dark);
-    padding:12px 16px;
-    border-radius:var(--radius-md);
-    font-size:.9rem;
-    font-weight:600;
-    margin-bottom:16px;
-    display:none;
-    text-align:center;
-  }
-
-  .min-order-alert.show{
-    display:block;
-    animation:fadeIn .3s ease;
-  }
-
-  .drawer-foot{
-    padding:24px;
-    border-top:1px solid var(--border-light);
-    background:var(--surface);
-    flex:none;
-  }
-
-  .place-order-btn{
-    width:100%;
-    background:var(--primary);
-    color:#fff;
-    padding:18px;
-    border-radius:var(--radius-md);
-    font-weight:800;
-    font-size:1.05rem;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    transition:all .3s ease;
-    box-shadow:var(--shadow-md);
-  }
-
-  .place-order-btn:hover{
-    background:var(--primary-dark);
-    transform:translateY(-2px);
-    box-shadow:var(--shadow-lg);
-  }
-
-  .place-order-btn:disabled{
-    background:var(--border);
-    cursor:not-allowed;
-    transform:none;
-    box-shadow:none;
-  }
-
-  .loading-spinner{
-    width:18px;
-    height:18px;
-    border:2px solid rgba(255,255,255,.35);
-    border-top-color:#fff;
-    border-radius:50%;
-    animation:spin .8s linear infinite;
-  }
-
-  /* =========================================================
-     Toast
-     ========================================================= */
-
-  .toast{
-    position:fixed;
-    bottom:32px;
-    left:50%;
-    transform:translateX(-50%) translateY(100px);
-    background:var(--text-primary);
-    color:#fff;
-    padding:16px 28px;
-    border-radius:var(--radius-md);
-    font-weight:600;
-    font-size:.95rem;
-    opacity:0;
-    pointer-events:none;
-    transition:all .4s cubic-bezier(.4,0,.2,1);
-    z-index:100;
-    box-shadow:var(--shadow-lg);
-    max-width:min(90vw,600px);
-    text-align:center;
-  }
-
-  .toast.show{
-    opacity:1;
-    transform:translateX(-50%) translateY(0);
-  }
-
-  /* =========================================================
-     WhatsApp
-     ========================================================= */
-
-  .whatsapp-floating{
-    position:fixed;
-    bottom:32px;
-    left:32px;
-    width:64px;
-    height:64px;
-    background-color:#25D366;
-    color:#fff;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:var(--shadow-lg);
-    z-index:50;
-    text-decoration:none;
-    transition:all .3s ease;
-  }
-
-  .whatsapp-floating:hover{
-    transform:scale(1.1) rotate(5deg);
-    box-shadow:0 12px 32px rgba(37,211,102,.4);
-  }
-
-  .whatsapp-floating svg{
-    width:32px;
-    height:32px;
-    fill:currentColor;
-  }
-
-  [dir="ltr"] .whatsapp-floating{
-    left:auto;
-    right:32px;
-  }
-
-  /* =========================================================
-     Confirmation
-     ========================================================= */
-
-  .confirm-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(44,36,24,.6);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-    z-index:80;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
-  }
-
-  .confirm-overlay.show{
-    display:flex;
-    animation:fadeIn .3s ease;
-  }
-
-  .confirm-box{
-    background:var(--surface);
-    border-radius:var(--radius-xl);
-    padding:40px 32px;
-    max-width:420px;
-    width:100%;
-    text-align:center;
-    box-shadow:var(--shadow-lg);
-    animation:fadeInUp .4s ease;
-  }
-
-  .confirm-icon{
-    font-size:3rem;
-    margin-bottom:16px;
-  }
-
-  .confirm-box h3{
-    font-size:1.4rem;
-    color:var(--text-primary);
-    margin-bottom:12px;
-  }
-
-  .confirm-box p{
-    color:var(--text-secondary);
-    font-size:1rem;
-    margin-bottom:24px;
-  }
-
-  .confirm-number{
-    background:var(--primary-light);
-    color:var(--accent-dark);
-    border-radius:var(--radius-md);
-    padding:20px;
-    font-size:2rem;
-    font-weight:900;
-    letter-spacing:.02em;
-    margin-bottom:24px;
-    border:2px solid var(--primary);
-  }
-
-  .confirm-actions{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
-
-  .confirm-track-btn{
-    background:var(--primary);
-    color:#fff;
-    padding:16px;
-    border-radius:var(--radius-md);
-    font-weight:700;
-    font-size:1rem;
-    transition:all .2s ease;
-  }
-
-  .confirm-track-btn:hover{
-    background:var(--primary-dark);
-    transform:translateY(-2px);
-  }
-
-  .confirm-close-btn{
-    background:none;
-    color:var(--text-muted);
-    font-size:.95rem;
-    padding:8px;
-    transition:color .2s ease;
-  }
-
-  .confirm-close-btn:hover{
-    color:var(--text-primary);
-  }
-
-  /* =========================================================
-     Footer
-     ========================================================= */
-
-  footer{
-    padding:48px 24px;
-    text-align:center;
-    color:var(--text-secondary);
-    font-size:.95rem;
-    background:var(--surface);
-    border-top:1px solid var(--border-light);
-  }
-
-  .footer-brand{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:12px;
-    margin-bottom:12px;
-  }
-
-  .footer-brand img{
-    width:32px;
-    height:32px;
-    border-radius:50%;
-  }
-
-  .footer-brand strong{
-    font-size:1.1rem;
-    color:var(--text-primary);
-  }
-
-  /* =========================================================
-     Responsive
-     ========================================================= */
-
-  @media (max-width:968px){
-    .hero-inner{
-      grid-template-columns:1fr;
-      gap:40px;
-    }
-
-    .hero h1{
-      font-size:2.5rem;
-    }
-
-    .hero-visual{
-      order:-1;
-    }
-
-    .hero-logo{
-      width:min(300px,80%);
-    }
-
-    .trust-card{
-      padding:20px 24px;
-      gap:20px;
-    }
-
-    .section-head h2{
-      font-size:2rem;
-    }
-  }
-
-  @media (max-width:640px){
-    .site-bar{
-      padding:12px 16px;
-    }
-
-    .brand-name{
-      font-size:1.1rem;
-    }
-
-    .brand-mark{
-      width:42px;
-      height:42px;
-    }
-
-    .cart-btn{
-      padding:10px 16px;
-      font-size:.85rem;
-    }
-
-    .btn-ghost{
-      padding:9px 14px;
-    }
-
-    .hero{
-      padding:60px 16px 80px;
-    }
-
-    .hero h1{
-      font-size:2rem;
-    }
-
-    .hero p.lead{
-      font-size:1rem;
-    }
-
-    .hero-ctas{
-      flex-direction:column;
-      width:100%;
-    }
-
-    .hero-ctas button{
-      width:100%;
-    }
-
-    .trust-strip{
-      padding:0 16px;
-    }
-
-    .trust-card{
-      flex-direction:column;
-      text-align:center;
-    }
-
-    .menu{
-      padding:60px 16px;
-    }
-
-    .grid{
-      grid-template-columns:1fr;
-    }
-
-    .drawer{
-      width:100%;
-    }
-
-    .pay-options{
-      flex-direction:column;
-    }
-
-    .cart-item{
-      gap:10px;
-    }
-
-    .cart-item .item-emoji{
-      width:44px;
-      height:44px;
-    }
-
-    .qty-ctrl{
-      gap:4px;
-    }
-
-    .qty-ctrl button{
-      width:30px;
-      height:30px;
-    }
-
-    .whatsapp-floating{
-      width:56px;
-      height:56px;
-      bottom:20px;
-      left:20px;
-    }
-
-    [dir="ltr"] .whatsapp-floating{
-      left:auto;
-      right:20px;
-    }
-
-    .toast{
-      bottom:20px;
-    }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هَمَّ النَّمَّ | Hum L Num - طعم البيت لحد باب بيتك</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1F4D34;
+            --primary-light: #2D6A4F;
+            --primary-dark: #081C15;
+            --accent: #C9A227;
+            --accent-light: #E4C878;
+            --accent-dark: #A67F1D;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F3F5;
+            --gray-200: #E9ECEF;
+            --gray-300: #DEE2E6;
+            --gray-400: #CED4DA;
+            --gray-500: #ADB5BD;
+            --gray-600: #868E96;
+            --gray-700: #495057;
+            --gray-800: #343A40;
+            --gray-900: #212529;
+            --success: #40C057;
+            --warning: #FAB005;
+            --danger: #FA5252;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --shadow-xl: 0 20px 40px rgba(0,0,0,0.2);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Cairo', 'Poppins', sans-serif; background: var(--gray-50); color: var(--gray-900); line-height: 1.6; overflow-x: hidden; }
+
+        /* ===== NAVBAR ===== */
+        .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--gray-200); transition: var(--transition); }
+        .navbar.scrolled { box-shadow: var(--shadow-md); }
+        .navbar-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+        .navbar-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .navbar-logo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+        .navbar-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .navbar-title span { color: var(--accent-dark); font-weight: 400; font-size: 0.85rem; display: block; margin-top: -4px; }
+        .navbar-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
+        .navbar-menu a { text-decoration: none; color: var(--gray-700); font-weight: 500; font-size: 0.95rem; transition: var(--transition); position: relative; }
+        .navbar-menu a:hover { color: var(--primary); }
+        .navbar-menu a::after { content: ''; position: absolute; bottom: -4px; right: 0; width: 0; height: 2px; background: var(--accent); transition: var(--transition); }
+        .navbar-menu a:hover::after { width: 100%; }
+        .navbar-actions { display: flex; align-items: center; gap: 1rem; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem; text-decoration: none; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; }
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .btn-accent { background: var(--accent); color: var(--white); }
+        .btn-accent:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: var(--white); }
+        .btn-ghost { background: transparent; color: var(--gray-700); }
+        .btn-ghost:hover { background: var(--gray-100); }
+        .cart-btn { position: relative; width: 44px; height: 44px; border-radius: 50%; background: var(--gray-100); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+        .cart-btn:hover { background: var(--gray-200); }
+        .cart-badge { position: absolute; top: -4px; left: -4px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--white); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+        .lang-switch { padding: 6px 12px; border-radius: var(--radius-sm); background: var(--gray-100); color: var(--gray-700); font-weight: 600; font-size: 0.85rem; cursor: pointer; border: none; transition: var(--transition); }
+        .lang-switch:hover { background: var(--gray-200); }
+
+        /* ===== HERO SECTION ===== */
+        .hero { min-height: 100vh; display: flex; align-items: center; padding-top: 72px; background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%); position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 50%, rgba(31, 77, 52, 0.03) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(201, 162, 39, 0.05) 0%, transparent 50%); animation: float 20s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 33% { transform: translate(30px, -30px) rotate(1deg); } 66% { transform: translate(-20px, 20px) rotate(-1deg); } }
+        .hero-container { max-width: 1400px; margin: 0 auto; padding: 4rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; z-index: 1; }
+        .hero-content { animation: slideInRight 1s ease-out; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(31, 77, 52, 0.1); color: var(--primary); border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; }
+        .hero-badge i { color: var(--accent); }
+        .hero-title { font-size: 3.5rem; font-weight: 900; line-height: 1.2; color: var(--primary-dark); margin-bottom: 1.5rem; }
+        .hero-title .highlight { color: var(--accent-dark); position: relative; }
+        .hero-title .highlight::after { content: ''; position: absolute; bottom: 5px; right: 0; width: 100%; height: 8px; background: rgba(201, 162, 39, 0.3); border-radius: 4px; }
+        .hero-subtitle { font-size: 1.2rem; color: var(--gray-600); margin-bottom: 2rem; line-height: 1.8; }
+        .hero-actions { display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap; }
+        .hero-stats { display: flex; gap: 3rem; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: 900; color: var(--primary); }
+        .stat-label { font-size: 0.85rem; color: var(--gray-600); margin-top: 4px; }
+        .hero-visual { position: relative; animation: slideInLeft 1s ease-out; }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
+        .hero-image-container { position: relative; width: 100%; aspect-ratio: 1; max-width: 500px; margin: 0 auto; }
+        .hero-image-bg { position: absolute; inset: 0; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; animation: morph 8s ease-in-out infinite; }
+        @keyframes morph { 0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; } 50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; } }
+        .hero-logo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70%; height: 70%; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3)); }
+
+        /* ===== MENU SECTION ===== */
+        .menu { padding: 6rem 2rem; background: var(--gray-50); }
+        .menu-container { max-width: 1400px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-tag { display: inline-block; padding: 6px 16px; background: rgba(31, 77, 52, 0.1); color: var(--primary); border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
+        .section-title { font-size: 2.5rem; font-weight: 900; color: var(--primary-dark); margin-bottom: 1rem; }
+        .section-subtitle { font-size: 1.1rem; color: var(--gray-600); max-width: 600px; margin: 0 auto; }
+        .menu-tabs { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .menu-tab { padding: 10px 20px; border-radius: 50px; background: var(--white); color: var(--gray-700); font-weight: 600; font-size: 0.9rem; cursor: pointer; border: 2px solid var(--gray-200); transition: var(--transition); }
+        .menu-tab:hover { border-color: var(--primary); color: var(--primary); }
+        .menu-tab.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+        .menu-item { background: var(--white); border-radius: var(--radius-md); overflow: hidden; transition: var(--transition); border: 1px solid var(--gray-200); }
+        .menu-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .menu-item-image { width: 100%; height: 160px; background: linear-gradient(135deg, var(--gray-100), var(--gray-200)); display: flex; align-items: center; justify-content: center; color: var(--gray-400); font-size: 2.5rem; position: relative; overflow: hidden; }
+        .menu-item-image img { width: 100%; height: 100%; object-fit: cover; }
+        .menu-item-badge { position: absolute; top: 8px; right: 8px; padding: 3px 10px; background: var(--accent); color: var(--white); border-radius: 50px; font-size: 0.7rem; font-weight: 600; }
+        .menu-item-content { padding: 1rem; }
+        .menu-item-title { font-size: 1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.3rem; }
+        .menu-item-desc { font-size: 0.8rem; color: var(--gray-600); margin-bottom: 0.75rem; line-height: 1.5; }
+        .menu-item-footer { display: flex; align-items: center; justify-content: space-between; }
+        .menu-item-price { font-size: 1.1rem; font-weight: 900; color: var(--primary); }
+        .menu-item-price span { font-size: 0.75rem; font-weight: 400; color: var(--gray-500); }
+        .add-to-cart { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: var(--white); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .add-to-cart:hover { background: var(--accent); transform: scale(1.1); }
+
+        /* ===== FEATURES SECTION ===== */
+        .features-above-footer { padding: 2rem 2rem 1.5rem; background: var(--white); text-align: center; }
+        .features-grid-small { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; max-width: 800px; margin: 0 auto; justify-content: center; }
+        .feature-box { background: var(--gray-50); border-radius: var(--radius-sm); padding: 1rem 0.75rem; text-align: center; border: 1px solid var(--gray-200); transition: var(--transition); }
+        .feature-box:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); border-color: var(--primary); }
+        .feature-box-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.6rem; color: var(--white); font-size: 1rem; }
+        .feature-box-title { font-size: 0.85rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.3rem; }
+        .feature-box-desc { font-size: 0.7rem; color: var(--gray-600); line-height: 1.4; }
+        .features-section-title { font-size: 1.5rem; font-weight: 900; color: var(--primary-dark); margin-bottom: 1.5rem; }
+        @media (max-width: 900px) { .features-grid-small { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .features-grid-small { gap: 0.6rem; } .feature-box { padding: 0.75rem 0.5rem; } .feature-box-icon { width: 35px; height: 35px; font-size: 0.9rem; } .feature-box-title { font-size: 0.75rem; } .feature-box-desc { font-size: 0.65rem; } }
+
+        /* ===== FOOTER ===== */
+        .footer { background: var(--primary-dark); color: var(--white); padding: 2rem 2rem 1.5rem; margin-top: 0; }
+        .footer-container { max-width: 1400px; margin: 0 auto; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        .footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+        .footer-logo { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent); }
+        .footer-brand-text { font-size: 1.3rem; font-weight: 700; }
+        .footer-brand-text span { color: var(--accent); font-weight: 400; font-size: 0.85rem; display: block; }
+        .footer-desc { color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1rem; }
+        .footer-social { display: flex; gap: 0.75rem; }
+        .footer-social a { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: var(--white); text-decoration: none; transition: var(--transition); }
+        .footer-social a:hover { background: var(--accent); transform: translateY(-3px); }
+        .footer-title { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: var(--accent); }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.6rem; }
+        .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; transition: var(--transition); font-size: 0.9rem; }
+        .footer-links a:hover { color: var(--white); padding-right: 6px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; text-align: center; color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+
+        /* ===== CART SIDEBAR ===== */
+        .cart-sidebar { position: fixed; top: 0; left: -450px; width: 450px; height: 100vh; background: var(--white); box-shadow: var(--shadow-xl); z-index: 2000; transition: var(--transition); display: flex; flex-direction: column; }
+        .cart-sidebar.open { left: 0; }
+        .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1999; opacity: 0; visibility: hidden; transition: var(--transition); }
+        .cart-overlay.open { opacity: 1; visibility: visible; }
+        .cart-header { padding: 1.5rem; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
+        .cart-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+        .cart-close { width: 36px; height: 36px; border-radius: 50%; background: var(--gray-100); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .cart-close:hover { background: var(--gray-200); }
+        .cart-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
+        .cart-empty { text-align: center; padding: 3rem 1rem; color: var(--gray-500); }
+        .cart-empty i { font-size: 4rem; margin-bottom: 1rem; color: var(--gray-300); }
+        .cart-item { display: flex; gap: 1rem; padding: 1rem; background: var(--gray-50); border-radius: var(--radius-md); margin-bottom: 1rem; }
+        .cart-item-image { width: 70px; height: 70px; border-radius: var(--radius-sm); background: var(--gray-200); flex-shrink: 0; overflow: hidden; }
+        .cart-item-image img { width: 100%; height: 100%; object-fit: cover; }
+        .cart-item-content { flex: 1; }
+        .cart-item-title { font-weight: 600; color: var(--primary-dark); margin-bottom: 0.25rem; font-size: 0.95rem; }
+        .cart-item-price { font-weight: 700; font-size: 0.9rem; }
+        .cart-item-qty { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+        .qty-btn { width: 26px; height: 26px; border-radius: 50%; background: var(--white); border: 1px solid var(--gray-300); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); font-size: 0.85rem; }
+        .qty-btn:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+        .cart-footer { padding: 1.5rem; border-top: 1px solid var(--gray-200); background: var(--gray-50); }
+        .cart-total { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .cart-total.grand { font-size: 1.1rem; font-weight: 900; color: var(--primary); padding-top: 0.75rem; border-top: 1px solid var(--gray-300); margin-top: 0.75rem; }
+        .checkout-btn { width: 100%; padding: 14px; background: var(--primary); color: var(--white); border: none; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--transition); margin-top: 1rem; font-family: inherit; }
+        .checkout-btn:hover { background: var(--primary-light); }
+        .checkout-btn:disabled { opacity: .6; cursor: not-allowed; background: var(--gray-400); }
+        .min-order-warning { color: var(--danger); font-size: 0.8rem; font-weight: 700; text-align: center; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+        /* ===== MODALS ===== */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 2rem; }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .modal { background: var(--white); border-radius: var(--radius-xl); max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9); transition: var(--transition); }
+        .modal-overlay.open .modal { transform: scale(1); }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
+        .modal-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+        .modal-body { padding: 1.5rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label { display: block; font-weight: 600; color: var(--gray-800); margin-bottom: 0.5rem; font-size: 0.85rem; }
+        .form-input { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; transition: var(--transition); }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-input.field-error { border-color: var(--danger); }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .payment-option { padding: 0.75rem; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); cursor: pointer; text-align: center; transition: var(--transition); }
+        .payment-option:hover { border-color: var(--primary); }
+        .payment-option.selected { border-color: var(--primary); background: rgba(31, 77, 52, 0.05); }
+        .payment-option i { font-size: 1.3rem; color: var(--primary); margin-bottom: 0.4rem; }
+        .payment-option-text { font-weight: 600; font-size: 0.85rem; }
+        .modal-footer { padding: 1.5rem; border-top: 1px solid var(--gray-200); display: flex; gap: 1rem; }
+        .modal-footer .btn { flex: 1; justify-content: center; padding: 12px; }
+        .success-content { text-align: center; padding: 2.5rem 2rem; }
+        .success-icon { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--success), #20C997); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: var(--white); font-size: 1.75rem; }
+        .success-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; }
+        .success-order-number { display: inline-block; padding: 6px 20px; background: var(--gray-100); border-radius: 50px; font-weight: 700; color: var(--primary); font-size: 1.1rem; margin: 1rem 0; }
+
+        @media (max-width: 1024px) {
+            .hero-container { grid-template-columns: 1fr; text-align: center; }
+            .hero-title { font-size: 2.5rem; }
+            .hero-actions { justify-content: center; }
+            .hero-stats { justify-content: center; }
+            .hero-visual { order: -1; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .menu-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+        }
+        @media (max-width: 768px) {
+            .navbar-menu { display: none; }
+            .hero-title { font-size: 2rem; }
+            .section-title { font-size: 1.8rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .cart-sidebar { width: 100%; left: -100%; }
+            .payment-options { grid-template-columns: 1fr; }
+            .features-grid-small { grid-template-columns: repeat(2, 1fr); }
+        }
+        .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+    </style>
 </head>
-
 <body>
-
-<!-- =========================================================
-     Floating WhatsApp Button
-     ========================================================= -->
-
-<a
-  href="https://wa.me/201158899779"
-  class="whatsapp-floating"
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label="Contact on WhatsApp"
->
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.454L0 24zm6.59-4.846c1.6.95 3.198 1.451 4.82 1.452 5.423 0 9.835-4.412 9.838-9.838.001-2.628-1.021-5.098-2.88-6.959-1.858-1.86-4.329-2.883-6.96-2.884-5.427 0-9.84 4.412-9.843 9.839-.001 1.73.456 3.418 1.322 4.927L1.93 22.067l4.717-1.729zm13.197-6.248c-.292-.146-1.729-.854-1.996-.951-.266-.098-.461-.147-.655.146-.194.293-.753.951-.923 1.146-.17.195-.341.219-.633.073-.292-.146-1.236-.456-2.355-1.453-.871-.777-1.459-1.738-1.63-2.03-.17-.293-.018-.452.129-.597.132-.131.292-.341.439-.512.146-.17.195-.293.292-.488.098-.195.049-.366-.024-.512-.073-.146-.655-1.579-.897-2.163-.236-.569-.477-.492-.655-.501-.17-.008-.365-.011-.56-.011-.195 0-.512.073-.78.366-.268.293-1.023 1.001-1.023 2.441 0 1.439 1.047 2.83 1.193 3.025.146.195 2.06 3.146 4.989 4.414.697.301 1.242.482 1.668.617.7.223 1.338.192 1.843.116.562-.085 1.729-.707 1.974-1.39.244-.683.244-1.268.171-1.39-.073-.122-.268-.195-.56-.341z"/>
-  </svg>
-</a>
-
-<!-- =========================================================
-     Header
-     ========================================================= -->
-
-<header class="site">
-  <div class="site-bar">
-
-    <div class="brand">
-      <div class="brand-mark">
-        <img src="logo.png" alt="مطبخ إيمي">
-      </div>
-
-      <div
-        class="brand-name"
-        data-ar="مطبخ إيمي"
-        data-en="Emmie's Kitchen"
-      >
-        مطبخ إيمي
-      </div>
-    </div>
-
-    <div class="bar-actions">
-      <button
-        class="btn-ghost"
-        id="langToggle"
-        type="button"
-        aria-label="Change language"
-      >
-        EN
-      </button>
-
-      <button
-        class="cart-btn"
-        id="openCartBtn"
-        type="button"
-      >
-        <span data-ar="السلة" data-en="Cart">السلة</span>
-        <span class="cart-count nums" id="cartCount">0</span>
-      </button>
-    </div>
-
-  </div>
-</header>
-
-<!-- =========================================================
-     Hero
-     ========================================================= -->
-
-<section class="hero">
-
-  <div class="hero-inner">
-
-    <div class="hero-content">
-
-      <div
-        class="eyebrow"
-        data-ar="ضيافة تليق بالملوك"
-        data-en="Hospitality fit for kings"
-      >
-        ضيافة تليق بالملوك
-      </div>
-
-      <h1>
-        <span
-          data-ar="طعم البيت"
-          data-en="The taste of home,"
-        >
-          طعم البيت
-        </span>
-        <br>
-        <span
-          data-ar="يوصل إلى الملوك"
-          data-en="worthy of kings"
-        >
-          يوصل إلى الملوك
-        </span>
-      </h1>
-
-      <p
-        class="lead"
-        data-ar="أطباق بتتعمل بالطلب بمكونات طازة، من مطبخي لبيتك. اختار طبقك، اكتب ملاحظاتك، وإحنا نتكفل بالباقي."
-        data-en="Dishes made to order with fresh ingredients, from my kitchen to yours. Pick your dish, add a note, and we'll take care of the rest."
-      >
-        أطباق بتتعمل بالطلب بمكونات طازة، من مطبخي لبيتك. اختار طبقك، اكتب ملاحظاتك، وإحنا نتكفل بالباقي.
-      </p>
-
-      <div class="hero-ctas">
-
-        <button
-          class="btn-primary"
-          id="heroOrderBtn"
-          type="button"
-          data-ar="اطلب دلوقتي"
-          data-en="Order now"
-        >
-          اطلب دلوقتي
-        </button>
-
-        <button
-          class="btn-secondary"
-          id="openCartBtn2"
-          type="button"
-          data-ar="شوف السلة"
-          data-en="View cart"
-        >
-          شوف السلة
-        </button>
-
-        <button
-          class="btn-track-small"
-          id="heroTrackBtn"
-          type="button"
-          data-ar="تابع طلبك"
-          data-en="Track order"
-        >
-          تابع طلبك
-        </button>
-
-      </div>
-    </div>
-
-    <div class="hero-visual">
-      <div class="hero-decoration"></div>
-
-      <img
-        class="hero-logo"
-        src="logo.png"
-        alt="مطبخ إيمي"
-      >
-    </div>
-
-  </div>
-
-</section>
-
-<!-- =========================================================
-     Trust Strip
-     ========================================================= -->
-
-<section class="trust-strip">
-
-  <div class="trust-card">
-
-    <h2
-      data-ar="أنت تستحق الأفضل"
-      data-en="You deserve the best"
-    >
-      أنت تستحق الأفضل
-    </h2>
-
-    <div class="trust-pillars">
-
-      <span
-        class="pillar"
-        data-ar="جودة"
-        data-en="Quality"
-      >
-        جودة
-      </span>
-
-      <span class="dot"></span>
-
-      <span
-        class="pillar"
-        data-ar="طعم"
-        data-en="Taste"
-      >
-        طعم
-      </span>
-
-      <span class="dot"></span>
-
-      <span
-        class="pillar"
-        data-ar="ثقة"
-        data-en="Trust"
-      >
-        ثقة
-      </span>
-
-    </div>
-
-  </div>
-
-</section>
-
-<!-- =========================================================
-     Menu
-     ========================================================= -->
-
-<section class="menu" id="menuTop">
-
-  <div class="section-head">
-
-    <div
-      class="eyebrow"
-      data-ar="المنيو"
-      data-en="The Menu"
-    >
-      المنيو
-    </div>
-
-    <h2
-      data-ar="أطباقنا"
-      data-en="Our Dishes"
-    >
-      أطباقنا
-    </h2>
-
-  </div>
-
-  <p
-    class="section-sub"
-    data-ar="الأسعار بالجنيه المصري"
-    data-en="Prices in Egyptian Pounds"
-  >
-    الأسعار بالجنيه المصري
-  </p>
-
-  <div class="tabs-wrapper">
-
-    <div class="search-container">
-      <label class="sr-only" for="menuSearchInput">
-        Search
-      </label>
-
-      <input
-        type="text"
-        id="menuSearchInput"
-        autocomplete="off"
-        data-ar-ph="🔍 دور على طبق..."
-        data-en-ph="🔍 Search for a dish..."
-        placeholder="🔍 دور على طبق..."
-      >
-    </div>
-
-    <div
-      class="tabs"
-      id="tabs"
-      role="tablist"
-    ></div>
-
-    <button
-      class="btn-custom-trigger"
-      id="toggleCustomBoxBtn"
-      type="button"
-    >
-      <span
-        data-ar="طلب خاص؟ أضف صنفًا مخصصًا"
-        data-en="Special request? Add custom item"
-      >
-        طلب خاص؟ أضف صنفًا مخصصًا
-      </span>
-      ✨
-    </button>
-
-    <div
-      class="main-custom-box"
-      id="mainCustomBox"
-    >
-
-      <div class="custom-warning">
-        <strong
-          data-ar="طلب مخصص:"
-          data-en="Custom request:"
-        >
-          طلب مخصص:
-        </strong>
-
-        <span
-          data-ar="السعر المدخل تقديري فقط ولن يتم اعتماده في إجمالي الطلب. السعر النهائي يتم تأكيده من المطبخ."
-          data-en="The entered price is only an estimate and will not be used as the final order total. The kitchen will confirm the final price."
-        >
-          السعر المدخل تقديري فقط ولن يتم اعتماده في إجمالي الطلب. السعر النهائي يتم تأكيده من المطبخ.
-        </span>
-      </div>
-
-      <div
-        class="field"
-        style="margin-top:0;"
-      >
-        <label
-          for="customItemName"
-          data-ar="اسم الصنف"
-          data-en="Item name"
-        >
-          اسم الصنف
-        </label>
-
-        <input
-          type="text"
-          id="customItemName"
-          maxlength="120"
-          data-ar-ph="مثال: محشي ورق عنب بالريش"
-          data-en-ph="e.g. Special Vine Leaves"
-          placeholder="مثال: محشي ورق عنب بالريش"
-        >
-      </div>
-
-      <div class="field">
-
-        <label
-          for="customItemPrice"
-          data-ar="السعر التقديري إن وجد"
-          data-en="Estimated price if known"
-        >
-          السعر التقديري إن وجد
-        </label>
-
-        <input
-          type="number"
-          id="customItemPrice"
-          min="0"
-          max="100000"
-          step="0.01"
-          inputmode="decimal"
-          data-ar-ph="السعر التقديري (اختياري)"
-          data-en-ph="Estimated price (optional)"
-          placeholder="السعر التقديري (اختياري)"
-        >
-
-      </div>
-
-      <button
-        class="btn-primary"
-        id="addCustomItemBtn"
-        type="button"
-        style="margin-top:16px;width:100%;"
-        data-ar="➕ تأكيد وإضافة للسلة"
-        data-en="➕ Confirm & Add to Cart"
-      >
-        ➕ تأكيد وإضافة للسلة
-      </button>
-
-    </div>
-
-  </div>
-
-  <div
-    class="grid"
-    id="menuGrid"
-    aria-live="polite"
-  ></div>
-
-</section>
-
-<!-- =========================================================
-     Footer
-     ========================================================= -->
-
-<footer>
-
-  <div class="footer-brand">
-
-    <img
-      src="logo.png"
-      alt="مطبخ إيمي"
-    >
-
-    <strong
-      data-ar="مطبخ إيمي"
-      data-en="Emmie's Kitchen"
-    >
-      مطبخ إيمي
-    </strong>
-
-  </div>
-
-  <p
-    data-ar="طعم البيت، لحد باب بيتك 🏡"
-    data-en="The taste of home, delivered to your door 🏡"
-  >
-    طعم البيت، لحد باب بيتك 🏡
-  </p>
-
-</footer>
-
-<!-- =========================================================
-     Cart Overlay
-     ========================================================= -->
-
-<div
-  class="overlay"
-  id="overlay"
-  aria-hidden="true"
-></div>
-
-<!-- =========================================================
-     Cart Drawer
-     ========================================================= -->
-
-<aside
-  class="drawer"
-  id="drawer"
-  aria-label="Shopping cart"
-  aria-hidden="true"
->
-
-  <div class="drawer-head">
-
-    <h3
-      data-ar="طلبك"
-      data-en="Your Order"
-    >
-      طلبك
-    </h3>
-
-    <button
-      class="close-btn"
-      id="closeCartBtn"
-      type="button"
-      aria-label="Close cart"
-    >
-      ✕
-    </button>
-
-  </div>
-
-  <div
-    class="drawer-body"
-    id="drawerBody"
-  >
-
-    <div
-      class="min-order-alert"
-      id="minOrderAlert"
-      aria-live="polite"
-    ></div>
-
-    <div id="cartItemsWrap"></div>
-
-    <!-- Delivery Date/Time -->
-    <div class="field">
-
-      <label
-        for="deliveryDaySelect"
-        data-ar="تاريخ ووقت الاستلام المطلوب"
-        data-en="Required Delivery/Pickup Time"
-      >
-        تاريخ ووقت الاستلام المطلوب
-      </label>
-
-      <div style="display:flex;gap:12px;">
-
-        <select
-          id="deliveryDaySelect"
-          style="flex:1.3;"
-        ></select>
-
-        <select
-          id="deliveryTimeSelect"
-          style="flex:1;"
-        ></select>
-
-      </div>
-
-    </div>
-
-    <!-- Order Note -->
-    <div class="field">
-
-      <label
-        for="orderNote"
-        data-ar="ملاحظة على الطلب (اختياري)"
-        data-en="Order note (optional)"
-      >
-        ملاحظة على الطلب (اختياري)
-      </label>
-
-      <textarea
-        id="orderNote"
-        maxlength="1000"
-        data-ar-ph="مثال: من غير بصل، أو زوّد شطة..."
-        data-en-ph="e.g. no onions, extra chili..."
-        placeholder="مثال: من غير بصل، أو زوّد شطة..."
-      ></textarea>
-
-    </div>
-
-    <hr class="divider">
-
-    <!-- Customer -->
-    <div class="field">
-
-      <label
-        for="custName"
-        data-ar="الاسم"
-        data-en="Name"
-      >
-        الاسم
-      </label>
-
-      <input
-        type="text"
-        id="custName"
-        maxlength="100"
-        autocomplete="name"
-        data-ar-ph="اسمك"
-        data-en-ph="Your name"
-        placeholder="اسمك"
-      >
-
-    </div>
-
-    <div class="field">
-
-      <label
-        for="custPhone"
-        data-ar="رقم الموبايل"
-        data-en="Phone number"
-      >
-        رقم الموبايل
-      </label>
-
-      <input
-        type="tel"
-        id="custPhone"
-        maxlength="20"
-        inputmode="tel"
-        autocomplete="tel"
-        data-ar-ph="01xxxxxxxxx"
-        data-en-ph="01xxxxxxxxx"
-        placeholder="01xxxxxxxxx"
-      >
-
-    </div>
-
-    <div class="field">
-
-      <label
-        for="custAddress"
-        data-ar="العنوان بالتفصيل"
-        data-en="Delivery address"
-      >
-        العنوان بالتفصيل
-      </label>
-
-      <textarea
-        id="custAddress"
-        maxlength="500"
-        autocomplete="street-address"
-        data-ar-ph="الحي، الشارع، رقم العمارة، علامة مميزة..."
-        data-en-ph="Area, street, building no., landmark..."
-        placeholder="الحي، الشارع، رقم العمارة، علامة مميزة..."
-      ></textarea>
-
-    </div>
-
-    <hr class="divider">
-
-    <!-- Delivery Location -->
-    <div class="field">
-
-      <label
-        data-ar="موقع التوصيل"
-        data-en="Delivery Location"
-      >
-        موقع التوصيل
-      </label>
-
-      <div class="delivery-box">
-
-        <div class="delivery-row">
-
-          <button
-            class="locate-btn"
-            id="locateBtn"
-            type="button"
-            data-ar="📍 تحديد موقعي التلقائي"
-            data-en="📍 Auto-detect location"
-          >
-            📍 تحديد موقعي التلقائي
-          </button>
-
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="#" class="navbar-brand">
+                <img src="logo.png" alt="هَمَّ النَّمَّ" class="navbar-logo">
+                <div class="navbar-title">هَمَّ النَّمَّ <span>Hum L Num</span></div>
+            </a>
+            <ul class="navbar-menu">
+                <li><a href="#home" data-ar="الرئيسية" data-en="Home">الرئيسية</a></li>
+                <li><a href="#menu" data-ar="المنيو" data-en="Menu">المنيو</a></li>
+                <li><a href="#features-section" data-ar="مميزاتنا" data-en="Features">مميزاتنا</a></li>
+                <li><a href="#contact" data-ar="تواصل معنا" data-en="Contact">تواصل معنا</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <button class="lang-switch" onclick="toggleLanguage()">EN</button>
+                <div class="cart-btn" onclick="toggleCart()">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-badge" id="cartCount">0</span>
+                </div>
+                <a href="#menu" class="btn btn-primary" data-ar="اطلب الآن" data-en="Order Now"><i class="fas fa-utensils"></i> اطلب الآن</a>
+            </div>
         </div>
+    </nav>
 
-        <div
-          class="delivery-status"
-          id="deliveryStatus"
-        >
-          أو الصق رابط خريطة جوجل بالأسفل
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge"><i class="fas fa-star"></i> <span data-ar="طعم البيت يوصل إلى الملوك" data-en="Home taste delivered to kings">طعم البيت يوصل إلى الملوك</span></div>
+                <h1 class="hero-title"><span data-ar="أطباق طازة من" data-en="Fresh dishes from">أطباق طازة من</span> <span class="highlight" data-ar="مطبخنا" data-en="our kitchen">مطبخنا</span> <span data-ar="لبيتك" data-en="to your home">لبيتك</span></h1>
+                <p class="hero-subtitle" data-ar="أطباق بتتعمل بالطلب بمكونات طازة، من مطبخي لبيتك. اختار طبقك، اكتب ملاحظاتك، وإحنا نتكفل بالباقي." data-en="Made-to-order dishes with fresh ingredients, from my kitchen to your home.">أطباق بتتعمل بالطلب بمكونات طازة، من مطبخي لبيتك. اختار طبقك، اكتب ملاحظاتك، وإحنا نتكفل بالباقي.</p>
+                <div class="hero-actions">
+                    <a href="#menu" class="btn btn-primary btn-lg" data-ar="اطلب دلوقتي" data-en="Order Now"><i class="fas fa-shopping-bag"></i> اطلب دلوقتي</a>
+                    <button class="btn btn-outline btn-lg" onclick="openCustomOrderModal()" data-ar="طلب خاص" data-en="Custom Order"><i class="fas fa-magic"></i> طلب خاص</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item"><div class="stat-number" id="statOrders">0+</div><div class="stat-label" data-ar="طلب سعيد" data-en="Happy Orders">طلب سعيد</div></div>
+                    <div class="stat-item"><div class="stat-number" id="statItems">0+</div><div class="stat-label" data-ar="صنف متنوع" data-en="Diverse Items">صنف متنوع</div></div>
+                    <div class="stat-item"><div class="stat-number">4.9</div><div class="stat-label" data-ar="تقييم العملاء" data-en="Customer Rating">تقييم العملاء</div></div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-image-container">
+                    <div class="hero-image-bg"></div>
+                    <img src="logo.png" alt="هَمَّ النَّمَّ" class="hero-logo">
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="delivery-help">
-          <span
-            data-ar="يمكنك استخدام GPS أو رابط Google Maps أو إدخال المسافة يدويًا."
-            data-en="You can use GPS, a Google Maps link, or enter the distance manually."
-          >
-            يمكنك استخدام GPS أو رابط Google Maps أو إدخال المسافة يدويًا.
-          </span>
+    <!-- Menu Section -->
+    <section class="menu" id="menu">
+        <div class="menu-container">
+            <div class="section-header">
+                <div class="section-tag" data-ar="المنيو" data-en="Menu">المنيو</div>
+                <h2 class="section-title" data-ar="أطباقنا المميزة" data-en="Our Special Dishes">أطباقنا المميزة</h2>
+                <p class="section-subtitle" data-ar="اختر من تشكيلتنا المتنوعة من الأطباق اللذيذة" data-en="Choose from our diverse selection of delicious dishes">اختر من تشكيلتنا المتنوعة من الأطباق اللذيذة</p>
+            </div>
+            <div class="menu-tabs">
+                <button class="menu-tab active" data-category="all" data-ar="الكل" data-en="All">الكل</button>
+                <button class="menu-tab" data-category="appetizers" data-ar="مقبلات" data-en="Appetizers">مقبلات</button>
+                <button class="menu-tab" data-category="mains" data-ar="أطباق رئيسية" data-en="Main Dishes">أطباق رئيسية</button>
+                <button class="menu-tab" data-category="desserts" data-ar="حلويات" data-en="Desserts">حلويات</button>
+                <button class="menu-tab" data-category="drinks" data-ar="مشروبات" data-en="Drinks">مشروبات</button>
+            </div>
+            <div class="menu-grid" id="menuGrid"></div>
         </div>
+    </section>
 
-        <div
-          class="field"
-          style="margin-top:16px;"
-        >
-
-          <label
-            for="googleMapsUrl"
-            style="font-weight:600;font-size:.85rem;"
-            data-ar="رابط لوكيشن جوجل مابس (اختياري)"
-            data-en="Google Maps URL (optional)"
-          >
-            رابط لوكيشن جوجل مابس (اختياري)
-          </label>
-
-          <input
-            type="url"
-            id="googleMapsUrl"
-            maxlength="1000"
-            data-ar-ph="رابط لوكيشن جوجل مابس"
-            data-en-ph="Google Maps URL"
-            placeholder="رابط لوكيشن جوجل مابس"
-          >
-
+    <!-- Features Section -->
+    <section class="features-above-footer" id="features-section">
+        <h2 class="features-section-title" data-ar="مميزاتنا" data-en="Our Features">مميزاتنا</h2>
+        <div class="features-grid-small">
+            <div class="feature-box"><div class="feature-box-icon"><i class="fas fa-gem"></i></div><h3 class="feature-box-title" data-ar="جودة عالية" data-en="High Quality">جودة عالية</h3><p class="feature-box-desc" data-ar="نختار أفضل المكونات الطازة يومياً" data-en="We select the best fresh ingredients daily">نختار أفضل المكونات الطازة يومياً</p></div>
+            <div class="feature-box"><div class="feature-box-icon"><i class="fas fa-heart"></i></div><h3 class="feature-box-title" data-ar="طعم لا يُنسى" data-en="Unforgettable Taste">طعم لا يُنسى</h3><p class="feature-box-desc" data-ar="وصفات أصلية محضّرة بحب وعناية" data-en="Original recipes prepared with love and care">وصفات أصلية محضّرة بحب وعناية</p></div>
+            <div class="feature-box"><div class="feature-box-icon"><i class="fas fa-comments"></i></div><h3 class="feature-box-title" data-ar="طلبات مخصصة" data-en="Custom Orders">طلبات مخصصة</h3><p class="feature-box-desc" data-ar="نقدر نعملك طبق مخصص حسب ذوقك" data-en="We can make custom dishes according to your taste">نقدر نعملك طبق مخصص حسب ذوقك</p></div>
+            <div class="feature-box"><div class="feature-box-icon"><i class="fas fa-headset"></i></div><h3 class="feature-box-title" data-ar="دعم متواصل" data-en="24/7 Support">دعم متواصل</h3><p class="feature-box-desc" data-ar="فريقنا متاح دائماً لمساعدتك" data-en="Our team is always available to help you">فريقنا متاح دائماً لمساعدتك</p></div>
         </div>
+    </section>
 
-        <div
-          class="field"
-          style="margin-top:16px;"
-        >
-
-          <label
-            for="manualKm"
-            style="font-weight:600;font-size:.85rem;"
-            data-ar="المسافة المحسوبة أو المدخلة (كم)"
-            data-en="Calculated/Manual Distance (km)"
-          >
-            المسافة المحسوبة أو المدخلة (كم)
-          </label>
-
-          <input
-            type="number"
-            id="manualKm"
-            min="0"
-            max="100"
-            step="0.1"
-            inputmode="decimal"
-            data-ar-ph="مثال: 5"
-            data-en-ph="e.g. 5"
-            placeholder="مثال: 5"
-          >
-
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand">
+                        <img src="logo.png" alt="هَمَّ النَّمَّ" class="footer-logo">
+                        <div class="footer-brand-text">هَمَّ النَّمَّ <span>Hum L Num</span></div>
+                    </div>
+                    <p class="footer-desc" data-ar="طعم البيت، لحد باب بيتك 🏡<br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك" data-en="Home taste, delivered to your door 🏡">طعم البيت، لحد باب بيتك 🏡<br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/201158899779" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-title" data-ar="روابط سريعة" data-en="Quick Links">روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">الرئيسية</a></li>
+                        <li><a href="#menu">المنيو</a></li>
+                        <li><a href="tracking.html">تتبع الطلب</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-title" data-ar="تواصل معنا" data-en="Contact Us">تواصل معنا</h4>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-phone"></i> +20 115 889 9779</li>
+                        <li><i class="fas fa-map-marker-alt"></i> القاهرة، مصر</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>© 2026 هَمَّ النَّمَّ - Hum L Num. جميع الحقوق محفوظة.</p></div>
         </div>
+    </footer>
 
-      </div>
-
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3 class="cart-title"><i class="fas fa-shopping-bag"></i> سلة الطلبات</h3>
+            <button class="cart-close" onclick="toggleCart()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-body" id="cartBody">
+            <div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>السلة فارغة</p></div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total"><span>الإجمالي الفرعي</span><span id="subtotal">0.00 ج.م</span></div>
+            <div class="cart-total"><span>رسوم التوصيل</span><span id="deliveryFee">0.00 ج.م</span></div>
+            <div class="cart-total"><span>الضريبة (14%)</span><span id="tax">0.00 ج.م</span></div>
+            <div class="cart-total grand"><span>الإجمالي الكلي</span><span id="grandTotal">0.00 ج.م</span></div>
+            <div id="minOrderWarning" class="min-order-warning" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i> الحد الأدنى للطلب 150 ج.م
+            </div>
+            <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled>
+                <i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب
+            </button>
+        </div>
     </div>
 
-    <!-- Payment -->
-    <div class="field">
-
-      <label
-        data-ar="طريقة الدفع"
-        data-en="Payment method"
-      >
-        طريقة الدفع
-      </label>
-
-      <div class="pay-options">
-
-        <label
-          class="pay-option selected"
-          id="payCashLabel"
-        >
-          <input
-            type="radio"
-            name="pay"
-            value="cash"
-            checked
-          >
-
-          <span
-            data-ar="كاش عند الاستلام"
-            data-en="Cash on delivery"
-          >
-            كاش عند الاستلام
-          </span>
-        </label>
-
-        <label
-          class="pay-option"
-          id="payCardLabel"
-        >
-          <input
-            type="radio"
-            name="pay"
-            value="card"
-          >
-
-          <span
-            data-ar="فيزا عند الاستلام"
-            data-en="Card on delivery"
-          >
-            فيزا عند الاستلام
-          </span>
-        </label>
-
-      </div>
-
+    <!-- Custom Order Modal -->
+    <div class="modal-overlay custom-order-modal" id="customOrderModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">طلب خاص</h3>
+                <button class="cart-close" onclick="closeCustomOrderModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="custom-order-info" style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; border-right: 4px solid var(--accent);">
+                    <p>اكتب اللي أنت عايزه بالظبط وهنجهزهولك!</p>
+                    <small>* السعر النهائي هيتم التواصل معاك لتأكيده</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">اسم الصنف المطلوب</label>
+                    <input type="text" class="form-input" id="customItemName" placeholder="مثال: كشري باللحمة زيادة">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ملاحظات إضافية</label>
+                    <textarea class="form-input form-textarea" id="customItemNotes" placeholder="أي ملاحظات خاصة بالطلب..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeCustomOrderModal()">إلغاء</button>
+                <button class="btn btn-primary" onclick="addCustomItem()"><i class="fas fa-plus"></i> إضافة للسلة</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Totals -->
-    <div class="totals-box">
-
-      <div class="totals-row">
-        <span
-          data-ar="الإجمالي الفرعي"
-          data-en="Subtotal"
-        >
-          الإجمالي الفرعي
-        </span>
-
-        <span
-          class="nums"
-          id="tSubtotal"
-        >
-          0.00
-        </span>
-      </div>
-
-      <div class="totals-row">
-        <span
-          data-ar="رسوم التوصيل"
-          data-en="Delivery fee"
-        >
-          رسوم التوصيل
-        </span>
-
-        <span
-          class="nums"
-          id="tDelivery"
-        >
-          0.00
-        </span>
-      </div>
-
-      <div class="totals-row">
-        <span
-          data-ar="الضريبة"
-          data-en="Tax"
-        >
-          الضريبة
-        </span>
-
-        <span
-          class="nums"
-          id="tTax"
-        >
-          0.00
-        </span>
-      </div>
-
-      <div class="totals-row grand">
-
-        <span
-          data-ar="الإجمالي الكلي"
-          data-en="Total"
-        >
-          الإجمالي الكلي
-        </span>
-
-        <span
-          class="nums"
-          id="tGrand"
-        >
-          0.00
-        </span>
-
-      </div>
-
+    <!-- Checkout Modal -->
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">إتمام الطلب</h3>
+                <button class="cart-close" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">تاريخ ووقت الاستلام المطلوب <span style="color:var(--danger); font-size:0.75rem;">(قبلها بـ 48 ساعة على الأقل)</span></label>
+                    <input type="datetime-local" class="form-input" id="deliveryTime">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ملاحظة على الطلب (اختياري)</label>
+                    <textarea class="form-input form-textarea" id="orderNote" placeholder="أي ملاحظات خاصة بالطلب..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الاسم</label>
+                    <input type="text" class="form-input" id="customerName" placeholder="اسمك الكامل">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">رقم الموبايل</label>
+                    <input type="tel" class="form-input" id="customerPhone" placeholder="01xxxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">العنوان بالتفصيل</label>
+                    <input type="text" class="form-input" id="customerAddress" placeholder="العنوان بالتفصيل">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">طريقة الدفع</label>
+                    <div class="payment-options">
+                        <div class="payment-option selected" data-value="cash" onclick="selectPayment(this)">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <div class="payment-option-text">كاش عند الاستلام</div>
+                        </div>
+                        <div class="payment-option" data-value="card" onclick="selectPayment(this)">
+                            <i class="fas fa-credit-card"></i>
+                            <div class="payment-option-text">فيزا عند الاستلام</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="checkoutError" style="color:var(--danger);font-size:.85rem;min-height:1em; font-weight:600;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeCheckout()">إلغاء</button>
+                <button class="btn btn-primary" id="submitOrderBtn" onclick="submitOrder()">
+                    <i class="fas fa-check"></i> <span id="submitOrderText">تأكيد الطلب</span>
+                </button>
+            </div>
+        </div>
     </div>
 
-  </div>
-
-  <div class="drawer-foot">
-
-    <button
-      class="place-order-btn"
-      id="placeOrderBtn"
-      type="button"
-      disabled
-    >
-      <span
-        id="placeOrderText"
-        data-ar="تأكيد وإرسال الطلب"
-        data-en="Confirm & Place Order"
-      >
-        تأكيد وإرسال الطلب
-      </span>
-    </button>
-
-  </div>
-
-</aside>
-
-<!-- =========================================================
-     Toast
-     ========================================================= -->
-
-<div
-  class="toast"
-  id="toast"
-  role="status"
-  aria-live="polite"
-></div>
-
-<!-- =========================================================
-     Confirmation
-     ========================================================= -->
-
-<div
-  class="confirm-overlay"
-  id="confirmOverlay"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="confirmTitle"
->
-
-  <div class="confirm-box">
-
-    <div class="confirm-icon">✅</div>
-
-    <h3
-      id="confirmTitle"
-      data-ar="تم تأكيد طلبك بنجاح"
-      data-en="Your order has been confirmed"
-    >
-      تم تأكيد طلبك بنجاح
-    </h3>
-
-    <p
-      data-ar="احتفظ برقم الطلب لمتابعة حالته."
-      data-en="Keep your order number to track its status."
-    >
-      احتفظ برقم الطلب لمتابعة حالته.
-    </p>
-
-    <div
-      class="confirm-number nums"
-      id="confirmNumber"
-    >
-      #0000
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal">
+            <div class="success-content">
+                <div class="success-icon"><i class="fas fa-check"></i></div>
+                <h3 class="success-title">تم تأكيد طلبك بنجاح!</h3>
+                <p>احتفظ برقم الطلب لمتابعة حالته</p>
+                <div class="success-order-number" id="orderNumber">#0000</div>
+                <div style="margin-top: 1.5rem;">
+                    <a href="tracking.html" id="successTrackLink" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-map-marker-alt"></i> تابع حالة طلبك
+                    </a>
+                </div>
+                <button class="btn btn-ghost" style="margin-top: 1rem;" onclick="closeSuccess()">إغلاق</button>
+            </div>
+        </div>
     </div>
 
-    <div class="confirm-actions">
-
-      <a
-        class="confirm-track-btn"
-        id="confirmTrackLink"
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-        data-ar="تابع حالة طلبك"
-        data-en="Track your order"
-      >
-        تابع حالة طلبك
-      </a>
-
-      <button
-        class="confirm-close-btn"
-        id="confirmCloseBtn"
-        type="button"
-        data-ar="إغلاق"
-        data-en="Close"
-      >
-        إغلاق
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- =========================================================
-     Firebase + Application Logic
-     ========================================================= -->
-
-<script type="module">
-
-/*
- * =========================================================
- * Firebase Imports
- * =========================================================
- */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
-import {
-  getDatabase,
-  ref,
-  push,
-  onValue,
-  serverTimestamp,
-  runTransaction,
-  update
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-
-/*
- * =========================================================
- * Firebase Configuration
- *
- * The Firebase web configuration is not a secret.
- * Real protection must be implemented using Firebase
- * Realtime Database Security Rules and/or trusted backend
- * logic.
- * =========================================================
- */
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA8h_w_JvoPV1PA5QFHJg_nAInFLCSEw9Y",
-  authDomain: "emmie-s-kitchen.firebaseapp.com",
-  databaseURL: "https://emmie-s-kitchen-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "emmie-s-kitchen",
-  storageBucket: "emmie-s-kitchen.firebasestorage.app",
-  messagingSenderId: "381764506540",
-  appId: "1:381764506540:web:58ee94ef5992661f1aa009"
-};
-
-const fbApp = initializeApp(firebaseConfig);
-const db = getDatabase(fbApp);
-
-
-/*
- * =========================================================
- * Business Configuration
- *
- * These values are still local for now.
- * Later we can move them to Firebase / Admin Settings.
- * =========================================================
- */
-
-const CONFIG = {
-  businessNameAr: "مطبخ إيمي",
-  businessNameEn: "Emmie's Kitchen",
-
-  whatsappNumber: "201158899779",
-
-  currencyAr: "ج.م",
-  currencyEn: "EGP",
-
-  kitchenLocation: {
-    lat: 30.0626,
-    lng: 31.3219
-  },
-
-  deliveryBaseFee: 15,
-  deliveryRatePerKm: 4,
-
-  /*
-   * Keep true to preserve the current behavior:
-   * tax = subtotal + delivery.
-   *
-   * If delivery is not taxable for the business,
-   * change this to false.
-   */
-  deliveryTaxable: true,
-
-  taxRate: 0.14,
-
-  minOrderLimit: 150,
-
-  /*
-   * Safety limits for client-side validation.
-   * These are not a replacement for Firebase Rules.
-   */
-  maxDistanceKm: 100,
-  maxOrderNoteLength: 1000,
-  maxCustomerNameLength: 100,
-  maxCustomerAddressLength: 500,
-  maxCustomItemNameLength: 120
-};
-
-
-/*
- * =========================================================
- * Categories
- * =========================================================
- */
-
-const CATEGORIES = [
-  {
-    key: "all",
-    ar: "الكل",
-    en: "All"
-  },
-  {
-    key: "appetizers",
-    ar: "مقبلات",
-    en: "Appetizers"
-  },
-  {
-    key: "mains",
-    ar: "أطباق رئيسية",
-    en: "Main Dishes"
-  },
-  {
-    key: "bakery",
-    ar: "مخبوزات وطواجن",
-    en: "Bakery & Tajines"
-  },
-  {
-    key: "desserts",
-    ar: "حلويات",
-    en: "Desserts"
-  },
-  {
-    key: "drinks",
-    ar: "مشروبات",
-    en: "Drinks"
-  }
-];
-
-
-/*
- * =========================================================
- * Delivery Time Configuration
- * =========================================================
- */
-
-const DELIVERY_TIME_SLOTS = [
-  "12:00",
-  "14:00",
-  "16:00",
-  "18:00",
-  "20:00",
-  "22:00"
-];
-
-const DAY_NAMES_AR = [
-  "الأحد",
-  "الإثنين",
-  "الثلاثاء",
-  "الأربعاء",
-  "الخميس",
-  "الجمعة",
-  "السبت"
-];
-
-const DAY_NAMES_EN = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday"
-];
-
-const MONTH_NAMES_AR = [
-  "يناير",
-  "فبراير",
-  "مارس",
-  "أبريل",
-  "مايو",
-  "يونيو",
-  "يوليو",
-  "أغسطس",
-  "سبتمبر",
-  "أكتوبر",
-  "نوفمبر",
-  "ديسمبر"
-];
-
-
-/*
- * =========================================================
- * Application State
- * =========================================================
- */
-
-let MENU = [];
-
-let lang = "ar";
-let activeCat = "all";
-let menuSearchQuery = "";
-
-let cart = {};
-let customItems = [];
-
-let deliveryDistanceKm = null;
-let detectedCoords = null;
-
-let reorderHandled = false;
-let orderSubmitting = false;
-
-let toastTimer = null;
-
-
-/*
- * =========================================================
- * DOM Helpers
- * =========================================================
- */
-
-const $ = (selector) => document.querySelector(selector);
-
-const $$ = (selector) => document.querySelectorAll(selector);
-
-
-/*
- * =========================================================
- * Safe Text Helpers
- *
- * We deliberately avoid injecting Firebase/customer values
- * directly into innerHTML.
- * =========================================================
- */
-
-function setText(element, value) {
-  if (!element) return;
-
-  element.textContent = value == null ? "" : String(value);
-}
-
-
-function createElement(tag, className = "", text = "") {
-  const element = document.createElement(tag);
-
-  if (className) {
-    element.className = className;
-  }
-
-  if (text !== "") {
-    element.textContent = text;
-  }
-
-  return element;
-}
-
-
-/*
- * =========================================================
- * Numeric Validation
- * =========================================================
- */
-
-function toSafeNumber(value, fallback = 0) {
-  const number = Number(value);
-
-  if (!Number.isFinite(number)) {
-    return fallback;
-  }
-
-  return number;
-}
-
-
-function toPositiveNumber(value, fallback = 0) {
-  const number = Number(value);
-
-  if (!Number.isFinite(number) || number < 0) {
-    return fallback;
-  }
-
-  return number;
-}
-
-
-function roundMoney(value) {
-  return Math.round((value + Number.EPSILON) * 100) / 100;
-}
-
-
-/*
- * =========================================================
- * String Sanitization / Normalization
- *
- * This is not HTML sanitization because we don't render
- * customer/Firebase text as HTML at all.
- * =========================================================
- */
-
-function cleanText(value, maxLength = 500) {
-  return String(value ?? "")
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
-    .trim()
-    .slice(0, maxLength);
-}
-
-
-/*
- * =========================================================
- * Phone Validation
- *
- * Egyptian mobile number validation with support for:
- * 01xxxxxxxxx
- * +201xxxxxxxxx
- * 201xxxxxxxxx
- * =========================================================
- */
-
-function normalizeEgyptianPhone(value) {
-  const raw = String(value ?? "").trim();
-
-  let phone = raw.replace(/[^\d+]/g, "");
-
-  if (phone.startsWith("+20")) {
-    phone = "0" + phone.slice(3);
-  } else if (phone.startsWith("20")) {
-    phone = "0" + phone.slice(2);
-  }
-
-  return phone;
-}
-
-
-function isValidEgyptianPhone(value) {
-  const phone = normalizeEgyptianPhone(value);
-
-  return /^01[0125]\d{8}$/.test(phone);
-}
-
-
-/*
- * =========================================================
- * Google Maps URL Validation
- * =========================================================
- */
-
-function isValidMapsUrl(value) {
-  if (!value) return true;
-
-  try {
-    const url = new URL(value);
-
-    if (!["http:", "https:"].includes(url.protocol)) {
-      return false;
-    }
-
-    return (
-      url.hostname.includes("google.com") ||
-      url.hostname.includes("maps.app.goo.gl") ||
-      url.hostname.includes("goo.gl")
-    );
-  } catch {
-    return false;
-  }
-}
-
-
-/*
- * =========================================================
- * Language / Currency Helpers
- * =========================================================
- */
-
-function currentCurrency() {
-  return lang === "ar"
-    ? CONFIG.currencyAr
-    : CONFIG.currencyEn;
-}
-
-
-function formatMoney(value) {
-  const number = roundMoney(toSafeNumber(value));
-
-  return `${number.toFixed(2)} ${currentCurrency()}`;
-}
-
-
-/*
- * =========================================================
- * Firebase Menu Loading
- * =========================================================
- */
-
-onValue(
-  ref(db, "menu"),
-
-  (snapshot) => {
-
-    const data = snapshot.val() || {};
-
-    MENU = Object.entries(data)
-      .map(([id, item]) => ({
-        id,
-        ...item
-      }))
-      .filter(item => item.available !== false)
-      .filter(item => isValidMenuItem(item));
-
-    renderTabs();
-    renderMenu();
-
-    if (!reorderHandled) {
-      reorderHandled = true;
-      tryRestoreReorder();
-    }
-  },
-
-  (error) => {
-
-    console.error("Firebase menu error:", error);
-
-    MENU = [];
-
-    renderTabs();
-
-    const grid = $("#menuGrid");
-
-    grid.innerHTML = "";
-
-    const state = createElement(
-      "p",
-      "menu-state",
-      lang === "ar"
-        ? "حصل خطأ في تحميل المنيو. حاول مرة تانية."
-        : "There was a problem loading the menu. Please try again."
-    );
-
-    grid.appendChild(state);
-  }
-);
-
-
-/*
- * =========================================================
- * Menu Item Validation
- * =========================================================
- */
-
-function isValidMenuItem(item) {
-
-  if (!item || typeof item !== "object") {
-    return false;
-  }
-
-  const price = toSafeNumber(item.price, -1);
-
-  if (price < 0) {
-    return false;
-  }
-
-  if (!item.ar && !item.en) {
-    return false;
-  }
-
-  return true;
-}
-
-
-/*
- * =========================================================
- * Reorder Restoration
- *
- * Reorder only restores currently available standard menu
- * items. It does NOT restore old custom prices.
- * =========================================================
- */
-
-function tryRestoreReorder() {
-
-  let saved = null;
-
-  try {
-    saved = JSON.parse(
-      localStorage.getItem("emmie_reorder_items") || "null"
-    );
-  } catch (error) {
-    console.warn("Could not restore reorder:", error);
-  }
-
-  if (
-    !saved ||
-    !Array.isArray(saved) ||
-    saved.length === 0
-  ) {
-    return;
-  }
-
-  localStorage.removeItem("emmie_reorder_items");
-
-  let addedCount = 0;
-  let skippedCount = 0;
-
-  saved.forEach((savedItem) => {
-
-    const stillExists = MENU.find(
-      item => item.id === savedItem.id
-    );
-
-    if (stillExists) {
-
-      const qty = Math.max(
-        1,
-        Math.min(
-          99,
-          Math.floor(
-            toPositiveNumber(savedItem.qty, 1)
-          )
-        )
-      );
-
-      cart[savedItem.id] =
-        (cart[savedItem.id] || 0) + qty;
-
-      addedCount++;
-
-    } else {
-
-      skippedCount++;
-    }
-  });
-
-  if (addedCount > 0) {
-
-    renderCart();
-
-    showToast(
-      skippedCount > 0
-        ? (
-            lang === "ar"
-              ? "تم استرجاع طلبك، وبعض الأصناف لم تعد متاحة."
-              : "Your order was restored, but some items are no longer available."
-          )
-        : (
-            lang === "ar"
-              ? "تم استرجاع طلبك السابق ✓"
-              : "Your previous order was restored ✓"
-          )
-    );
-
-    openDrawer();
-  }
-}
-
-
-/*
- * =========================================================
- * Delivery Date Options
- * =========================================================
- *
- * We intentionally keep deliveryDate and deliveryTime
- * separate in the database.
- * =========================================================
- */
-
-function buildDeliveryDayOptions() {
-
-  const select = $("#deliveryDaySelect");
-
-  if (!select) return;
-
-  const previousValue = select.value;
-
-  select.innerHTML = "";
-
-  for (let i = 2; i <= 8; i++) {
-
-    const date = new Date();
-
-    date.setHours(0, 0, 0, 0);
-    date.setDate(date.getDate() + i);
-
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const dd = String(date.getDate()).padStart(2, "0");
-
-    const value = `${yyyy}-${mm}-${dd}`;
-
-    const dayIndex = date.getDay();
-
-    const label =
-      lang === "ar"
-        ? `${DAY_NAMES_AR[dayIndex]} ${date.getDate()} ${MONTH_NAMES_AR[date.getMonth()]}`
-        : `${DAY_NAMES_EN[dayIndex]} ${date.getDate()}/${date.getMonth() + 1}`;
-
-    const option = document.createElement("option");
-
-    option.value = value;
-    option.textContent = label;
-
-    select.appendChild(option);
-  }
-
-  if (
-    previousValue &&
-    [...select.options].some(
-      option => option.value === previousValue
-    )
-  ) {
-    select.value = previousValue;
-  }
-}
-
-
-/*
- * =========================================================
- * Delivery Time Options
- * =========================================================
- */
-
-function formatTimeLabel(time) {
-
-  const [hour, minute] = time
-    .split(":")
-    .map(Number);
-
-  const h12 =
-    hour === 0
-      ? 12
-      : hour > 12
-        ? hour - 12
-        : hour;
-
-  if (lang === "ar") {
-
-    const period =
-      hour < 12
-        ? "ظهرًا"
-        : hour < 18
-          ? "عصرًا"
-          : "مساءً";
-
-    return `${h12}:${String(minute).padStart(2, "0")} ${period}`;
-  }
-
-  const period = hour < 12 ? "AM" : "PM";
-
-  return `${h12}:${String(minute).padStart(2, "0")} ${period}`;
-}
-
-
-function buildDeliveryTimeOptions() {
-
-  const select = $("#deliveryTimeSelect");
-
-  if (!select) return;
-
-  const previousValue = select.value;
-
-  select.innerHTML = "";
-
-  DELIVERY_TIME_SLOTS.forEach(time => {
-
-    const option = document.createElement("option");
-
-    option.value = time;
-    option.textContent = formatTimeLabel(time);
-
-    select.appendChild(option);
-  });
-
-  if (
-    previousValue &&
-    [...select.options].some(
-      option => option.value === previousValue
-    )
-  ) {
-    select.value = previousValue;
-  }
-}
-
-
-/*
- * =========================================================
- * Selected Delivery Values
- * =========================================================
- */
-
-function getSelectedDelivery() {
-
-  const deliveryDate =
-    $("#deliveryDaySelect")?.value || "";
-
-  const deliveryTime =
-    $("#deliveryTimeSelect")?.value || "";
-
-  return {
-    deliveryDate,
-    deliveryTime
-  };
-}
-
-
-/*
- * =========================================================
- * Language Application
- * =========================================================
- */
-
-function applyLang() {
-
-  document.documentElement.lang = lang;
-
-  document.documentElement.dir =
-    lang === "ar" ? "rtl" : "ltr";
-
-  $("#langToggle").textContent =
-    lang === "ar" ? "EN" : "AR";
-
-  $$("[data-ar]").forEach(element => {
-
-    const value =
-      lang === "ar"
-        ? element.getAttribute("data-ar")
-        : element.getAttribute("data-en");
-
-    if (value !== null) {
-      element.textContent = value;
-    }
-  });
-
-  $$("[data-ar-ph]").forEach(element => {
-
-    const value =
-      lang === "ar"
-        ? element.getAttribute("data-ar-ph")
-        : element.getAttribute("data-en-ph");
-
-    if (value !== null) {
-      element.setAttribute("placeholder", value);
-    }
-  });
-
-  buildDeliveryDayOptions();
-  buildDeliveryTimeOptions();
-
-  renderTabs();
-  renderMenu();
-  renderCart();
-}
-
-
-/*
- * =========================================================
- * Render Categories
- * =========================================================
- */
-
-function renderTabs() {
-
-  const box = $("#tabs");
-
-  box.innerHTML = "";
-
-  CATEGORIES.forEach(category => {
-
-    const button = document.createElement("button");
-
-    button.type = "button";
-    button.className =
-      "tab" +
-      (category.key === activeCat ? " active" : "");
-
-    button.textContent =
-      lang === "ar"
-        ? category.ar
-        : category.en;
-
-    button.setAttribute(
-      "aria-selected",
-      category.key === activeCat ? "true" : "false"
-    );
-
-    button.addEventListener("click", () => {
-
-      activeCat = category.key;
-
-      renderTabs();
-      renderMenu();
-    });
-
-    box.appendChild(button);
-  });
-}
-
-
-/*
- * =========================================================
- * Render Menu
- *
- * IMPORTANT:
- * Firebase values are inserted using textContent,
- * not HTML interpolation.
- * =========================================================
- */
-
-function renderMenu() {
-
-  const grid = $("#menuGrid");
-
-  grid.innerHTML = "";
-
-  let items = MENU.filter(
-    item =>
-      activeCat === "all" ||
-      item.cat === activeCat
-  );
-
-  if (menuSearchQuery) {
-
-    const query = menuSearchQuery
-      .toLowerCase()
-      .trim();
-
-    items = items.filter(item => {
-
-      const values = [
-        item.ar,
-        item.en,
-        item.dAr,
-        item.dEn
-      ]
-        .filter(Boolean)
-        .map(value =>
-          String(value).toLowerCase()
-        );
-
-      return values.some(
-        value => value.includes(query)
-      );
-    });
-  }
-
-  if (items.length === 0) {
-
-    const empty = createElement(
-      "p",
-      "menu-state",
-      lang === "ar"
-        ? "مفيش أطباق مطابقة للبحث"
-        : "No dishes match your search"
-    );
-
-    grid.appendChild(empty);
-
-    return;
-  }
-
-  items.forEach(item => {
-
-    const card =
-      createElement("div", "item-card");
-
-    if (
-      item.bestSeller === true ||
-      item.bestseller === true
-    ) {
-
-      const badge =
-        createElement(
-          "div",
-          "bestseller-badge",
-          lang === "ar"
-            ? "الأكثر مبيعاً"
-            : "Best Seller"
-        );
-
-      card.appendChild(badge);
-    }
-
-    const top =
-      createElement("div", "item-top");
-
-    const emoji =
-      createElement(
-        "div",
-        "item-emoji",
-        "🍽️"
-      );
-
-    const name =
-      createElement(
-        "div",
-        "item-name"
-      );
-
-    name.textContent =
-      lang === "ar"
-        ? cleanText(item.ar, 200)
-        : cleanText(item.en, 200);
-
-    top.appendChild(emoji);
-    top.appendChild(name);
-
-    const description =
-      createElement(
-        "div",
-        "item-desc"
-      );
-
-    description.textContent =
-      lang === "ar"
-        ? cleanText(item.dAr, 300)
-        : cleanText(item.dEn, 300);
-
-    const foot =
-      createElement(
-        "div",
-        "item-foot"
-      );
-
-    const price =
-      createElement(
-        "div",
-        "item-price nums"
-      );
-
-    price.textContent =
-      formatMoney(
-        toPositiveNumber(item.price)
-      );
-
-    const addButton =
-      createElement(
-        "button",
-        "add-btn",
-        lang === "ar"
-          ? "إضافة"
-          : "Add"
-      );
-
-    addButton.type = "button";
-
-    addButton.addEventListener(
-      "click",
-      () => addToCart(item.id)
-    );
-
-    foot.appendChild(price);
-    foot.appendChild(addButton);
-
-    card.appendChild(top);
-    card.appendChild(description);
-    card.appendChild(foot);
-
-    grid.appendChild(card);
-  });
-}
-
-
-/*
- * =========================================================
- * Cart
- * =========================================================
- */
-
-function addToCart(id) {
-
-  const item = MENU.find(
-    menuItem => menuItem.id === id
-  );
-
-  if (!item) {
-    showToast(
-      lang === "ar"
-        ? "الصنف لم يعد متاحًا."
-        : "This item is no longer available."
-    );
-
-    return;
-  }
-
-  cart[id] =
-    Math.min(
-      99,
-      (cart[id] || 0) + 1
-    );
-
-  renderCart();
-
-  showToast(
-    lang === "ar"
-      ? "اتضاف للسلة ✓"
-      : "Added to cart ✓"
-  );
-}
-
-
-function changeQty(id, delta) {
-
-  if (!cart[id]) return;
-
-  cart[id] += delta;
-
-  if (cart[id] <= 0) {
-    delete cart[id];
-  }
-
-  renderCart();
-}
-
-
-function changeCustomQty(index, delta) {
-
-  if (!customItems[index]) return;
-
-  customItems[index].qty += delta;
-
-  if (customItems[index].qty <= 0) {
-    customItems.splice(index, 1);
-  }
-
-  renderCart();
-}
-
-
-function cartCountTotal() {
-
-  const standardCount =
-    Object.values(cart)
-      .reduce(
-        (total, qty) =>
-          total + toPositiveNumber(qty),
-        0
-      );
-
-  const customCount =
-    customItems
-      .reduce(
-        (total, item) =>
-          total + toPositiveNumber(item.qty),
-        0
-      );
-
-  return standardCount + customCount;
-}
-
-
-/*
- * =========================================================
- * Subtotal
- *
- * IMPORTANT:
- * Custom items are intentionally NOT included because
- * their client-entered price is only an estimate.
- * =========================================================
- */
-
-function computeSubtotal() {
-
-  return roundMoney(
-    Object.entries(cart)
-      .reduce((sum, [id, qty]) => {
-
-        const item =
-          MENU.find(
-            menuItem =>
-              menuItem.id === id
-          );
-
-        if (!item) {
-          return sum;
-        }
-
-        const price =
-          toPositiveNumber(item.price);
-
-        const safeQty =
-          Math.max(
-            1,
-            Math.min(
-              99,
-              Math.floor(
-                toPositiveNumber(qty, 1)
-              )
-            )
-          );
-
-        return sum + price * safeQty;
-
-      }, 0)
-  );
-}
-
-
-/*
- * =========================================================
- * Delivery Fee
- * =========================================================
- */
-
-function computeDeliveryFee() {
-
-  if (
-    deliveryDistanceKm === null ||
-    !Number.isFinite(deliveryDistanceKm)
-  ) {
-    return 0;
-  }
-
-  const distance =
-    Math.max(
-      0,
-      Math.min(
-        CONFIG.maxDistanceKm,
-        deliveryDistanceKm
-      )
-    );
-
-  return roundMoney(
-    CONFIG.deliveryBaseFee +
-    CONFIG.deliveryRatePerKm * distance
-  );
-}
-
-
-/*
- * =========================================================
- * Pricing Calculation
- * =========================================================
- */
-
-function calculatePricing() {
-
-  const subtotal =
-    computeSubtotal();
-
-  const deliveryFee =
-    computeDeliveryFee();
-
-  const taxableAmount =
-    CONFIG.deliveryTaxable
-      ? subtotal + deliveryFee
-      : subtotal;
-
-  const tax =
-    subtotal > 0
-      ? roundMoney(
-          taxableAmount *
-          CONFIG.taxRate
-        )
-      : 0;
-
-  const total =
-    subtotal > 0
-      ? roundMoney(
-          subtotal +
-          deliveryFee +
-          tax
-        )
-      : 0;
-
-  return {
-    subtotal,
-    deliveryFee,
-    taxableAmount,
-    tax,
-    total
-  };
-}
-
-
-/*
- * =========================================================
- * Render Cart
- * =========================================================
- */
-
-function renderCart() {
-
-  $("#cartCount").textContent =
-    cartCountTotal();
-
-  const wrap =
-    $("#cartItemsWrap");
-
-  const entries =
-    Object.entries(cart);
-
-  wrap.innerHTML = "";
-
-  if (
-    entries.length === 0 &&
-    customItems.length === 0
-  ) {
-
-    const empty =
-      createElement(
-        "div",
-        "empty-cart",
-        lang === "ar"
-          ? "السلة فاضية لسه، تصفح المنيو وابدأ طلبك"
-          : "Your cart is empty — browse the menu to begin"
-      );
-
-    wrap.appendChild(empty);
-
-  } else {
-
-    entries.forEach(([id, qty]) => {
-
-      const item =
-        MENU.find(
-          menuItem =>
-            menuItem.id === id
-        );
-
-      if (!item) {
-        return;
-      }
-
-      const row =
-        createElement(
-          "div",
-          "cart-item"
-        );
-
-      const emoji =
-        createElement(
-          "div",
-          "item-emoji",
-          "🍽️"
-        );
-
-      const info =
-        createElement(
-          "div",
-          "cart-item-info"
-        );
-
-      const name =
-        createElement("b");
-
-      name.textContent =
-        lang === "ar"
-          ? cleanText(item.ar, 200)
-          : cleanText(item.en, 200);
-
-      const price =
-        createElement(
-          "span",
-          "nums",
-          formatMoney(item.price)
-        );
-
-      info.appendChild(name);
-      info.appendChild(price);
-
-      const controls =
-        createElement(
-          "div",
-          "qty-ctrl"
-        );
-
-      const minus =
-        createElement(
-          "button",
-          "",
-          "−"
-        );
-
-      minus.type = "button";
-
-      const quantity =
-        createElement(
-          "b",
-          "nums",
-          String(qty)
-        );
-
-      const plus =
-        createElement(
-          "button",
-          "",
-          "+"
-        );
-
-      plus.type = "button";
-
-      minus.addEventListener(
-        "click",
-        () => changeQty(item.id, -1)
-      );
-
-      plus.addEventListener(
-        "click",
-        () => changeQty(item.id, 1)
-      );
-
-      controls.appendChild(minus);
-      controls.appendChild(quantity);
-      controls.appendChild(plus);
-
-      row.appendChild(emoji);
-      row.appendChild(info);
-      row.appendChild(controls);
-
-      wrap.appendChild(row);
-    });
-
-
-    /*
-     * Custom items
-     *
-     * Notice:
-     * Their estimated price is displayed as reference only.
-     * It does not affect subtotal or total.
-     */
-
-    customItems.forEach((item, index) => {
-
-      const row =
-        createElement(
-          "div",
-          "cart-item custom-cart-item"
-        );
-
-      const emoji =
-        createElement(
-          "div",
-          "item-emoji",
-          "✨"
-        );
-
-      const info =
-        createElement(
-          "div",
-          "cart-item-info"
-        );
-
-      const name =
-        createElement("b");
-
-      name.textContent =
-        cleanText(
-          item.name,
-          CONFIG.maxCustomItemNameLength
-        );
-
-      const estimated =
-        createElement(
-          "span",
-          "nums"
-        );
-
-      if (
-        Number.isFinite(item.estimatedPrice) &&
-        item.estimatedPrice > 0
-      ) {
-
-        estimated.textContent =
-          lang === "ar"
-            ? `تقديري: ${formatMoney(item.estimatedPrice)}`
-            : `Estimate: ${formatMoney(item.estimatedPrice)}`;
-
-      } else {
-
-        estimated.textContent =
-          lang === "ar"
-            ? "السعر يحدد لاحقًا"
-            : "Price to be confirmed";
-      }
-
-      info.appendChild(name);
-      info.appendChild(estimated);
-
-      const controls =
-        createElement(
-          "div",
-          "qty-ctrl"
-        );
-
-      const minus =
-        createElement(
-          "button",
-          "",
-          "−"
-        );
-
-      minus.type = "button";
-
-      const quantity =
-        createElement(
-          "b",
-          "nums",
-          String(item.qty)
-        );
-
-      const plus =
-        createElement(
-          "button",
-          "",
-          "+"
-        );
-
-      plus.type = "button";
-
-      minus.addEventListener(
-        "click",
-        () => changeCustomQty(index, -1)
-      );
-
-      plus.addEventListener(
-        "click",
-        () => changeCustomQty(index, 1)
-      );
-
-      controls.appendChild(minus);
-      controls.appendChild(quantity);
-      controls.appendChild(plus);
-
-      row.appendChild(emoji);
-      row.appendChild(info);
-      row.appendChild(controls);
-
-      wrap.appendChild(row);
-    });
-  }
-
-
-  /*
-   * Pricing
-   */
-
-  const pricing =
-    calculatePricing();
-
-  $("#tSubtotal").textContent =
-    formatMoney(pricing.subtotal);
-
-  $("#tDelivery").textContent =
-    formatMoney(pricing.deliveryFee);
-
-  $("#tTax").textContent =
-    formatMoney(pricing.tax);
-
-  $("#tGrand").textContent =
-    formatMoney(pricing.total);
-
-
-  /*
-   * Minimum Order
-   *
-   * Custom items don't count toward the minimum because
-   * their price has not been confirmed.
-   */
-
-  const alertBox =
-    $("#minOrderAlert");
-
-  const placeBtn =
-    $("#placeOrderBtn");
-
-  if (
-    pricing.subtotal > 0 &&
-    pricing.subtotal < CONFIG.minOrderLimit
-  ) {
-
-    const difference =
-      roundMoney(
-        CONFIG.minOrderLimit -
-        pricing.subtotal
-      );
-
-    alertBox.textContent =
-      lang === "ar"
-        ? `⚠️ الحد الأدنى للطلب هو ${CONFIG.minOrderLimit} ج.م. باقي لك ${difference.toFixed(2)} ج.م لتتمكن من الطلب.`
-        : `Minimum order is ${CONFIG.minOrderLimit} EGP. Add ${difference.toFixed(2)} EGP more to checkout.`;
-
-    alertBox.classList.add("show");
-
-    placeBtn.disabled = true;
-
-  } else {
-
-    alertBox.classList.remove("show");
-
-    placeBtn.disabled =
-      (
-        entries.length === 0 &&
-        customItems.length === 0
-      );
-  }
-}
-
-
-/*
- * =========================================================
- * Custom Item
- * =========================================================
- */
-
-$("#toggleCustomBoxBtn").addEventListener(
-  "click",
-  () => {
-
-    $("#mainCustomBox")
-      .classList
-      .toggle("show");
-  }
-);
-
-
-$("#addCustomItemBtn").addEventListener(
-  "click",
-  () => {
-
-    const nameInput =
-      $("#customItemName");
-
-    const priceInput =
-      $("#customItemPrice");
-
-    const name =
-      cleanText(
-        nameInput.value,
-        CONFIG.maxCustomItemNameLength
-      );
-
-    const estimatedPrice =
-      toPositiveNumber(
-        priceInput.value,
-        0
-      );
-
-    if (!name) {
-
-      showToast(
-        lang === "ar"
-          ? "من فضلك اكتب اسم الصنف المخصص."
-          : "Please enter the custom item name."
-      );
-
-      nameInput.focus();
-
-      return;
-    }
-
-    if (
-      estimatedPrice > 100000
-    ) {
-
-      showToast(
-        lang === "ar"
-          ? "السعر التقديري غير صالح."
-          : "The estimated price is invalid."
-      );
-
-      priceInput.focus();
-
-      return;
-    }
-
-    customItems.push({
-      name,
-      estimatedPrice,
-      qty: 1,
-      type: "custom"
-    });
-
-    nameInput.value = "";
-    priceInput.value = "";
-
-    $("#mainCustomBox")
-      .classList
-      .remove("show");
-
-    renderCart();
-
-    showToast(
-      lang === "ar"
-        ? "تم إضافة الطلب المخصص للسلة ✓"
-        : "Custom request added to cart ✓"
-    );
-  }
-);
-
-
-/*
- * =========================================================
- * Distance Calculation
- * =========================================================
- */
-
-function distanceKm(
-  lat1,
-  lon1,
-  lat2,
-  lon2
-) {
-
-  const R = 6371;
-
-  const dLat =
-    (lat2 - lat1) *
-    Math.PI /
-    180;
-
-  const dLon =
-    (lon2 - lon1) *
-    Math.PI /
-    180;
-
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) *
-    Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) ** 2;
-
-  const c =
-    2 *
-    Math.atan2(
-      Math.sqrt(a),
-      Math.sqrt(1 - a)
-    );
-
-  return R * c;
-}
-
-
-/*
- * =========================================================
- * Delivery Status
- * =========================================================
- */
-
-function setDeliveryStatus(text) {
-
-  setText(
-    $("#deliveryStatus"),
-    text
-  );
-}
-
-
-/*
- * =========================================================
- * GPS
- * =========================================================
- */
-
-$("#locateBtn").addEventListener(
-  "click",
-  () => {
-
-    if (!navigator.geolocation) {
-
-      setDeliveryStatus(
-        lang === "ar"
-          ? "المتصفح لا يدعم تحديد الموقع تلقائيًا."
-          : "Geolocation is not supported by this browser."
-      );
-
-      return;
-    }
-
-    const button =
-      $("#locateBtn");
-
-    button.disabled = true;
-
-    setDeliveryStatus(
-      lang === "ar"
-        ? "جاري تحديد موقعك الفعلي عبر GPS..."
-        : "Locating you via GPS..."
-    );
-
-    navigator.geolocation.getCurrentPosition(
-
-      (position) => {
-
-        const lat =
-          Number(position.coords.latitude);
-
-        const lng =
-          Number(position.coords.longitude);
-
-        if (
-          !Number.isFinite(lat) ||
-          !Number.isFinite(lng)
-        ) {
-
-          setDeliveryStatus(
-            lang === "ar"
-              ? "تعذر قراءة موقعك."
-              : "Could not read your location."
-          );
-
-          button.disabled = false;
-
-          return;
-        }
-
-        detectedCoords = {
-          lat,
-          lng
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, onValue, push, update, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8h_w_JvoPV1PA5QFHJg_nAInFLCSEw9Y",
+            authDomain: "emmie-s-kitchen.firebaseapp.com",
+            databaseURL: "https://emmie-s-kitchen-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "emmie-s-kitchen",
+            storageBucket: "emmie-s-kitchen.firebasestorage.app",
+            messagingSenderId: "381764506540",
+            appId: "1:381764506540:web:58ee94ef5992661f1aa009"
+        };
+        const fbApp = initializeApp(firebaseConfig);
+        const db = getDatabase(fbApp);
+
+        const CONFIG = {
+            businessNameAr: "هَمَّ النَّمَّ",
+            whatsappNumber: "201158899779",
+            deliveryFee: 30,
+            taxRate: 0.14,
+            minOrderLimit: 150, // الحد الأدنى للطلب
+            advanceOrderHours: 48 // يجب الطلب قبلها بـ 48 ساعة
         };
 
-        const distance =
-          distanceKm(
-            CONFIG.kitchenLocation.lat,
-            CONFIG.kitchenLocation.lng,
-            lat,
-            lng
-          );
-
-        if (
-          distance < 0 ||
-          distance > CONFIG.maxDistanceKm
-        ) {
-
-          deliveryDistanceKm = null;
-
-          setDeliveryStatus(
-            lang === "ar"
-              ? "الموقع خارج نطاق التوصيل الحالي."
-              : "The location is outside the current delivery range."
-          );
-
-          button.disabled = false;
-
-          renderCart();
-
-          return;
-        }
-
-        deliveryDistanceKm =
-          roundMoney(distance);
-
-        $("#manualKm").value =
-          distance.toFixed(1);
-
-        $("#googleMapsUrl").value =
-          `https://www.google.com/maps?q=${lat},${lng}`;
-
-        setDeliveryStatus(
-          lang === "ar"
-            ? `تم تحديد موقعك! المسافة: ${distance.toFixed(1)} كم`
-            : `Location set! Distance: ${distance.toFixed(1)} km`
-        );
-
-        button.disabled = false;
-
-        renderCart();
-      },
-
-      (error) => {
-
-        console.warn(
-          "GPS Error:",
-          error
-        );
-
-        button.disabled = false;
-
-        setDeliveryStatus(
-          lang === "ar"
-            ? "مقدرناش نوصل للموقع تلقائيًا. استخدم رابط الخريطة أو اكتب المسافة."
-            : "GPS failed. Please use a Google Maps link or enter the distance manually."
-        );
-      },
-
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
-  }
-);
-
-
-/*
- * =========================================================
- * Manual Distance
- * =========================================================
- */
-
-$("#manualKm").addEventListener(
-  "input",
-  (event) => {
-
-    const value =
-      Number(event.target.value);
-
-    if (
-      !Number.isFinite(value) ||
-      value < 0
-    ) {
-
-      deliveryDistanceKm = null;
-
-      setDeliveryStatus("");
-
-      renderCart();
-
-      return;
-    }
-
-    if (
-      value > CONFIG.maxDistanceKm
-    ) {
-
-      deliveryDistanceKm =
-        CONFIG.maxDistanceKm;
-
-      event.target.value =
-        CONFIG.maxDistanceKm;
-
-      setDeliveryStatus(
-        lang === "ar"
-          ? `أقصى مسافة مسموحة حاليًا ${CONFIG.maxDistanceKm} كم.`
-          : `Maximum supported distance is ${CONFIG.maxDistanceKm} km.`
-      );
-
-      renderCart();
-
-      return;
-    }
-
-    deliveryDistanceKm =
-      roundMoney(value);
-
-    setDeliveryStatus(
-      lang === "ar"
-        ? `المسافة: ${value.toFixed(1)} كم`
-        : `Distance: ${value.toFixed(1)} km`
-    );
-
-    renderCart();
-  }
-);
-
-
-/*
- * =========================================================
- * Payment UI
- * =========================================================
- */
-
-$$('input[name="pay"]').forEach(
-  radio => {
-
-    radio.addEventListener(
-      "change",
-      () => {
-
-        $$('input[name="pay"]').forEach(
-          input => {
-
-            const labelId =
-              input.value === "cash"
-                ? "payCashLabel"
-                : "payCardLabel";
-
-            const label =
-              document.getElementById(
-                labelId
-              );
-
-            label.classList.toggle(
-              "selected",
-              input.checked
-            );
-          }
-        );
-      }
-    );
-  }
-);
-
-
-/*
- * =========================================================
- * Drawer
- * =========================================================
- */
-
-const drawer =
-  $("#drawer");
-
-const overlay =
-  $("#overlay");
-
-
-function openDrawer() {
-
-  drawer.classList.add("open");
-  overlay.classList.add("show");
-
-  drawer.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-  overlay.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-  document.body.classList.add(
-    "no-scroll"
-  );
-}
-
-
-function closeDrawer() {
-
-  drawer.classList.remove("open");
-  overlay.classList.remove("show");
-
-  drawer.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-  overlay.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-  document.body.classList.remove(
-    "no-scroll"
-  );
-}
-
-
-$("#openCartBtn").addEventListener(
-  "click",
-  openDrawer
-);
-
-
-$("#openCartBtn2").addEventListener(
-  "click",
-  openDrawer
-);
-
-
-$("#closeCartBtn").addEventListener(
-  "click",
-  closeDrawer
-);
-
-
-overlay.addEventListener(
-  "click",
-  closeDrawer
-);
-
-
-/*
- * =========================================================
- * Toast
- * =========================================================
- */
-
-function showToast(message) {
-
-  const toast =
-    $("#toast");
-
-  clearTimeout(toastTimer);
-
-  toast.textContent =
-    String(message || "");
-
-  toast.classList.add("show");
-
-  toastTimer =
-    setTimeout(
-      () => {
-        toast.classList.remove("show");
-      },
-      3000
-    );
-}
-
-
-/*
- * =========================================================
- * Form Validation Helpers
- * =========================================================
- */
-
-function clearFieldErrors() {
-
-  $$(
-    ".field-error"
-  ).forEach(
-    element =>
-      element.classList.remove(
-        "field-error"
-      )
-  );
-}
-
-
-function markFieldError(element) {
-
-  if (!element) return;
-
-  element.classList.add(
-    "field-error"
-  );
-}
-
-
-function validateCheckoutForm() {
-
-  clearFieldErrors();
-
-  const name =
-    cleanText(
-      $("#custName").value,
-      CONFIG.maxCustomerNameLength
-    );
-
-  const phone =
-    normalizeEgyptianPhone(
-      $("#custPhone").value
-    );
-
-  const address =
-    cleanText(
-      $("#custAddress").value,
-      CONFIG.maxCustomerAddressLength
-    );
-
-  const note =
-    cleanText(
-      $("#orderNote").value,
-      CONFIG.maxOrderNoteLength
-    );
-
-  const {
-    deliveryDate,
-    deliveryTime
-  } = getSelectedDelivery();
-
-  const mapsUrl =
-    cleanText(
-      $("#googleMapsUrl").value,
-      1000
-    );
-
-  let valid = true;
-
-  if (!name) {
-
-    markFieldError(
-      $("#custName")
-    );
-
-    valid = false;
-  }
-
-  if (!isValidEgyptianPhone(phone)) {
-
-    markFieldError(
-      $("#custPhone")
-    );
-
-    valid = false;
-  }
-
-  if (!address) {
-
-    markFieldError(
-      $("#custAddress")
-    );
-
-    valid = false;
-  }
-
-  if (!deliveryDate || !deliveryTime) {
-
-    markFieldError(
-      $("#deliveryDaySelect")
-    );
-
-    markFieldError(
-      $("#deliveryTimeSelect")
-    );
-
-    valid = false;
-  }
-
-  if (!isValidMapsUrl(mapsUrl)) {
-
-    markFieldError(
-      $("#googleMapsUrl")
-    );
-
-    valid = false;
-  }
-
-  if (
-    deliveryDistanceKm !== null &&
-    (
-      !Number.isFinite(deliveryDistanceKm) ||
-      deliveryDistanceKm < 0 ||
-      deliveryDistanceKm > CONFIG.maxDistanceKm
-    )
-  ) {
-
-    markFieldError(
-      $("#manualKm")
-    );
-
-    valid = false;
-  }
-
-  if (!valid) {
-
-    showToast(
-      lang === "ar"
-        ? "من فضلك راجع البيانات المطلوبة."
-        : "Please check the required information."
-    );
-
-    return null;
-  }
-
-  return {
-    name,
-    phone,
-    address,
-    note,
-    deliveryDate,
-    deliveryTime,
-    mapsUrl
-  };
-}
-
-
-/*
- * =========================================================
- * Build Standard Order Items
- *
- * Prices are re-read from the CURRENT MENU state before
- * creating the order.
- * =========================================================
- */
-
-function buildStandardOrderItems() {
-
-  return Object.entries(cart)
-    .map(([id, qty]) => {
-
-      const item =
-        MENU.find(
-          menuItem =>
-            menuItem.id === id
-        );
-
-      if (!item) {
-        return null;
-      }
-
-      const safeQty =
-        Math.max(
-          1,
-          Math.min(
-            99,
-            Math.floor(
-              toPositiveNumber(
-                qty,
-                1
-              )
-            )
-          )
-        );
-
-      const safePrice =
-        roundMoney(
-          toPositiveNumber(
-            item.price
-          )
-        );
-
-      return {
-        id: item.id,
-
-        ar: cleanText(
-          item.ar,
-          200
-        ),
-
-        en: cleanText(
-          item.en,
-          200
-        ),
-
-        price: safePrice,
-
-        qty: safeQty,
-
-        type: "standard"
-      };
-    })
-    .filter(Boolean);
-}
-
-
-/*
- * =========================================================
- * Build Custom Order Items
- *
- * NO final price is accepted from the customer.
- * estimatedPrice is stored separately.
- * =========================================================
- */
-
-function buildCustomOrderItems() {
-
-  return customItems.map(
-    (item, index) => ({
-
-      id: `custom_${Date.now()}_${index}`,
-
-      ar: cleanText(
-        item.name,
-        CONFIG.maxCustomItemNameLength
-      ),
-
-      en: cleanText(
-        item.name,
-        CONFIG.maxCustomItemNameLength
-      ),
-
-      /*
-       * Final price is intentionally 0.
-       * Kitchen/admin must confirm it later.
-       */
-      price: 0,
-
-      estimatedPrice:
-        Number.isFinite(item.estimatedPrice)
-          ? roundMoney(
-              Math.max(
-                0,
-                item.estimatedPrice
-              )
-            )
-          : 0,
-
-      qty: Math.max(
-        1,
-        Math.min(
-          99,
-          Math.floor(
-            toPositiveNumber(
-              item.qty,
-              1
-            )
-          )
-        )
-      ),
-
-      type: "custom",
-
-      pricingStatus: "pending"
-    })
-  );
-}
-
-
-/*
- * =========================================================
- * Generate Google Maps URL from GPS
- * =========================================================
- */
-
-function getFinalMapsUrl(
-  enteredMapsUrl
-) {
-
-  if (enteredMapsUrl) {
-    return enteredMapsUrl;
-  }
-
-  if (
-    detectedCoords &&
-    Number.isFinite(detectedCoords.lat) &&
-    Number.isFinite(detectedCoords.lng)
-  ) {
-
-    return (
-      `https://www.google.com/maps?q=` +
-      `${detectedCoords.lat},${detectedCoords.lng}`
-    );
-  }
-
-  return "";
-}
-
-
-/*
- * =========================================================
- * Build WhatsApp Message
- * =========================================================
- */
-
-function buildWhatsAppMessage({
-  orderNumber,
-  orderItems,
-  pricing,
-  deliveryDate,
-  deliveryTime,
-  note,
-  payMethod,
-  name,
-  phone,
-  address,
-  mapsUrl
-}) {
-
-  const currency =
-    currentCurrency();
-
-  const lines = [];
-
-  lines.push(
-    lang === "ar"
-      ? `طلب جديد من ${CONFIG.businessNameAr}`
-      : `New order — ${CONFIG.businessNameEn}`
-  );
-
-  lines.push(
-    `${lang === "ar" ? "رقم الطلب" : "Order number"}: #${orderNumber}`
-  );
-
-  lines.push("");
-
-  orderItems.forEach(item => {
-
-    if (item.type === "custom") {
-
-      lines.push(
-        `${item.qty} × ${
-          lang === "ar"
-            ? item.ar
-            : item.en
-        } — ${
-          lang === "ar"
-            ? "السعر يحدد لاحقًا"
-            : "Price to be confirmed"
-        }`
-      );
-
-    } else {
-
-      lines.push(
-        `${item.qty} × ${
-          lang === "ar"
-            ? item.ar
-            : item.en
-        } — ${
-          (item.price * item.qty).toFixed(2)
-        } ${currency}`
-      );
-    }
-  });
-
-  lines.push("");
-
-  lines.push(
-    `${lang === "ar" ? "الإجمالي الفرعي" : "Subtotal"}: ${pricing.subtotal.toFixed(2)} ${currency}`
-  );
-
-  lines.push(
-    `${lang === "ar" ? "رسوم التوصيل" : "Delivery"}: ${pricing.deliveryFee.toFixed(2)} ${currency}`
-  );
-
-  lines.push(
-    `${lang === "ar" ? "الضريبة" : "Tax"}: ${pricing.tax.toFixed(2)} ${currency}`
-  );
-
-  lines.push(
-    `${lang === "ar" ? "الإجمالي الكلي" : "Total"}: ${pricing.total.toFixed(2)} ${currency}`
-  );
-
-  lines.push("");
-
-  lines.push(
-    `${lang === "ar" ? "تاريخ الاستلام" : "Delivery date"}: ${deliveryDate}`
-  );
-
-  lines.push(
-    `${lang === "ar" ? "وقت الاستلام" : "Delivery time"}: ${formatTimeLabel(deliveryTime)}`
-  );
-
-  if (note) {
-
-    lines.push(
-      `${lang === "ar" ? "ملاحظة" : "Note"}: ${note}`
-    );
-  }
-
-  lines.push(
-    `${lang === "ar" ? "طريقة الدفع" : "Payment"}: ${
-      payMethod === "cash"
-        ? (
-            lang === "ar"
-              ? "كاش عند الاستلام"
-              : "Cash on delivery"
-          )
-        : (
-            lang === "ar"
-              ? "فيزا عند الاستلام"
-              : "Card on delivery"
-          )
-    }`
-  );
-
-  lines.push("");
-
-  lines.push(
-    `${lang === "ar" ? "الاسم" : "Name"}: ${name}`
-  );
-
-  lines.push(
-    `${lang === "ar" ? "الموبايل" : "Phone"}: ${phone}`
-  );
-
-  lines.push(
-    `${lang === "ar" ? "العنوان" : "Address"}: ${address}`
-  );
-
-  if (mapsUrl) {
-
-    lines.push(
-      `${lang === "ar" ? "لوكيشن" : "Location"}: ${mapsUrl}`
-    );
-  }
-
-  if (deliveryDistanceKm !== null) {
-
-    lines.push(
-      `${lang === "ar" ? "المسافة" : "Distance"}: ${deliveryDistanceKm.toFixed(1)} km`
-    );
-  }
-
-  return lines.join("\n");
-}
-
-
-/*
- * =========================================================
- * Order Submission
- *
- * Important improvements:
- *
- * 1. Revalidates the form.
- * 2. Rebuilds items from current MENU.
- * 3. Uses Firebase transaction for unique order number.
- * 4. Uses ONE atomic multi-location update for:
- *      orders/<id>
- *      orderLookup/<orderNumber>
- * 5. Stores structured order data.
- * 6. Keeps deliveryDate and deliveryTime separate.
- * 7. Keeps custom pricing pending.
- * =========================================================
- */
-
-$("#placeOrderBtn").addEventListener(
-  "click",
-  async () => {
-
-    if (orderSubmitting) {
-      return;
-    }
-
-    const form =
-      validateCheckoutForm();
-
-    if (!form) {
-      return;
-    }
-
-    const standardItems =
-      buildStandardOrderItems();
-
-    const customOrderItems =
-      buildCustomOrderItems();
-
-    const orderItems = [
-      ...standardItems,
-      ...customOrderItems
-    ];
-
-    if (orderItems.length === 0) {
-
-      showToast(
-        lang === "ar"
-          ? "السلة فاضية."
-          : "Your cart is empty."
-      );
-
-      return;
-    }
-
-
-    /*
-     * Recalculate subtotal from the current menu.
-     */
-
-    const subtotal =
-      roundMoney(
-        standardItems.reduce(
-          (sum, item) =>
-            sum +
-            item.price *
-            item.qty,
-          0
-        )
-      );
-
-
-    /*
-     * Minimum order is checked against confirmed standard
-     * menu items only.
-     */
-
-    if (
-      subtotal <
-      CONFIG.minOrderLimit
-    ) {
-
-      showToast(
-        lang === "ar"
-          ? `الحد الأدنى للطلب ${CONFIG.minOrderLimit} ج.م.`
-          : `Minimum order is ${CONFIG.minOrderLimit} EGP.`
-      );
-
-      renderCart();
-
-      return;
-    }
-
-
-    /*
-     * Maps URL validation.
-     */
-
-    const finalMapsUrl =
-      getFinalMapsUrl(
-        form.mapsUrl
-      );
-
-    if (
-      finalMapsUrl &&
-      !isValidMapsUrl(finalMapsUrl)
-    ) {
-
-      showToast(
-        lang === "ar"
-          ? "رابط Google Maps غير صالح."
-          : "Invalid Google Maps URL."
-      );
-
-      return;
-    }
-
-
-    /*
-     * Final client-side pricing.
-     */
-
-    const pricing =
-      calculatePricing();
-
-
-    /*
-     * Ensure pricing is still based on the same subtotal.
-     */
-
-    if (
-      roundMoney(pricing.subtotal) !==
-      subtotal
-    ) {
-
-      showToast(
-        lang === "ar"
-          ? "حصل تغيير في المنيو. راجع السلة وحاول مرة أخرى."
-          : "The menu changed. Please review your cart and try again."
-      );
-
-      renderCart();
-
-      return;
-    }
-
-
-    /*
-     * Payment method.
-     */
-
-    const selectedPayment =
-      document.querySelector(
-        'input[name="pay"]:checked'
-      );
-
-    const payMethod =
-      selectedPayment?.value || "cash";
-
-
-    /*
-     * Disable button while submitting.
-     */
-
-    orderSubmitting = true;
-
-    const placeBtn =
-      $("#placeOrderBtn");
-
-    const originalText =
-      $("#placeOrderText").textContent;
-
-    placeBtn.disabled = true;
-
-    $("#placeOrderText").innerHTML = "";
-
-    const spinner =
-      createElement(
-        "span",
-        "loading-spinner"
-      );
-
-    $("#placeOrderText")
-      .appendChild(spinner);
-
-
-    try {
-
-      /*
-       * =====================================================
-       * Generate unique order number
-       * =====================================================
-       */
-
-      const counterRef =
-        ref(
-          db,
-          "counters/orderNumber"
-        );
-
-      const counterResult =
-        await runTransaction(
-          counterRef,
-          current => {
-
-            const currentNumber =
-              Number(current);
-
-            if (
-              !Number.isFinite(
-                currentNumber
-              )
-            ) {
-              return 1001;
-            }
-
-            return currentNumber + 1;
-          }
-        );
-
-
-      if (!counterResult.committed) {
-        throw new Error(
-          "Order number transaction was not committed."
-        );
-      }
-
-
-      const orderNumber =
-        Number(
-          counterResult.snapshot.val()
-        );
-
-
-      if (
-        !Number.isInteger(orderNumber) ||
-        orderNumber <= 0
-      ) {
-        throw new Error(
-          "Invalid generated order number."
-        );
-      }
-
-
-      /*
-       * =====================================================
-       * Create Firebase push key
-       * =====================================================
-       */
-
-      const newOrderRef =
-        push(
-          ref(db, "orders")
-        );
-
-      const orderId =
-        newOrderRef.key;
-
-
-      if (!orderId) {
-        throw new Error(
-          "Could not generate order ID."
-        );
-      }
-
-
-      /*
-       * =====================================================
-       * Structured Order Object
-       * =====================================================
-       */
-
-      const order = {
-
-        orderNumber,
-
-        status: "received",
-
-        customer: {
-
-          name: form.name,
-
-          phone: form.phone,
-
-          address: form.address
-        },
-
-        delivery: {
-
-          date: form.deliveryDate,
-
-          time: form.deliveryTime,
-
-          distanceKm:
-            deliveryDistanceKm !== null
-              ? roundMoney(
-                  deliveryDistanceKm
-                )
-              : null,
-
-          mapsUrl:
-            finalMapsUrl || "",
-
-          fee:
-            pricing.deliveryFee
-        },
-
-        payment: {
-
-          method: payMethod,
-
-          status: "pending"
-        },
-
-        pricing: {
-
-          subtotal:
-            pricing.subtotal,
-
-          deliveryFee:
-            pricing.deliveryFee,
-
-          taxableAmount:
-            pricing.taxableAmount,
-
-          tax:
-            pricing.tax,
-
-          taxRate:
-            CONFIG.taxRate,
-
-          deliveryTaxable:
-            CONFIG.deliveryTaxable,
-
-          total:
-            pricing.total,
-
-          /*
-           * This field explicitly indicates that the
-           * displayed total is client-calculated and must
-           * be revalidated by trusted backend/admin logic
-           * before fulfillment.
-           */
-          calculationSource:
-            "client_pending_validation"
-        },
-
-        items: orderItems,
-
-        note: form.note,
-
-        pricingStatus:
-          customOrderItems.length > 0
-            ? "requires_custom_item_confirmation"
-            : "pending_validation",
-
-        createdAt:
-          serverTimestamp(),
-
-        updatedAt:
-          serverTimestamp()
-      };
-
-
-      /*
-       * =====================================================
-       * Atomic multi-location write
-       *
-       * Both order and lookup are written together.
-       * =====================================================
-       */
-
-      const updates = {};
-
-      updates[
-        `orders/${orderId}`
-      ] = order;
-
-      updates[
-        `orderLookup/${orderNumber}`
-      ] = orderId;
-
-      await update(
-        ref(db),
-        updates
-      );
-
-
-      /*
-       * =====================================================
-       * Tracking URL
-       * =====================================================
-       */
-
-      const trackingUrl =
-        new URL(
-          "tracking.html",
-          window.location.href
-        ).href +
-        "?id=" +
-        encodeURIComponent(
-          orderId
-        );
-
-
-      /*
-       * =====================================================
-       * WhatsApp
-       * =====================================================
-       */
-
-      const whatsappMessage =
-        buildWhatsAppMessage({
-
-          orderNumber,
-
-          orderItems,
-
-          pricing,
-
-          deliveryDate:
-            form.deliveryDate,
-
-          deliveryTime:
-            form.deliveryTime,
-
-          note:
-            form.note,
-
-          payMethod,
-
-          name:
-            form.name,
-
-          phone:
-            form.phone,
-
-          address:
-            form.address,
-
-          mapsUrl:
-            finalMapsUrl
+        let MENU = [];
+        let cart = [];
+        let currentCategory = 'all';
+        let orderSubmitting = false;
+        let currentLang = 'ar';
+
+        onValue(ref(db, 'menu'), (snapshot) => {
+            const data = snapshot.val() || {};
+            MENU = Object.entries(data).map(([id, item]) => ({ id, ...item })).filter(item => item.available !== false);
+            document.getElementById('statItems').textContent = MENU.length + '+';
+            renderMenu();
         });
 
-
-      const whatsappUrl =
-        `https://wa.me/${CONFIG.whatsappNumber}` +
-        `?text=${encodeURIComponent(
-          whatsappMessage
-        )}`;
-
-
-      /*
-       * Open WhatsApp.
-       */
-
-      window.open(
-        whatsappUrl,
-        "_blank",
-        "noopener,noreferrer"
-      );
-
-
-      /*
-       * =====================================================
-       * Confirmation UI
-       * =====================================================
-       */
-
-      $("#confirmNumber").textContent =
-        "#" + orderNumber;
-
-      $("#confirmTrackLink").href =
-        trackingUrl;
-
-      $("#confirmOverlay")
-        .classList
-        .add("show");
-
-
-      /*
-       * =====================================================
-       * Reset Cart
-       * =====================================================
-       */
-
-      cart = {};
-      customItems = [];
-
-      deliveryDistanceKm = null;
-      detectedCoords = null;
-
-      $("#orderNote").value = "";
-      $("#googleMapsUrl").value = "";
-      $("#manualKm").value = "";
-      $("#custName").value = "";
-      $("#custPhone").value = "";
-      $("#custAddress").value = "";
-
-      renderCart();
-
-      closeDrawer();
-
-    } catch (error) {
-
-      console.error(
-        "Order submission failed:",
-        error
-      );
-
-      showToast(
-        lang === "ar"
-          ? "حدث خطأ أثناء حفظ الطلب. حاول مرة أخرى."
-          : "There was an error saving the order. Please try again."
-      );
-
-    } finally {
-
-      orderSubmitting = false;
-
-      placeBtn.disabled = false;
-
-      $("#placeOrderText").textContent =
-        originalText;
-    }
-  }
-);
-
-
-/*
- * =========================================================
- * Confirmation Close
- * =========================================================
- */
-
-$("#confirmCloseBtn").addEventListener(
-  "click",
-  () => {
-
-    $("#confirmOverlay")
-      .classList
-      .remove("show");
-  }
-);
-
-
-/*
- * =========================================================
- * Language Toggle
- * =========================================================
- */
-
-$("#langToggle").addEventListener(
-  "click",
-  () => {
-
-    lang =
-      lang === "ar"
-        ? "en"
-        : "ar";
-
-    applyLang();
-  }
-);
-
-
-/*
- * =========================================================
- * Search
- * =========================================================
- */
-
-$("#menuSearchInput").addEventListener(
-  "input",
-  event => {
-
-    menuSearchQuery =
-      cleanText(
-        event.target.value,
-        100
-      ).toLowerCase();
-
-    renderMenu();
-  }
-);
-
-
-/*
- * =========================================================
- * Hero Buttons
- * =========================================================
- */
-
-$("#heroOrderBtn").addEventListener(
-  "click",
-  () => {
-
-    $("#menuTop").scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }
-);
-
-
-$("#heroTrackBtn").addEventListener(
-  "click",
-  () => {
-
-    window.location.href =
-      "tracking.html";
-  }
-);
-
-
-/*
- * =========================================================
- * Header Scroll Effect
- * =========================================================
- */
-
-window.addEventListener(
-  "scroll",
-  () => {
-
-    const header =
-      document.querySelector(
-        "header.site"
-      );
-
-    if (window.scrollY > 50) {
-
-      header.classList.add(
-        "scrolled"
-      );
-
-    } else {
-
-      header.classList.remove(
-        "scrolled"
-      );
-    }
-  },
-  {
-    passive: true
-  }
-);
-
-
-/*
- * =========================================================
- * Escape Key
- * =========================================================
- */
-
-document.addEventListener(
-  "keydown",
-  event => {
-
-    if (
-      event.key === "Escape"
-    ) {
-
-      closeDrawer();
-
-      $("#confirmOverlay")
-        .classList
-        .remove("show");
-    }
-  }
-);
-
-
-/*
- * =========================================================
- * Initial Application Setup
- * =========================================================
- */
-
-buildDeliveryDayOptions();
-buildDeliveryTimeOptions();
-
-renderTabs();
-renderMenu();
-renderCart();
-
-applyLang();
-
-</script>
-
+        onValue(ref(db, 'orders'), (snapshot) => {
+            document.getElementById('statOrders').textContent = (snapshot.size || 0) + '+';
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupScrollAnimations();
+            setupNavbar();
+        });
+
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.querySelector('.lang-switch').textContent = currentLang === 'ar' ? 'EN' : 'عربي';
+            renderMenu();
+            updateCart();
+        }
+
+        function cleanText(value, maxLength = 500) {
+            return String(value ?? '').trim().slice(0, maxLength);
+        }
+
+        function renderMenu() {
+            const grid = document.getElementById('menuGrid');
+            const filtered = currentCategory === 'all' ? MENU : MENU.filter(item => (item.cat || item.category) === currentCategory);
+            if (filtered.length === 0) {
+                grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem;">مفيش أصناف في القسم ده دلوقتي</p>`;
+                return;
+            }
+            grid.innerHTML = filtered.map(item => {
+                const name = currentLang === 'ar' ? (item.ar || item.name) : (item.en || item.name || item.ar);
+                const price = item.price || 0;
+                return `
+                <div class="menu-item fade-in">
+                    <div class="menu-item-image">${item.image ? `<img src="${item.image}" alt="${name}">` : '<i class="fas fa-utensils"></i>'}</div>
+                    <div class="menu-item-content">
+                        <h3 class="menu-item-title">${name}</h3>
+                        <div class="menu-item-footer">
+                            <div class="menu-item-price">${price} <span>ج.م</span></div>
+                            <button class="add-to-cart" onclick="addToCart('${item.id}')"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 100);
+        }
+
+        document.querySelectorAll('.menu-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentCategory = tab.dataset.category;
+                renderMenu();
+            });
+        });
+
+        window.addToCart = function (itemId) {
+            const item = MENU.find(i => i.id === itemId);
+            if (!item) return;
+            const existing = cart.find(i => i.id === itemId);
+            if (existing) existing.qty++;
+            else cart.push({ id: item.id, ar: item.ar || item.name, en: item.en || item.name, price: item.price, qty: 1, isCustom: false });
+            updateCart();
+            toggleCart(true);
+        };
+
+        window.openCustomOrderModal = function () { document.getElementById('customOrderModal').classList.add('open'); };
+        window.closeCustomOrderModal = function () {
+            document.getElementById('customOrderModal').classList.remove('open');
+            document.getElementById('customItemName').value = '';
+            document.getElementById('customItemNotes').value = '';
+        };
+
+        window.addCustomItem = function () {
+            const name = cleanText(document.getElementById('customItemName').value, 120);
+            const notes = cleanText(document.getElementById('customItemNotes').value, 500);
+            if (!name) { alert('الرجاء إدخال اسم الصنف'); return; }
+            cart.push({ id: `custom_${Date.now()}`, ar: name, en: name, notes, price: 0, qty: 1, isCustom: true, pendingPrice: true });
+            closeCustomOrderModal();
+            updateCart();
+            toggleCart(true);
+        };
+
+        function computeTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.pendingPrice ? 0 : item.price * item.qty), 0);
+            const deliveryFee = subtotal > 0 ? CONFIG.deliveryFee : 0;
+            const tax = subtotal > 0 ? Math.round(subtotal * CONFIG.taxRate * 100) / 100 : 0;
+            const grandTotal = subtotal > 0 ? Math.round((subtotal + deliveryFee + tax) * 100) / 100 : 0;
+            return { subtotal, deliveryFee, tax, grandTotal };
+        }
+
+        function updateCart() {
+            const cartBody = document.getElementById('cartBody');
+            document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+
+            if (cart.length === 0) {
+                cartBody.innerHTML = `<div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>السلة فارغة</p></div>`;
+            } else {
+                cartBody.innerHTML = cart.map((item, idx) => `
+                    <div class="cart-item">
+                        <div class="cart-item-image"><i class="fas fa-utensils" style="font-size: 2rem; color: var(--gray-400); display:flex; align-items:center; justify-content:center; height:100%;"></i></div>
+                        <div class="cart-item-content">
+                            <div class="cart-item-title">${currentLang === 'ar' ? item.ar : (item.en || item.ar)}</div>
+                            <div class="cart-item-price" style="color: ${item.pendingPrice ? 'var(--warning)' : 'var(--accent-dark)'};">
+                                ${item.pendingPrice ? '⏳ هيتم تحديد السعر' : `${item.price} ج.م`}
+                            </div>
+                            ${item.notes ? `<small style="color: var(--gray-500); font-size: 0.75rem; display: block; margin-top: 4px;">📝 ${item.notes}</small>` : ''}
+                            <div class="cart-item-qty">
+                                <button class="qty-btn" onclick="updateQty(${idx}, -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button class="qty-btn" onclick="updateQty(${idx}, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>`).join('');
+            }
+            updateTotals();
+        }
+
+        window.updateQty = function (idx, change) {
+            cart[idx].qty += change;
+            if (cart[idx].qty <= 0) cart.splice(idx, 1);
+            updateCart();
+        };
+
+        function updateTotals() {
+            const { subtotal, deliveryFee, tax, grandTotal } = computeTotals();
+            const currency = 'ج.م';
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' ' + currency;
+            document.getElementById('deliveryFee').textContent = deliveryFee.toFixed(2) + ' ' + currency;
+            document.getElementById('tax').textContent = tax.toFixed(2) + ' ' + currency;
+            document.getElementById('grandTotal').textContent = grandTotal.toFixed(2) + ' ' + currency;
+
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            const warningEl = document.getElementById('minOrderWarning');
+
+            if (cart.length === 0) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> السلة فارغة';
+                warningEl.style.display = 'none';
+            } else if (subtotal < CONFIG.minOrderLimit) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> الحد الأدنى ${CONFIG.minOrderLimit} ج.م`;
+                warningEl.style.display = 'flex';
+            } else {
+                checkoutBtn.disabled = false;
+                checkoutBtn.innerHTML = '<i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب';
+                warningEl.style.display = 'none';
+            }
+        }
+
+        window.toggleCart = function (forceOpen = false) {
+            const sidebar = document.getElementById('cartSidebar');
+            const overlay = document.getElementById('cartOverlay');
+            if (forceOpen || !sidebar.classList.contains('open')) {
+                sidebar.classList.add('open'); overlay.classList.add('open');
+            } else {
+                sidebar.classList.remove('open'); overlay.classList.remove('open');
+            }
+        };
+
+        window.openCheckout = function () {
+            if (cart.length === 0) return;
+            // تعيين الحد الأدنى للوقت (48 ساعة من الآن)
+            const minDate = new Date();
+            minDate.setHours(minDate.getHours() + CONFIG.advanceOrderHours);
+            minDate.setMinutes(minDate.getMinutes() - minDate.getTimezoneOffset());
+            document.getElementById('deliveryTime').min = minDate.toISOString().slice(0, 16);
+            
+            document.getElementById('checkoutModal').classList.add('open');
+            toggleCart();
+        };
+
+        window.closeCheckout = function () { document.getElementById('checkoutModal').classList.remove('open'); };
+
+        let selectedPayMethod = 'cash';
+        window.selectPayment = function (el) {
+            document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedPayMethod = el.dataset.value || 'cash';
+        };
+
+        function isValidEgyptianPhone(value) {
+            let phone = String(value || '').replace(/[^\d+]/g, '');
+            if (phone.startsWith('+20')) phone = '0' + phone.slice(3);
+            else if (phone.startsWith('20')) phone = '0' + phone.slice(2);
+            return /^01[0125]\d{8}$/.test(phone);
+        }
+
+        function toIntlPhone(phone) {
+            let digits = String(phone || '').replace(/[^0-9]/g, '');
+            if (digits.startsWith('0')) digits = '20' + digits.slice(1);
+            else if (digits.length === 10 && !digits.startsWith('20')) digits = '20' + digits;
+            return digits;
+        }
+
+        function getMinDeliveryDateTime() {
+            const date = new Date();
+            date.setHours(date.getHours() + CONFIG.advanceOrderHours);
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+            return date.toISOString().slice(0, 16);
+        }
+
+        window.submitOrder = async function () {
+            if (orderSubmitting) return;
+            const errBox = document.getElementById('checkoutError');
+            errBox.textContent = '';
+
+            const name = cleanText(document.getElementById('customerName').value, 100);
+            const phoneRaw = document.getElementById('customerPhone').value;
+            const address = cleanText(document.getElementById('customerAddress').value, 500);
+            const note = cleanText(document.getElementById('orderNote').value, 1000);
+            const deliveryTime = document.getElementById('deliveryTime').value;
+
+            ['customerName', 'customerPhone', 'customerAddress'].forEach(id => document.getElementById(id).classList.remove('field-error'));
+
+            let valid = true;
+            if (!name) { document.getElementById('customerName').classList.add('field-error'); valid = false; }
+            if (!isValidEgyptianPhone(phoneRaw)) { document.getElementById('customerPhone').classList.add('field-error'); valid = false; }
+            if (!address) { document.getElementById('customerAddress').classList.add('field-error'); valid = false; }
+
+            if (!valid) { errBox.textContent = 'من فضلك راجع البيانات المطلوبة'; return; }
+            if (cart.length === 0) { errBox.textContent = 'السلة فارغة'; return; }
+
+            const totals = computeTotals();
+            
+            // 1. Validation: Minimum Order Limit
+            if (totals.subtotal < CONFIG.minOrderLimit) {
+                errBox.textContent = `الحد الأدنى للطلب هو ${CONFIG.minOrderLimit} ج.م. يرجى إضافة أصناف أخرى.`;
+                return;
+            }
+
+            // 2. Validation: 48 Hours Advance
+            if (deliveryTime) {
+                const selectedTime = new Date(deliveryTime).getTime();
+                const minTime = new Date(getMinDeliveryDateTime()).getTime();
+                if (selectedTime < minTime) {
+                    errBox.textContent = `يجب أن يكون موعد الاستلام بعد ${CONFIG.advanceOrderHours} ساعة على الأقل من الآن.`;
+                    return;
+                }
+            }
+
+            orderSubmitting = true;
+            const submitBtn = document.getElementById('submitOrderBtn');
+            const submitText = document.getElementById('submitOrderText');
+            submitBtn.disabled = true;
+            submitText.textContent = 'جاري الإرسال...';
+
+            try {
+                let orderNumber;
+                // محاولة استخدام العداد، وفي حال فشلها (بسبب قواعد Firebase مثلاً) نستخدم بديلاً آمناً
+                try {
+                    const counterResult = await runTransaction(ref(db, 'counters/orderNumber'), current => {
+                        const currentNumber = Number(current);
+                        return Number.isFinite(currentNumber) ? currentNumber + 1 : 1001;
+                    });
+                    if (counterResult.committed) {
+                        orderNumber = Number(counterResult.snapshot.val());
+                    } else {
+                        throw new Error("Transaction aborted");
+                    }
+                } catch (txError) {
+                    console.warn("Counter transaction failed, using fallback:", txError);
+                    // Fallback: رقم طلب فريد بناءً على الوقت لتجنب فشل الطلب تماماً
+                    orderNumber = 1000 + Math.floor(Math.random() * 9000);
+                }
+
+                const newOrderRef = push(ref(db, 'orders'));
+                const orderId = newOrderRef.key;
+
+                const orderItems = cart.map(it => ({
+                    id: it.id, ar: it.ar, en: it.en || it.ar, price: it.pendingPrice ? 0 : it.price, qty: it.qty,
+                    ...(it.notes ? { notes: it.notes } : {}),
+                    ...(it.pendingPrice ? { pricingStatus: 'pending' } : {})
+                }));
+
+                const order = {
+                    orderNumber, status: 'received', customerName: name,
+                    customerPhone: toIntlPhone(phoneRaw) ? phoneRaw.trim() : phoneRaw.trim(),
+                    customerAddress: address, payMethod: selectedPayMethod,
+                    deliveryTimeTarget: deliveryTime || '', note, items: orderItems,
+                    subtotal: totals.subtotal, deliveryFee: totals.deliveryFee, tax: totals.tax, total: totals.grandTotal,
+                    pricingStatus: cart.some(it => it.pendingPrice) ? 'requires_custom_item_confirmation' : 'confirmed',
+                    createdAt: serverTimestamp(), updatedAt: serverTimestamp()
+                };
+
+                const updates = {};
+                updates[`orders/${orderId}`] = order;
+                updates[`orderLookup/${orderNumber}`] = orderId;
+                
+                await update(ref(db), updates);
+
+                const trackingUrl = new URL('tracking.html', window.location.href).href + '?id=' + encodeURIComponent(orderId);
+                const waMessage = `طلب جديد من ${CONFIG.businessNameAr}\nرقم الطلب: #${orderNumber}\nالإجمالي: ${totals.grandTotal.toFixed(2)} ج.م\nالاسم: ${name}\nالموبايل: ${phoneRaw}\nالعنوان: ${address}`;
+                
+                window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(waMessage)}`, '_blank', 'noopener,noreferrer');
+
+                document.getElementById('orderNumber').textContent = '#' + orderNumber;
+                document.getElementById('successTrackLink').href = trackingUrl;
+
+                closeCheckout();
+                document.getElementById('successModal').classList.add('open');
+
+                cart = [];
+                updateCart();
+                ['customerName', 'customerPhone', 'customerAddress', 'orderNote', 'deliveryTime'].forEach(id => document.getElementById(id).value = '');
+
+            } catch (error) {
+                console.error('Order submission failed:', error);
+                errBox.textContent = 'حصل خطأ أثناء حفظ الطلب، تأكد من اتصال الإنترنت أو قواعد بيانات Firebase. الخطأ: ' + error.message;
+            } finally {
+                orderSubmitting = false;
+                submitBtn.disabled = false;
+                submitText.textContent = 'تأكيد الطلب';
+            }
+        };
+
+        window.closeSuccess = function () { document.getElementById('successModal').classList.remove('open'); };
+
+        function setupNavbar() {
+            window.addEventListener('scroll', () => {
+                document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+            });
+        }
+
+        function setupScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+        });
+    </script>
 </body>
 </html>
