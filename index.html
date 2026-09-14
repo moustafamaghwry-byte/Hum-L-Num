@@ -590,12 +590,11 @@
         };
 
         function computeTotals() {
-            const subtotal = cart.reduce((sum, item) => sum + (item.pendingPrice ? 0 : item.price * item.qty), 0);
-            const deliveryFee = subtotal > 0 ? CONFIG.deliveryFee : 0;
-            const tax = subtotal > 0 ? Math.round(subtotal * CONFIG.taxRate * 100) / 100 : 0;
-            const grandTotal = subtotal > 0 ? Math.round((subtotal + deliveryFee + tax) * 100) / 100 : 0;
-            return { subtotal, deliveryFee, tax, grandTotal };
-        }
+    const subtotal = cart.reduce((sum, item) => sum + (item.pendingPrice ? 0 : item.price * item.qty), 0);
+    const deliveryFee = subtotal > 0 ? CONFIG.deliveryFee : 0;
+    const grandTotal = subtotal > 0 ? subtotal + deliveryFee : 0;
+    return { subtotal, deliveryFee, grandTotal };
+}
 
         function updateCart() {
             const cartBody = document.getElementById('cartBody');
