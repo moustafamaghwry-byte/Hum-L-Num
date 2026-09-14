@@ -629,31 +629,30 @@
             updateCart();
         };
 
-        function updateTotals() {
-            const { subtotal, deliveryFee, tax, grandTotal } = computeTotals();
-            const currency = 'ج.م';
-            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' ' + currency;
-            document.getElementById('deliveryFee').textContent = deliveryFee.toFixed(2) + ' ' + currency;
-            document.getElementById('tax').textContent = tax.toFixed(2) + ' ' + currency;
-            document.getElementById('grandTotal').textContent = grandTotal.toFixed(2) + ' ' + currency;
+       function updateTotals() {
+    const { subtotal, deliveryFee, grandTotal } = computeTotals();
+    const currency = 'ج.م';
+    document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' ' + currency;
+    document.getElementById('deliveryFee').textContent = deliveryFee.toFixed(2) + ' ' + currency;
+    document.getElementById('grandTotal').textContent = grandTotal.toFixed(2) + ' ' + currency;
 
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            const warningEl = document.getElementById('minOrderWarning');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const warningEl = document.getElementById('minOrderWarning');
 
-            if (cart.length === 0) {
-                checkoutBtn.disabled = true;
-                checkoutBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> السلة فارغة';
-                warningEl.style.display = 'none';
-            } else if (subtotal < CONFIG.minOrderLimit) {
-                checkoutBtn.disabled = true;
-                checkoutBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> الحد الأدنى ${CONFIG.minOrderLimit} ج.م`;
-                warningEl.style.display = 'flex';
-            } else {
-                checkoutBtn.disabled = false;
-                checkoutBtn.innerHTML = '<i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب';
-                warningEl.style.display = 'none';
-            }
-        }
+    if (cart.length === 0) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> السلة فارغة';
+        warningEl.style.display = 'none';
+    } else if (subtotal < CONFIG.minOrderLimit) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> الحد الأدنى ${CONFIG.minOrderLimit} ج.م`;
+        warningEl.style.display = 'flex';
+    } else {
+        checkoutBtn.disabled = false;
+        checkoutBtn.innerHTML = '<i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب';
+        warningEl.style.display = 'none';
+    }
+}
 
         window.toggleCart = function (forceOpen = false) {
             const sidebar = document.getElementById('cartSidebar');
