@@ -668,17 +668,30 @@
             }
         };
 
-        window.openCheckout = function () {
-            if (cart.length === 0) return;
-            // تعيين الحد الأدنى للوقت (48 ساعة من الآن)
-            const minDate = new Date();
-            minDate.setHours(minDate.getHours() + CONFIG.advanceOrderHours);
-            minDate.setMinutes(minDate.getMinutes() - minDate.getTimezoneOffset());
-            document.getElementById('deliveryTime').min = minDate.toISOString().slice(0, 16);
-            
-            document.getElementById('checkoutModal').classList.add('open');
-            toggleCart();
-        };
+       window.openCheckout = function () {
+    if (cart.length === 0) return;
+    
+    // حساب التاريخ والوقت بعد يومين (48 ساعة) من الآن
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 2); // إضافة يومين بالضبط
+    
+    // تنسيق التاريخ ليناسب حقل datetime-local (YYYY-MM-DDThh:mm)
+    const year = futureDate.getFullYear();
+    const month = String(futureDate.getMonth() + 1).padStart(2, '0');
+    const day = String(futureDate.getDate()).padStart(2, '0');
+    const hours = String(futureDate.getHours()).padStart(2, '0');
+    const minutes = String(futureDate.getMinutes()).padStart(2, '0');
+    
+    const defaultDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    
+    // تعيين الحد الأدنى والقيمة الافتراضية معاً
+    const deliveryTimeInput = document.getElementById('deliveryTime');
+    deliveryTimeInput.min = defaultDateTime;
+    deliveryTimeInput.value = defaultDateTime; // هذا السطر هو الحل السحري للموبايل
+    
+    document.getElementById('checkoutModal').classList.add('open');
+    toggleCart();
+};
 
         window.closeCheckout = function () { document.getElementById('checkoutModal').classList.remove('open'); };
 
