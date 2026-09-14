@@ -668,26 +668,22 @@
             }
         };
 
-       window.openCheckout = function () {
+      window.openCheckout = function () {
     if (cart.length === 0) return;
     
-    // حساب التاريخ والوقت بعد يومين (48 ساعة) من الآن
+    // حساب التاريخ بعد يومين (بداية اليوم فقط)
     const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 2); // إضافة يومين بالضبط
+    futureDate.setDate(futureDate.getDate() + 2);
     
-    // تنسيق التاريخ ليناسب حقل datetime-local (YYYY-MM-DDThh:mm)
+    // تنسيق التاريخ فقط (YYYY-MM-DD)
     const year = futureDate.getFullYear();
     const month = String(futureDate.getMonth() + 1).padStart(2, '0');
     const day = String(futureDate.getDate()).padStart(2, '0');
-    const hours = String(futureDate.getHours()).padStart(2, '0');
-    const minutes = String(futureDate.getMinutes()).padStart(2, '0');
+    const defaultDate = `${year}-${month}-${day}T00:00`;
     
-    const defaultDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-    
-    // تعيين الحد الأدنى والقيمة الافتراضية معاً
     const deliveryTimeInput = document.getElementById('deliveryTime');
-    deliveryTimeInput.min = defaultDateTime;
-    deliveryTimeInput.value = defaultDateTime; // هذا السطر هو الحل السحري للموبايل
+    deliveryTimeInput.min = defaultDate;
+    deliveryTimeInput.value = defaultDate;
     
     document.getElementById('checkoutModal').classList.add('open');
     toggleCart();
