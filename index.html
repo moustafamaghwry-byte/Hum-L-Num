@@ -795,14 +795,14 @@
                 }));
 
                 const order = {
-                    orderNumber, status: 'received', customerName: name,
-                    customerPhone: toIntlPhone(phoneRaw) ? phoneRaw.trim() : phoneRaw.trim(),
-                    customerAddress: address, payMethod: selectedPayMethod,
-                    deliveryTimeTarget: deliveryTime || '', note, items: orderItems,
-                    subtotal: totals.subtotal, deliveryFee: totals.deliveryFee, tax: totals.tax, total: totals.grandTotal,
-                    pricingStatus: cart.some(it => it.pendingPrice) ? 'requires_custom_item_confirmation' : 'confirmed',
-                    createdAt: serverTimestamp(), updatedAt: serverTimestamp()
-                };
+    orderNumber, status: 'received', customerName: name,
+    customerPhone: toIntlPhone(phoneRaw) ? phoneRaw.trim() : phoneRaw.trim(),
+    customerAddress: address, payMethod: selectedPayMethod,
+    deliveryTimeTarget: deliveryTime || '', note, items: orderItems,
+    subtotal: totals.subtotal, deliveryFee: totals.deliveryFee, tax: totals.tax, total: totals.grandTotal,
+    pricingStatus: cart.some(it => it.pendingPrice) ? 'requires_custom_item_confirmation' : 'confirmed',
+    createdAt: serverTimestamp(), updatedAt: serverTimestamp()
+};
 
                 const updates = {};
                 updates[`orders/${orderId}`] = order;
