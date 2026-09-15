@@ -435,7 +435,7 @@
                         <img src="logo.png" alt="هَمَّ النَّمَّ" class="footer-logo">
                         <div class="footer-brand-text" data-ar="هَمَّ النَّمَّ" data-en="Hum L Num">هَمَّ النَّمَّ</div>
                     </div>
-                    <p class="footer-desc" data-ar="طعم البيت، لحد باب بيتك 🏡<br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك" data-en="Home taste, delivered to your door <br>Fresh dishes prepared with love and care from our kitchen to your home">طعم البيت، لحد باب بيتك <br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك</p>
+                    <p class="footer-desc" data-ar="طعم البيت، لحد باب بيتك <br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك" data-en="Home taste, delivered to your door <br>Fresh dishes prepared with love and care from our kitchen to your home">طعم البيت، لحد باب بيتك <br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك</p>
                     <div class="footer-social">
                         <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="instagram"><i class="fab fa-instagram"></i></a>
@@ -492,7 +492,7 @@
     <div class="modal-overlay" id="customOrderModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title" data-ar="🎯 طلب خاص" data-en="🎯 Custom Order"> طلب خاص</h3>
+                <h3 class="modal-title" data-ar=" طلب خاص" data-en=" Custom Order"> طلب خاص</h3>
                 <button class="cart-close" onclick="closeCustomOrderModal()" style="background: rgba(255,255,255,0.2);"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
@@ -814,14 +814,14 @@
             if (!customerAddress) { errBox.textContent = v.address; return; }
 
             const lines = [
-                '🎯 *طلب خاص جديد من هَمَّ النَّمَّ*', '',
-                '🍽️ *الصنف المطلوب:*', '• ' + itemName,
+                ' *طلب خاص جديد من هَمَّ النَّمَّ*', '',
+                ' *الصنف المطلوب:*', '• ' + itemName,
                 ...(itemNotes ? ['', '📝 *ملاحظات:*', itemNotes] : []),
                 '', '━━━━━━━━━━━━━━━━',
-                '👤 *الاسم:* ' + customerName,
-                '📱 *الموبايل:* ' + customerPhone,
-                '📍 *العنوان:* ' + customerAddress,
-                '', '⏰ *التاريخ:* ' + new Date().toLocaleString('ar-EG'),
+                ' *الاسم:* ' + customerName,
+                ' *الموبايل:* ' + customerPhone,
+                ' *العنوان:* ' + customerAddress,
+                '', ' *التاريخ:* ' + new Date().toLocaleString('ar-EG'),
                 '', '_*يرجى التواصل لتأكيد السعر والتفاصيل*_ '
             ];
 
