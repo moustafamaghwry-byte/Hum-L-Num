@@ -24,23 +24,28 @@
         .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--gray-200); transition: var(--transition); }
         .navbar.scrolled { box-shadow: var(--shadow-md); }
         .navbar-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 72px; }
-        .navbar-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .navbar-logo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
-        .navbar-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .navbar-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; min-width: 0; flex: 1; }
+        .navbar-logo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); flex-shrink: 0; }
+        .navbar-title-wrap { min-width: 0; overflow: hidden; }
+        .navbar-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .navbar-title span { color: var(--accent-dark); font-weight: 400; font-size: 0.85rem; display: block; margin-top: -4px; }
         .navbar-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
         .navbar-menu a { text-decoration: none; color: var(--gray-700); font-weight: 500; font-size: 0.95rem; transition: var(--transition); }
         .navbar-menu a:hover { color: var(--primary); }
-        .navbar-actions { display: flex; align-items: center; gap: 1rem; }
+        .navbar-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem; text-decoration: none; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; }
         .btn-primary { background: var(--primary); color: var(--white); }
+            }
         .btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
         .btn-outline:hover { background: var(--primary); color: var(--white); }
+        .btn-ghost { background: transparent; color: var(--gray-700); }
+        .btn-ghost:hover { background: var(--gray-100); }
         .cart-btn { position: relative; width: 44px; height: 44px; border-radius: 50%; background: var(--gray-100); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
         .cart-btn:hover { background: var(--gray-200); }
         .cart-badge { position: absolute; top: -4px; left: -4px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--white); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
-        .lang-switch { padding: 6px 12px; border-radius: var(--radius-sm); background: var(--gray-100); color: var(--gray-700); font-weight: 600; font-size: 0.85rem; cursor: pointer; border: none; }
+        .lang-switch { padding: 6px 14px; border-radius: var(--radius-sm); background: var(--gray-100); color: var(--gray-700); font-weight: 700; font-size: 0.85rem; cursor: pointer; border: 2px solid transparent; transition: var(--transition); }
+        .lang-switch:hover { background: var(--primary); color: var(--white); }
 
         .hero { min-height: 100vh; display: flex; align-items: center; padding-top: 72px; background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%); position: relative; overflow: hidden; }
         .hero-container { max-width: 1400px; margin: 0 auto; padding: 4rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; z-index: 1; }
@@ -169,11 +174,21 @@
         }
         @media (max-width: 768px) {
             .navbar-menu { display: none; }
+            .navbar-container { padding: 0 1rem; height: 64px; }
+            .navbar-logo { width: 40px; height: 40px; }
+            .navbar-title { font-size: 1.1rem; }
+            .navbar-title span { display: none; }
             .hero-title { font-size: 2rem; }
             .footer-grid { grid-template-columns: 1fr; }
             .cart-sidebar { width: 100%; left: -100%; }
             .payment-options { grid-template-columns: 1fr; }
             .footer-social a { width: 45px; height: 45px; font-size: 1.3rem; }
+            .btn-primary.nav-order-btn span { display: none; }
+        }
+        @media (max-width: 400px) {
+            .navbar-title { font-size: 1rem; }
+            .navbar-actions { gap: 0.5rem; }
+            .cart-btn { width: 38px; height: 38px; }
         }
     </style>
 </head>
@@ -182,20 +197,27 @@
         <div class="navbar-container">
             <a href="#" class="navbar-brand">
                 <img src="logo.png" alt="هَمَّ النَّمَّ" class="navbar-logo">
-                <div class="navbar-title">هَمَّ النَّمَّ <span>Hum L Num</span></div>
+                <div class="navbar-title-wrap">
+                    <div class="navbar-title">
+                        <span data-ar="هَمَّ النَّمَّ" data-en="Hum L Num">هَمَّ النَّمَّ</span>
+                    </div>
+                </div>
             </a>
             <ul class="navbar-menu">
-                <li><a href="#home">الرئيسية</a></li>
-                <li><a href="#menu">المنيو</a></li>
-                <li><a href="#contact">تواصل معنا</a></li>
+                <li><a href="#home" data-ar="الرئيسية" data-en="Home">الرئيسية</a></li>
+                <li><a href="#menu" data-ar="المنيو" data-en="Menu">المنيو</a></li>
+                <li><a href="#contact" data-ar="تواصل معنا" data-en="Contact">تواصل معنا</a></li>
             </ul>
             <div class="navbar-actions">
-                <button class="lang-switch" onclick="toggleLanguage()">EN</button>
+                <button class="lang-switch" onclick="toggleLanguage()" id="langSwitch">EN</button>
                 <div class="cart-btn" onclick="toggleCart()">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="cart-badge" id="cartCount">0</span>
                 </div>
-                <a href="#menu" class="btn btn-primary"><i class="fas fa-utensils"></i> اطلب الآن</a>
+                <a href="#menu" class="btn btn-primary nav-order-btn">
+                    <i class="fas fa-utensils"></i> 
+                    <span data-ar="اطلب الآن" data-en="Order Now">اطلب الآن</span>
+                </a>
             </div>
         </div>
     </nav>
@@ -203,17 +225,21 @@
     <section class="hero" id="home">
         <div class="hero-container">
             <div class="hero-content">
-                <div class="hero-badge"><i class="fas fa-star"></i> <span>طعم البيت يوصل إلى الملوك</span></div>
-                <h1 class="hero-title">أطباق طازة من <span class="highlight">مطبخنا</span> لبيتك</h1>
-                <p class="hero-subtitle">أطباق بتتعمل بالطلب بمكونات طازة، من مطبخي لبيتك. اختار طبقك، اكتب ملاحظاتك، وإحنا نتكفل بالباقي.</p>
+                <div class="hero-badge"><i class="fas fa-star"></i> <span data-ar="طعم البيت يوصل إلى الملوك" data-en="Home taste delivered to kings">طعم البيت يوصل إلى الملوك</span></div>
+                <h1 class="hero-title">
+                    <span data-ar="أطباق طازة من" data-en="Fresh dishes from">أطباق طازة من</span> 
+                    <span class="highlight" data-ar="مطبخنا" data-en="our kitchen">مطبخنا</span> 
+                    <span data-ar="لبيتك" data-en="to your home">لبيتك</span>
+                </h1>
+                <p class="hero-subtitle" data-ar="أطباق بتتعمل بالطلب بمكونات طازة، من مطبخي لبيتك. اختار طبقك، اكتب ملاحظاتك، وإحنا نتكفل بالباقي." data-en="Made-to-order dishes with fresh ingredients, from my kitchen to your home.">أطباق بتتعمل بالطلب بمكونات طازة، من مطبخي لبيتك. اختار طبقك، اكتب ملاحظاتك، وإحنا نتكفل بالباقي.</p>
                 <div class="hero-actions">
-                    <a href="#menu" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> اطلب دلوقتي</a>
-                    <button class="btn btn-outline" onclick="openCustomOrderModal()"><i class="fas fa-magic"></i> طلب خاص</button>
+                    <a href="#menu" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> <span data-ar="اطلب دلوقتي" data-en="Order Now">اطلب دلوقتي</span></a>
+                    <button class="btn btn-outline" onclick="openCustomOrderModal()"><i class="fas fa-magic"></i> <span data-ar="طلب خاص" data-en="Custom Order">طلب خاص</span></button>
                 </div>
                 <div class="hero-stats">
-                    <div class="stat-item"><div class="stat-number" id="statOrders">0+</div><div class="stat-label">طلب سعيد</div></div>
-                    <div class="stat-item"><div class="stat-number" id="statItems">0+</div><div class="stat-label">صنف متنوع</div></div>
-                    <div class="stat-item"><div class="stat-number">4.9</div><div class="stat-label">تقييم العملاء</div></div>
+                    <div class="stat-item"><div class="stat-number" id="statOrders">0+</div><div class="stat-label" data-ar="طلب سعيد" data-en="Happy Orders">طلب سعيد</div></div>
+                    <div class="stat-item"><div class="stat-number" id="statItems">0+</div><div class="stat-label" data-ar="صنف متنوع" data-en="Diverse Items">صنف متنوع</div></div>
+                    <div class="stat-item"><div class="stat-number">4.9</div><div class="stat-label" data-ar="تقييم العملاء" data-en="Customer Rating">تقييم العملاء</div></div>
                 </div>
             </div>
             <div class="hero-visual">
@@ -228,16 +254,16 @@
     <section class="menu" id="menu">
         <div class="menu-container">
             <div class="section-header">
-                <div class="section-tag">المنيو</div>
-                <h2 class="section-title">أطباقنا المميزة</h2>
-                <p class="section-subtitle">اختر من تشكيلتنا المتنوعة من الأطباق اللذيذة</p>
+                <div class="section-tag" data-ar="المنيو" data-en="Menu">المنيو</div>
+                <h2 class="section-title" data-ar="أطباقنا المميزة" data-en="Our Special Dishes">أطباقنا المميزة</h2>
+                <p class="section-subtitle" data-ar="اختر من تشكيلتنا المتنوعة من الأطباق اللذيذة" data-en="Choose from our diverse selection of delicious dishes">اختر من تشكيلتنا المتنوعة من الأطباق اللذيذة</p>
             </div>
             <div class="menu-tabs">
-                <button class="menu-tab active" data-category="all">الكل</button>
-                <button class="menu-tab" data-category="appetizers">مقبلات</button>
-                <button class="menu-tab" data-category="mains">أطباق رئيسية</button>
-                <button class="menu-tab" data-category="desserts">حلويات</button>
-                <button class="menu-tab" data-category="drinks">مشروبات</button>
+                <button class="menu-tab active" data-category="all" data-ar="الكل" data-en="All">الكل</button>
+                <button class="menu-tab" data-category="appetizers" data-ar="مقبلات" data-en="Appetizers">مقبلات</button>
+                <button class="menu-tab" data-category="mains" data-ar="أطباق رئيسية" data-en="Main Dishes">أطباق رئيسية</button>
+                <button class="menu-tab" data-category="desserts" data-ar="حلويات" data-en="Desserts">حلويات</button>
+                <button class="menu-tab" data-category="drinks" data-ar="مشروبات" data-en="Drinks">مشروبات</button>
             </div>
             <div class="menu-grid" id="menuGrid"></div>
         </div>
@@ -249,9 +275,11 @@
                 <div>
                     <div class="footer-brand">
                         <img src="logo.png" alt="هَمَّ النَّمَّ" class="footer-logo">
-                        <div class="footer-brand-text">هَمَّ النَّمَّ <span>Hum L Num</span></div>
+                        <div class="footer-brand-text">
+                            <span data-ar="هَمَّ النَّمَّ" data-en="Hum L Num">هَمَّ النَّمَّ</span>
+                        </div>
                     </div>
-                    <p class="footer-desc">طعم البيت، لحد باب بيتك 🏡</p>
+                    <p class="footer-desc" data-ar="طعم البيت، لحد باب بيتك 🏡" data-en="Home taste, delivered to your door 🏡">طعم البيت، لحد باب بيتك 🏡</p>
                     <div class="footer-social">
                         <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="instagram"><i class="fab fa-instagram"></i></a>
@@ -259,167 +287,166 @@
                     </div>
                 </div>
                 <div>
-                    <h4 class="footer-title">روابط سريعة</h4>
+                    <h4 class="footer-title" data-ar="روابط سريعة" data-en="Quick Links">روابط سريعة</h4>
                     <ul class="footer-links">
-                        <li><a href="#home">الرئيسية</a></li>
-                        <li><a href="#menu">المنيو</a></li>
-                        <li><a href="tracking.html">تتبع الطلب</a></li>
+                        <li><a href="#home" data-ar="الرئيسية" data-en="Home">الرئيسية</a></li>
+                        <li><a href="#menu" data-ar="المنيو" data-en="Menu">المنيو</a></li>
+                        <li><a href="tracking.html" data-ar="تتبع الطلب" data-en="Track Order">تتبع الطلب</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="footer-title">تواصل معنا</h4>
+                    <h4 class="footer-title" data-ar="تواصل معنا" data-en="Contact Us">تواصل معنا</h4>
                     <ul class="footer-links">
                         <li><i class="fas fa-phone"></i> +20 115 889 9779</li>
-                        <li><i class="fas fa-map-marker-alt"></i> القاهرة، مصر</li>
+                        <li><i class="fas fa-map-marker-alt"></i> <span data-ar="القاهرة، مصر" data-en="Cairo, Egypt">القاهرة، مصر</span></li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom"><p>© 2026 هَمَّ النَّمَّ - Hum L Num. جميع الحقوق محفوظة.</p></div>
+            <div class="footer-bottom">
+                <p>© 2026 <span data-ar="هَمَّ النَّمَّ" data-en="Hum L Num">هَمَّ النَّمَّ</span>. <span data-ar="جميع الحقوق محفوظة." data-en="All rights reserved.">جميع الحقوق محفوظة.</span></p>
+            </div>
         </div>
     </footer>
 
     <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
-            <h3 class="cart-title"><i class="fas fa-shopping-bag"></i> سلة الطلبات</h3>
+            <h3 class="cart-title"><i class="fas fa-shopping-bag"></i> <span data-ar="سلة الطلبات" data-en="Shopping Cart">سلة الطلبات</span></h3>
             <button class="cart-close" onclick="toggleCart()"><i class="fas fa-times"></i></button>
         </div>
         <div class="cart-body" id="cartBody">
-            <div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>السلة فارغة</p></div>
+            <div class="cart-empty"><i class="fas fa-shopping-bag"></i><p data-ar="السلة فارغة" data-en="Cart is empty">السلة فارغة</p></div>
         </div>
         <div class="cart-footer">
-            <div class="cart-total"><span>الإجمالي الفرعي</span><span id="subtotal">0.00 ج.م</span></div>
-            <div class="cart-total"><span>رسوم التوصيل</span><span id="deliveryFee">0.00 ج.م</span></div>
-            <div class="cart-total grand"><span>الإجمالي الكلي</span><span id="grandTotal">0.00 ج.م</span></div>
+            <div class="cart-total"><span data-ar="الإجمالي الفرعي" data-en="Subtotal">الإجمالي الفرعي</span><span id="subtotal">0.00 ج.م</span></div>
+            <div class="cart-total"><span data-ar="رسوم التوصيل" data-en="Delivery Fee">رسوم التوصيل</span><span id="deliveryFee">0.00 ج.م</span></div>
+            <div class="cart-total grand"><span data-ar="الإجمالي الكلي" data-en="Grand Total">الإجمالي الكلي</span><span id="grandTotal">0.00 ج.م</span></div>
             <div id="minOrderWarning" class="min-order-warning" style="display: none;">
                 <i class="fas fa-exclamation-circle"></i>
                 <span id="minOrderText">الحد الأدنى للطلب 150 ج.م</span>
                 <span class="remaining" id="remainingAmount"></span>
             </div>
             <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled>
-                <i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب
+                <i class="fas fa-check-circle"></i> <span data-ar="تأكيد وإرسال الطلب" data-en="Confirm & Send Order">تأكيد وإرسال الطلب</span>
             </button>
         </div>
     </div>
 
-    <!-- Custom Order Modal -->
     <div class="modal-overlay" id="customOrderModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title">🎯 طلب خاص</h3>
+                <h3 class="modal-title" data-ar="🎯 طلب خاص" data-en="🎯 Custom Order">🎯 طلب خاص</h3>
                 <button class="cart-close" onclick="closeCustomOrderModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="custom-order-section">
-                    <div class="custom-order-section-title"><i class="fas fa-utensils"></i> تفاصيل الصنف</div>
+                    <div class="custom-order-section-title"><i class="fas fa-utensils"></i> <span data-ar="تفاصيل الصنف" data-en="Item Details">تفاصيل الصنف</span></div>
                     <div class="form-group">
-                        <label class="form-label">اسم الصنف المطلوب *</label>
-                        <input type="text" class="form-input" id="customItemName" placeholder="مثال: كشري باللحمة زيادة">
+                        <label class="form-label" data-ar="اسم الصنف المطلوب *" data-en="Item Name *">اسم الصنف المطلوب *</label>
+                        <input type="text" class="form-input" id="customItemName" data-ar-placeholder="مثال: كشري باللحمة زيادة" data-en-placeholder="Example: Koshary with extra meat" placeholder="مثال: كشري باللحمة زيادة">
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label">ملاحظات إضافية (اختياري)</label>
-                        <textarea class="form-input form-textarea" id="customItemNotes" placeholder="مثال: من غير بصل، حراق زيادة..."></textarea>
+                        <label class="form-label" data-ar="ملاحظات إضافية (اختياري)" data-en="Additional Notes (Optional)">ملاحظات إضافية (اختياري)</label>
+                        <textarea class="form-input form-textarea" id="customItemNotes" data-ar-placeholder="مثال: من غير بصل، حراق زيادة..." data-en-placeholder="Example: No onions, extra spicy..." placeholder="مثال: من غير بصل، حراق زيادة..."></textarea>
                     </div>
                 </div>
                 <div class="custom-order-section">
-                    <div class="custom-order-section-title"><i class="fas fa-user"></i> بيانات التواصل</div>
+                    <div class="custom-order-section-title"><i class="fas fa-user"></i> <span data-ar="بيانات التواصل" data-en="Contact Info">بيانات التواصل</span></div>
                     <div class="form-group">
-                        <label class="form-label">الاسم *</label>
-                        <input type="text" class="form-input" id="customName" placeholder="اسمك الكامل">
+                        <label class="form-label" data-ar="الاسم *" data-en="Name *">الاسم *</label>
+                        <input type="text" class="form-input" id="customName" data-ar-placeholder="اسمك الكامل" data-en-placeholder="Your full name" placeholder="اسمك الكامل">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">رقم الموبايل *</label>
+                        <label class="form-label" data-ar="رقم الموبايل *" data-en="Phone Number *">رقم الموبايل *</label>
                         <input type="tel" class="form-input" id="customPhone" placeholder="01xxxxxxxxx">
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label">العنوان *</label>
-                        <textarea class="form-input form-textarea" id="customAddress" placeholder="العنوان بالتفصيل" style="min-height: 60px;"></textarea>
+                        <label class="form-label" data-ar="العنوان *" data-en="Address *">العنوان *</label>
+                        <textarea class="form-input form-textarea" id="customAddress" data-ar-placeholder="العنوان بالتفصيل" data-en-placeholder="Detailed address" placeholder="العنوان بالتفصيل" style="min-height: 60px;"></textarea>
                     </div>
                 </div>
                 <div class="custom-order-error" id="customError"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="closeCustomOrderModal()">إلغاء</button>
+                <button class="btn btn-ghost" onclick="closeCustomOrderModal()" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
                 <button class="btn btn-primary" style="background: var(--whatsapp);" onclick="sendCustomOrderToWhatsApp()">
-                    <i class="fab fa-whatsapp"></i> إرسال عبر واتساب
+                    <i class="fab fa-whatsapp"></i> <span data-ar="إرسال عبر واتساب" data-en="Send via WhatsApp">إرسال عبر واتساب</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Checkout Modal -->
     <div class="modal-overlay" id="checkoutModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title">إتمام الطلب</h3>
+                <h3 class="modal-title" data-ar="إتمام الطلب" data-en="Complete Order">إتمام الطلب</h3>
                 <button class="cart-close" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">تاريخ ووقت الاستلام <span style="color:var(--danger); font-size:0.75rem;">(بعد يومين على الأقل)</span></label>
+                    <label class="form-label" data-ar="تاريخ ووقت الاستلام" data-en="Delivery Date & Time">تاريخ ووقت الاستلام <span style="color:var(--danger); font-size:0.75rem;" data-ar="(بعد يومين على الأقل)" data-en="(at least 2 days ahead)">(بعد يومين على الأقل)</span></label>
                     <input type="datetime-local" class="form-input" id="deliveryTime">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">ملاحظة على الطلب (اختياري)</label>
-                    <textarea class="form-input form-textarea" id="orderNote" placeholder="أي ملاحظات..."></textarea>
+                    <label class="form-label" data-ar="ملاحظة على الطلب (اختياري)" data-en="Order Note (Optional)">ملاحظة على الطلب (اختياري)</label>
+                    <textarea class="form-input form-textarea" id="orderNote" data-ar-placeholder="أي ملاحظات..." data-en-placeholder="Any notes..." placeholder="أي ملاحظات..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">الاسم *</label>
-                    <input type="text" class="form-input" id="customerName" placeholder="اسمك الكامل">
+                    <label class="form-label" data-ar="الاسم *" data-en="Name *">الاسم *</label>
+                    <input type="text" class="form-input" id="customerName" data-ar-placeholder="اسمك الكامل" data-en-placeholder="Your full name" placeholder="اسمك الكامل">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">رقم الموبايل *</label>
+                    <label class="form-label" data-ar="رقم الموبايل *" data-en="Phone Number *">رقم الموبايل *</label>
                     <input type="tel" class="form-input" id="customerPhone" placeholder="01xxxxxxxxx">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">العنوان بالتفصيل *</label>
-                    <input type="text" class="form-input" id="customerAddress" placeholder="العنوان بالتفصيل">
+                    <label class="form-label" data-ar="العنوان بالتفصيل *" data-en="Detailed Address *">العنوان بالتفصيل *</label>
+                    <input type="text" class="form-input" id="customerAddress" data-ar-placeholder="العنوان بالتفصيل" data-en-placeholder="Detailed address" placeholder="العنوان بالتفصيل">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">طريقة الدفع</label>
+                    <label class="form-label" data-ar="طريقة الدفع" data-en="Payment Method">طريقة الدفع</label>
                     <div class="payment-options">
                         <div class="payment-option selected" data-value="cash" onclick="selectPayment(this)">
                             <i class="fas fa-money-bill-wave"></i>
-                            <div class="payment-option-text">كاش</div>
+                            <div class="payment-option-text" data-ar="كاش" data-en="Cash">كاش</div>
                         </div>
                         <div class="payment-option" data-value="card" onclick="selectPayment(this)">
                             <i class="fas fa-credit-card"></i>
-                            <div class="payment-option-text">فيزا</div>
+                            <div class="payment-option-text" data-ar="فيزا" data-en="Card">فيزا</div>
                         </div>
                     </div>
                 </div>
                 <div id="checkoutError" style="color:var(--danger);font-size:.85rem;min-height:1em; font-weight:600;"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="closeCheckout()">إلغاء</button>
+                <button class="btn btn-ghost" onclick="closeCheckout()" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
                 <button class="btn btn-primary" id="submitOrderBtn" onclick="submitOrder()">
-                    <i class="fas fa-check"></i> <span id="submitOrderText">تأكيد الطلب</span>
+                    <i class="fas fa-check"></i> <span id="submitOrderText" data-ar="تأكيد الطلب" data-en="Confirm Order">تأكيد الطلب</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Success Modal -->
     <div class="modal-overlay" id="successModal">
         <div class="modal">
             <div class="success-content">
                 <div class="success-icon"><i class="fas fa-check"></i></div>
-                <h3 class="success-title">تم تأكيد طلبك بنجاح!</h3>
-                <p>احتفظ برقم الطلب لمتابعة حالته</p>
+                <h3 class="success-title" data-ar="تم تأكيد طلبك بنجاح!" data-en="Your order has been confirmed!">تم تأكيد طلبك بنجاح!</h3>
+                <p data-ar="احتفظ برقم الطلب لمتابعة حالته" data-en="Keep the order number to track its status">احتفظ برقم الطلب لمتابعة حالته</p>
                 <div class="success-order-number" id="orderNumber">#0000</div>
                 <div style="margin-top: 1.5rem;">
                     <a href="tracking.html" id="successTrackLink" class="btn btn-primary" target="_blank">
-                        <i class="fas fa-map-marker-alt"></i> تابع حالة طلبك
+                        <i class="fas fa-map-marker-alt"></i> <span data-ar="تابع حالة طلبك" data-en="Track Your Order">تابع حالة طلبك</span>
                     </a>
                 </div>
-                <button class="btn btn-ghost" style="margin-top: 1rem;" onclick="closeSuccess()">إغلاق</button>
+                <button class="btn btn-ghost" style="margin-top: 1rem;" onclick="closeSuccess()" data-ar="إغلاق" data-en="Close">إغلاق</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, onValue, push, update, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, onValue, push, update, runTransaction, serverTimestamp, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA8h_w_JvoPV1PA5QFHJg_nAInFLCSEw9Y",
@@ -436,50 +463,105 @@
 
         const CONFIG = {
             businessNameAr: "هَمَّ النَّمَّ",
+            businessNameEn: "Hum L Num",
             whatsappNumber: "201158899779",
             deliveryFee: 30,
-            minOrderLimit: 150
+            minOrderLimit: 150,
+            currencyAr: "ج.م",
+            currencyEn: "EGP"
         };
 
         let MENU = [];
         let cart = [];
         let currentCategory = 'all';
         let orderSubmitting = false;
+        let currentLang = 'ar';
+
+        // ===== اختبار اتصال Firebase =====
+        async function testFirebaseConnection() {
+            try {
+                console.log('🔍 Testing Firebase connection...');
+                const snapshot = await get(ref(db, 'menu'));
+                console.log('✅ Firebase connection OK - Menu loaded:', snapshot.exists());
+                return true;
+            } catch (error) {
+                console.error('❌ Firebase connection FAILED:', error);
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
+                return false;
+            }
+        }
+
+        // ===== LANGUAGE SYSTEM =====
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            applyLanguage();
+        };
+
+        function applyLanguage() {
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('langSwitch').textContent = currentLang === 'ar' ? 'EN' : 'عربي';
+            
+            document.querySelectorAll('[data-ar][data-en]').forEach(el => {
+                const text = el.getAttribute(`data-${currentLang}`);
+                if (text !== null && el.children.length === 0) {
+                    el.textContent = text;
+                }
+            });
+            
+            document.querySelectorAll('[data-ar-placeholder][data-en-placeholder]').forEach(el => {
+                el.placeholder = el.getAttribute(`data-${currentLang}-placeholder`);
+            });
+            
+            renderMenu();
+            updateCart();
+            updateTotals();
+        }
 
         onValue(ref(db, 'menu'), (snapshot) => {
             const data = snapshot.val() || {};
             MENU = Object.entries(data).map(([id, item]) => ({ id, ...item })).filter(item => item.available !== false);
             document.getElementById('statItems').textContent = MENU.length + '+';
             renderMenu();
+        }, (error) => {
+            console.error('❌ Menu loading error:', error);
         });
 
         onValue(ref(db, 'orders'), (snapshot) => {
             document.getElementById('statOrders').textContent = (snapshot.size || 0) + '+';
         });
 
-        window.toggleLanguage = function() {};
-
         function cleanText(value, maxLength = 500) {
             return String(value ?? '').trim().slice(0, maxLength);
+        }
+
+        function getItemName(item) {
+            return currentLang === 'ar' ? (item.ar || item.name) : (item.en || item.name || item.ar);
+        }
+
+        function getCurrency() {
+            return currentLang === 'ar' ? CONFIG.currencyAr : CONFIG.currencyEn;
         }
 
         function renderMenu() {
             const grid = document.getElementById('menuGrid');
             const filtered = currentCategory === 'all' ? MENU : MENU.filter(item => (item.cat || item.category) === currentCategory);
             if (filtered.length === 0) {
-                grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem;">مفيش أصناف في القسم ده دلوقتي</p>`;
+                grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--gray-500);padding:2rem;">${currentLang === 'ar' ? 'مفيش أصناف في القسم ده دلوقتي' : 'No items in this category right now'}</p>`;
                 return;
             }
             grid.innerHTML = filtered.map(item => {
-                const name = item.ar || item.name;
+                const name = getItemName(item);
                 const price = item.price || 0;
+                const currency = getCurrency();
                 return `
                 <div class="menu-item">
                     <div class="menu-item-image">${item.image ? `<img src="${item.image}" alt="${name}">` : '<i class="fas fa-utensils"></i>'}</div>
                     <div class="menu-item-content">
                         <h3 class="menu-item-title">${name}</h3>
                         <div class="menu-item-footer">
-                            <div class="menu-item-price">${price} <span>ج.م</span></div>
+                            <div class="menu-item-price">${price} <span>${currency}</span></div>
                             <button class="add-to-cart" onclick="addToCart('${item.id}')"><i class="fas fa-plus"></i></button>
                         </div>
                     </div>
@@ -537,10 +619,16 @@
             const customerPhone = cleanText(document.getElementById('customPhone').value, 20);
             const customerAddress = cleanText(document.getElementById('customAddress').value, 500);
 
-            if (!itemName) { errBox.textContent = 'من فضلك اكتب اسم الصنف'; return; }
-            if (!customerName) { errBox.textContent = 'من فضلك اكتب اسمك'; return; }
-            if (!isValidEgyptianPhone(customerPhone)) { errBox.textContent = 'رقم موبايل غير صحيح'; return; }
-            if (!customerAddress) { errBox.textContent = 'من فضلك اكتب عنوانك'; return; }
+            const validations = {
+                ar: { item: 'من فضلك اكتب اسم الصنف', name: 'من فضلك اكتب اسمك', phone: 'رقم موبايل غير صحيح', address: 'من فضلك اكتب عنوانك' },
+                en: { item: 'Please enter item name', name: 'Please enter your name', phone: 'Invalid phone number', address: 'Please enter your address' }
+            };
+            const v = validations[currentLang];
+
+            if (!itemName) { errBox.textContent = v.item; return; }
+            if (!customerName) { errBox.textContent = v.name; return; }
+            if (!isValidEgyptianPhone(customerPhone)) { errBox.textContent = v.phone; return; }
+            if (!customerAddress) { errBox.textContent = v.address; return; }
 
             const lines = [
                 '🎯 *طلب خاص جديد من هَمَّ النَّمَّ*', '',
@@ -567,17 +655,20 @@
         function updateCart() {
             const cartBody = document.getElementById('cartBody');
             document.getElementById('cartCount').textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+            const currency = getCurrency();
 
             if (cart.length === 0) {
-                cartBody.innerHTML = `<div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>السلة فارغة</p></div>`;
+                cartBody.innerHTML = `<div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>${currentLang === 'ar' ? 'السلة فارغة' : 'Cart is empty'}</p></div>`;
             } else {
                 cartBody.innerHTML = cart.map((item, idx) => `
                     <div class="cart-item">
                         <div class="cart-item-image"><i class="fas fa-utensils" style="font-size: 2rem; color: var(--gray-400);"></i></div>
                         <div class="cart-item-content">
-                            <div class="cart-item-title">${item.ar}</div>
+                            <div class="cart-item-title">${currentLang === 'ar' ? item.ar : (item.en || item.ar)}</div>
                             <div class="cart-item-price" style="color: ${item.pendingPrice ? 'var(--warning)' : 'var(--accent-dark)'};">
-                                ${item.pendingPrice ? '⏳ هيتم تحديد السعر' : `${item.price} ج.م`}
+                                ${item.pendingPrice 
+                                    ? (currentLang === 'ar' ? '⏳ هيتم تحديد السعر' : '⏳ Price TBD') 
+                                    : `${item.price} ${currency}`}
                             </div>
                             ${item.notes ? `<small style="color: var(--gray-500); font-size: 0.75rem; display: block; margin-top: 4px;">📝 ${item.notes}</small>` : ''}
                             <div class="cart-item-qty">
@@ -599,27 +690,30 @@
 
         function updateTotals() {
             const { subtotal, deliveryFee, grandTotal } = computeTotals();
-            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' ج.م';
-            document.getElementById('deliveryFee').textContent = deliveryFee.toFixed(2) + ' ج.م';
-            document.getElementById('grandTotal').textContent = grandTotal.toFixed(2) + ' ج.م';
+            const currency = getCurrency();
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' ' + currency;
+            document.getElementById('deliveryFee').textContent = deliveryFee.toFixed(2) + ' ' + currency;
+            document.getElementById('grandTotal').textContent = grandTotal.toFixed(2) + ' ' + currency;
 
             const checkoutBtn = document.getElementById('checkoutBtn');
             const warningEl = document.getElementById('minOrderWarning');
 
             if (cart.length === 0) {
                 checkoutBtn.disabled = true;
-                checkoutBtn.innerHTML = '<i class="fas fa-shopping-bag"></i> السلة فارغة';
+                checkoutBtn.innerHTML = `<i class="fas fa-shopping-bag"></i> <span>${currentLang === 'ar' ? 'السلة فارغة' : 'Cart is empty'}</span>`;
                 warningEl.style.display = 'none';
             } else if (subtotal < CONFIG.minOrderLimit) {
                 const remaining = CONFIG.minOrderLimit - subtotal;
                 checkoutBtn.disabled = true;
-                checkoutBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> الحد الأدنى ${CONFIG.minOrderLimit} ج.م`;
+                checkoutBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span>${currentLang === 'ar' ? `الحد الأدنى ${CONFIG.minOrderLimit} ج.م` : `Min. ${CONFIG.minOrderLimit} EGP`}</span>`;
                 warningEl.style.display = 'flex';
-                document.getElementById('minOrderText').textContent = 'الحد الأدنى للطلب 150 ج.م';
-                document.getElementById('remainingAmount').textContent = `ضيف ${remaining.toFixed(2)} ج.م علشان توصل للحد الأدنى`;
+                document.getElementById('minOrderText').textContent = currentLang === 'ar' ? 'الحد الأدنى للطلب 150 ج.م' : 'Minimum order is 150 EGP';
+                document.getElementById('remainingAmount').textContent = currentLang === 'ar' 
+                    ? `ضيف ${remaining.toFixed(2)} ج.م علشان توصل للحد الأدنى` 
+                    : `Add ${remaining.toFixed(2)} EGP to reach minimum`;
             } else {
                 checkoutBtn.disabled = false;
-                checkoutBtn.innerHTML = '<i class="fas fa-check-circle"></i> تأكيد وإرسال الطلب';
+                checkoutBtn.innerHTML = `<i class="fas fa-check-circle"></i> <span>${currentLang === 'ar' ? 'تأكيد وإرسال الطلب' : 'Confirm & Send Order'}</span>`;
                 warningEl.style.display = 'none';
             }
         }
@@ -664,21 +758,39 @@
             const errBox = document.getElementById('checkoutError');
             errBox.textContent = '';
 
+            // 🔍 اختبار الاتصال قبل الحفظ
+            const isConnected = await testFirebaseConnection();
+            if (!isConnected) {
+                errBox.textContent = currentLang === 'ar' 
+                    ? '⚠️ مشكلة في الاتصال بقاعدة البيانات. تأكد من إعدادات Firebase.' 
+                    : '⚠️ Database connection issue. Please check Firebase settings.';
+                return;
+            }
+            
             const name = cleanText(document.getElementById('customerName').value, 100);
             const phoneRaw = document.getElementById('customerPhone').value;
             const address = cleanText(document.getElementById('customerAddress').value, 500);
             const note = cleanText(document.getElementById('orderNote').value, 1000);
             const deliveryTime = document.getElementById('deliveryTime').value;
 
+            const errorMsg = currentLang === 'ar' 
+                ? 'من فضلك راجع البيانات المطلوبة (الاسم، الموبايل، العنوان)' 
+                : 'Please check required fields (name, phone, address)';
+
             if (!name || !isValidEgyptianPhone(phoneRaw) || !address) {
-                errBox.textContent = 'من فضلك راجع البيانات المطلوبة (الاسم، الموبايل، العنوان)';
+                errBox.textContent = errorMsg;
                 return;
             }
-            if (cart.length === 0) { errBox.textContent = 'السلة فارغة'; return; }
+            if (cart.length === 0) { 
+                errBox.textContent = currentLang === 'ar' ? 'السلة فارغة' : 'Cart is empty'; 
+                return; 
+            }
 
             const totals = computeTotals();
             if (totals.subtotal < CONFIG.minOrderLimit) {
-                errBox.textContent = `الحد الأدنى للطلب هو ${CONFIG.minOrderLimit} ج.م.`;
+                errBox.textContent = currentLang === 'ar' 
+                    ? `الحد الأدنى للطلب هو ${CONFIG.minOrderLimit} ج.م.` 
+                    : `Minimum order is ${CONFIG.minOrderLimit} EGP`;
                 return;
             }
 
@@ -689,7 +801,9 @@
                 minDate.setHours(0, 0, 0, 0);
                 selectedDate.setHours(0, 0, 0, 0);
                 if (selectedDate < minDate) {
-                    errBox.textContent = 'يجب أن يكون موعد الاستلام بعد يومين على الأقل.';
+                    errBox.textContent = currentLang === 'ar' 
+                        ? 'يجب أن يكون موعد الاستلام بعد يومين على الأقل.' 
+                        : 'Delivery must be at least 2 days from now.';
                     return;
                 }
             }
@@ -697,16 +811,21 @@
             orderSubmitting = true;
             const submitBtn = document.getElementById('submitOrderBtn');
             submitBtn.disabled = true;
-            document.getElementById('submitOrderText').textContent = 'جاري الإرسال...';
+            document.getElementById('submitOrderText').textContent = currentLang === 'ar' ? 'جاري الإرسال...' : 'Sending...';
 
             try {
+                console.log('📝 Starting order submission...');
+                
+                // توليد رقم الطلب
                 let orderNumber;
                 try {
                     const counterResult = await runTransaction(ref(db, 'counters/orderNumber'), current => {
                         return Number.isFinite(Number(current)) ? Number(current) + 1 : 1001;
                     });
                     orderNumber = counterResult.committed ? Number(counterResult.snapshot.val()) : 1000 + Math.floor(Math.random() * 9000);
-                } catch (e) {
+                    console.log('✅ Order number generated:', orderNumber);
+                } catch (counterError) {
+                    console.warn('⚠️ Counter transaction failed, using fallback:', counterError);
                     orderNumber = 1000 + Math.floor(Math.random() * 9000);
                 }
 
@@ -728,14 +847,57 @@
                     createdAt: serverTimestamp(), updatedAt: serverTimestamp()
                 };
 
-                await update(ref(db), {
-                    [`orders/${orderId}`]: order,
-                    [`orderLookup/${orderNumber}`]: orderId,
-                    [`userOrders/${guestId}/${orderId}`]: true
-                });
+                console.log('💾 Saving order to Firebase...', order);
+
+                // ✅ محاولة الحفظ بطريقة بسيطة ومباشرة
+                try {
+                    // أولاً: حفظ الطلب
+                    await set(ref(db, 'orders/' + orderId), order);
+                    console.log('✅ Order saved successfully');
+                    
+                    // ثانياً: حفظ رابط البحث
+                    try {
+                        await set(ref(db, 'orderLookup/' + orderNumber), orderId);
+                        console.log('✅ Lookup saved');
+                    } catch (lookupError) {
+                        console.warn('⚠️ Lookup save failed (non-critical):', lookupError);
+                    }
+                    
+                    // ثالثاً: حفظ فهرس المستخدم
+                    try {
+                        await set(ref(db, 'userOrders/' + guestId + '/' + orderId), true);
+                        console.log('✅ User order index saved');
+                    } catch (userOrderError) {
+                        console.warn('⚠️ User order index save failed (non-critical):', userOrderError);
+                    }
+                } catch (saveError) {
+                    console.error('❌ Save error:', saveError);
+                    console.error('Error code:', saveError.code);
+                    console.error('Error message:', saveError.message);
+                    
+                    // عرض رسالة الخطأ الحقيقية
+                    let errorMessage = currentLang === 'ar' 
+                        ? 'حصل خطأ أثناء حفظ الطلب. ' 
+                        : 'Error saving order. ';
+                    
+                    if (saveError.code === 'PERMISSION_DENIED') {
+                        errorMessage += currentLang === 'ar'
+                            ? '⚠️ مشكلة في الصلاحيات. تأكد من تحديث قواعد Firebase.'
+                            : '⚠️ Permission denied. Please update Firebase rules.';
+                    } else {
+                        errorMessage += saveError.message || '';
+                    }
+                    
+                    throw new Error(errorMessage);
+                }
 
                 const waMessage = `طلب جديد من ${CONFIG.businessNameAr}\nرقم الطلب: #${orderNumber}\nالإجمالي: ${totals.grandTotal.toFixed(2)} ج.م\nالاسم: ${name}\nالموبايل: ${phoneRaw}\nالعنوان: ${address}`;
-                window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(waMessage)}`, '_blank');
+                
+                try {
+                    window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(waMessage)}`, '_blank');
+                } catch (waError) {
+                    console.warn('⚠️ WhatsApp open failed:', waError);
+                }
 
                 document.getElementById('orderNumber').textContent = '#' + orderNumber;
                 document.getElementById('successTrackLink').href = `tracking.html?id=${encodeURIComponent(orderId)}`;
@@ -748,12 +910,14 @@
                 ['customerName', 'customerPhone', 'customerAddress', 'orderNote', 'deliveryTime'].forEach(id => document.getElementById(id).value = '');
 
             } catch (error) {
-                console.error('Order error:', error);
-                errBox.textContent = 'حصل خطأ أثناء حفظ الطلب. تأكد من اتصال الإنترنت.';
+                console.error('❌ Order submission failed:', error);
+                errBox.textContent = error.message || (currentLang === 'ar' 
+                    ? 'حصل خطأ أثناء حفظ الطلب. تأكد من اتصال الإنترنت.' 
+                    : 'Error saving order. Please check your internet connection.');
             } finally {
                 orderSubmitting = false;
                 submitBtn.disabled = false;
-                document.getElementById('submitOrderText').textContent = 'تأكيد الطلب';
+                document.getElementById('submitOrderText').textContent = currentLang === 'ar' ? 'تأكيد الطلب' : 'Confirm Order';
             }
         };
 
@@ -766,6 +930,11 @@
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
         });
+
+        applyLanguage();
+        
+        // اختبار الاتصال عند تحميل الصفحة
+        testFirebaseConnection();
     </script>
 </body>
 </html>
