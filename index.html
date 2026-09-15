@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> هَم النَّم | Hum L Num - طعم البيت لحد باب بيتك</title>
+    <title>هَم النَّم | Hum L Num - طعم البيت لحد باب بيتك</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -68,13 +68,12 @@
         .hero-container { max-width: 1400px; margin: 0 auto; padding: 4rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; z-index: 1; }
         .hero-content { animation: slideInRight 1s ease-out; }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-        .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(31, 77, 52, 0.1); color: var(--primary); border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem; }
-        .hero-badge i { color: var(--accent); }
+        
         .hero-title { font-size: 3.5rem; font-weight: 900; line-height: 1.2; color: var(--primary-dark); margin-bottom: 1.5rem; }
         .hero-title .highlight { color: var(--accent-dark); position: relative; }
         .hero-subtitle { font-size: 1.2rem; color: var(--gray-600); margin-bottom: 2rem; line-height: 1.8; }
-        .hero-actions { display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap; }
-        .hero-stats { display: flex; gap: 3rem; }
+        .hero-actions { display: flex; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap; justify-content: center; }
+        .hero-stats { display: flex; gap: 3rem; justify-content: center; }
         .stat-item { text-align: center; }
         .stat-number { font-size: 2rem; font-weight: 900; color: var(--primary); }
         .stat-label { font-size: 0.85rem; color: var(--gray-600); margin-top: 4px; }
@@ -84,6 +83,35 @@
         .hero-image-bg { position: absolute; inset: 0; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; animation: morph 8s ease-in-out infinite; }
         @keyframes morph { 0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; } 50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; } }
         .hero-logo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70%; height: 70%; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3)); }
+
+        /* ===== تصميم الـ Badge للمنيو ===== */
+        .menu-badge-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            width: 100%;
+            gap: 10px;
+        }
+        
+        .menu-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: transparent;
+            color: var(--primary-dark);
+            font-size: 1.05rem;
+            font-weight: 700;
+            position: relative;
+            white-space: nowrap;
+        }
+        
+        .menu-badge-decoration {
+            color: var(--primary);
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
 
         .menu { padding: 6rem 2rem; background: var(--gray-50); }
         .menu-container { max-width: 1400px; margin: 0 auto; }
@@ -192,7 +220,6 @@
         .form-input:focus { outline: none; border-color: var(--primary); background: var(--white); }
         .form-textarea { resize: vertical; min-height: 80px; }
         
-        /* ===== تصميم حقل التاريخ والوقت المحسن ===== */
         .datetime-wrapper {
             position: relative;
             background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
@@ -219,9 +246,7 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .datetime-wrapper input[type="datetime-local"]:focus {
-            outline: none;
-        }
+        .datetime-wrapper input[type="datetime-local"]:focus { outline: none; }
         .datetime-wrapper input[type="datetime-local"]::-webkit-calendar-picker-indicator {
             cursor: pointer;
             opacity: 0;
@@ -285,17 +310,14 @@
             .footer-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        /* ===== تصميم الموبايل: القائمة ظاهرة مباشرة ===== */
         @media (max-width: 768px) {
             .navbar-container { padding: 0 0.75rem; height: auto; min-height: 64px; flex-wrap: wrap; }
             .navbar-logo { width: 36px; height: 36px; }
             .navbar-title { font-size: 1rem; }
             .navbar-title .sub-title { display: none; }
             
-            /* إخفاء زر الهمبرغر */
             .mobile-menu-btn { display: none !important; }
             
-            /* إظهار القائمة مباشرة في البار */
             .navbar-menu {
                 display: flex !important;
                 position: static;
@@ -329,6 +351,8 @@
             .cart-badge { width: 20px; height: 20px; font-size: 0.65rem; }
             
             .hero-title { font-size: 2rem; }
+            .menu-badge { font-size: 0.95rem; padding: 6px 14px; }
+            .menu-badge-decoration { font-size: 1.1rem; }
             .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
             .cart-sidebar { width: 100%; left: -100%; }
             .payment-options { grid-template-columns: 1fr; }
@@ -342,6 +366,7 @@
             .hero-actions { flex-direction: column; align-items: center; }
             .hero-actions .btn { width: 100%; max-width: 280px; justify-content: center; }
             .navbar-menu a { font-size: 0.8rem; padding: 5px 10px; }
+            .menu-badge { font-size: 0.9rem; padding: 5px 12px; }
         }
     </style>
 </head>
@@ -349,16 +374,15 @@
     <nav class="navbar" id="navbar">
         <div class="navbar-container">
             <a href="index.html" class="navbar-brand">
-                <img src="logo.png" alt="هَمَّ النَّمَّ" class="navbar-logo">
+                <img src="logo.png" alt="هَم النَّم" class="navbar-logo">
                 <div class="navbar-title-wrap">
                     <div class="navbar-title">
-                        هَمَّ النَّمَّ
+                        هَم النَّم
                         <span class="sub-title" data-ar="Hum L Num" data-en="Hum L Num">Hum L Num</span>
                     </div>
                 </div>
             </a>
 
-            <!-- زر القائمة للموبايل (مخفي الآن) -->
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="القائمة" style="display: none;">
                 <i class="fas fa-bars"></i>
             </button>
@@ -383,7 +407,6 @@
     <section class="hero" id="home">
         <div class="hero-container">
             <div class="hero-content">
-                <div class="hero-badge"><i class="fas fa-star"></i> <span data-ar="طعم البيت يوصل إلى الملوك" data-en="Home taste delivered to kings">طعم البيت يوصل إلى الملوك</span></div>
                 <h1 class="hero-title">
                     <span data-ar="أطباق طازة من" data-en="Fresh dishes from">أطباق طازة من</span> 
                     <span class="highlight" data-ar="مطبخنا" data-en="our kitchen">مطبخنا</span> 
@@ -403,7 +426,7 @@
             <div class="hero-visual">
                 <div class="hero-image-container">
                     <div class="hero-image-bg"></div>
-                    <img src="logo.png" alt="هَمَّ النَّمَّ" class="hero-logo">
+                    <img src="logo.png" alt="هَم النَّم" class="hero-logo">
                 </div>
             </div>
         </div>
@@ -411,6 +434,20 @@
 
     <section class="menu" id="menu">
         <div class="menu-container">
+            
+            <!-- ===== الـ Badge فوق المنيو في النص ===== -->
+            <div class="menu-badge-wrapper">
+                <div class="menu-badge-decoration">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="menu-badge">
+                    <span data-ar="هنا تبدأ الحكاية" data-en="Here the story begins">هنا تبدأ الحكاية</span>
+                </div>
+                <div class="menu-badge-decoration">
+                    <i class="fas fa-leaf" style="transform: scaleX(-1);"></i>
+                </div>
+            </div>
+
             <div class="section-header">
                 <div class="section-tag" data-ar="المنيو" data-en="Menu">المنيو</div>
                 <h2 class="section-title" data-ar="أطباقنا المميزة" data-en="Our Special Dishes">أطباقنا المميزة</h2>
@@ -432,10 +469,10 @@
             <div class="footer-grid">
                 <div>
                     <div class="footer-brand">
-                        <img src="logo.png" alt="هَمَّ النَّمَّ" class="footer-logo">
-                        <div class="footer-brand-text" data-ar="هَمَّ النَّمَّ" data-en="Hum L Num">هَمَّ النَّمَّ</div>
+                        <img src="logo.png" alt="هَم النَّم" class="footer-logo">
+                        <div class="footer-brand-text" data-ar="هَم النَّم" data-en="Hum L Num">هَم النَّم</div>
                     </div>
-                    <p class="footer-desc" data-ar="طعم البيت، لحد باب بيتك <br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك" data-en="Home taste, delivered to your door <br>Fresh dishes prepared with love and care from our kitchen to your home">طعم البيت، لحد باب بيتك <br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك</p>
+                    <p class="footer-desc" data-ar="طعم البيت، لحد باب بيتك 🏡<br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك" data-en="Home taste, delivered to your door 🏡<br>Fresh dishes prepared with love and care from our kitchen to your home">طعم البيت، لحد باب بيتك <br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك</p>
                     <div class="footer-social">
                         <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="instagram"><i class="fab fa-instagram"></i></a>
@@ -460,7 +497,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2026 <span data-ar="هَمَّ النَّمَّ" data-en="Hum L Num">هَم النَّم</span>. <span data-ar="جميع الحقوق محفوظة." data-en="All rights reserved.">جميع الحقوق محفوظة.</span></p>
+                <p>© 2026 <span data-ar="هَم النَّم" data-en="Hum L Num">هَم النَّم</span>. <span data-ar="جميع الحقوق محفوظة." data-en="All rights reserved.">جميع الحقوق محفوظة.</span></p>
             </div>
         </div>
     </footer>
@@ -492,7 +529,7 @@
     <div class="modal-overlay" id="customOrderModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title" data-ar=" طلب خاص" data-en=" Custom Order"> طلب خاص</h3>
+                <h3 class="modal-title" data-ar="🎯 طلب خاص" data-en=" Custom Order"> طلب خاص</h3>
                 <button class="cart-close" onclick="closeCustomOrderModal()" style="background: rgba(255,255,255,0.2);"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
@@ -630,7 +667,7 @@
         const db = getDatabase(fbApp);
 
         const CONFIG = {
-            businessNameAr: "هَمَّ النَّمَّ",
+            businessNameAr: "هَم النَّم",
             businessNameEn: "Hum L Num",
             whatsappNumber: "201158899779",
             deliveryFee: 30,
@@ -814,14 +851,14 @@
             if (!customerAddress) { errBox.textContent = v.address; return; }
 
             const lines = [
-                ' *طلب خاص جديد من هَمَّ النَّمَّ*', '',
-                ' *الصنف المطلوب:*', '• ' + itemName,
+                '🎯 *طلب خاص جديد من هَم النَّم*', '',
+                '🍽️ *الصنف المطلوب:*', '• ' + itemName,
                 ...(itemNotes ? ['', '📝 *ملاحظات:*', itemNotes] : []),
                 '', '━━━━━━━━━━━━━━━━',
-                ' *الاسم:* ' + customerName,
-                ' *الموبايل:* ' + customerPhone,
-                ' *العنوان:* ' + customerAddress,
-                '', ' *التاريخ:* ' + new Date().toLocaleString('ar-EG'),
+                '👤 *الاسم:* ' + customerName,
+                '📱 *الموبايل:* ' + customerPhone,
+                '📍 *العنوان:* ' + customerAddress,
+                '', '⏰ *التاريخ:* ' + new Date().toLocaleString('ar-EG'),
                 '', '_*يرجى التواصل لتأكيد السعر والتفاصيل*_ '
             ];
 
