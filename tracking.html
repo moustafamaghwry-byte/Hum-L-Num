@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #1F4D34;
-            --primary-light: #2D6A4F;
+            --primary: #1B4332;
+            --primary-light: #2D5A4A;
             --primary-dark: #081C15;
             --accent: #C9A227;
             --accent-soft: #e0b840;
@@ -34,12 +34,17 @@
         /* Header */
         .header { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
         .header-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
-        .header-logo { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
+        .header-logo { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
         .header-title { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
         .header-title span { color: var(--primary-light); font-weight: 400; font-size: 0.85rem; display: block; }
         
-        .lang-btn { background: transparent; border: 1.5px solid var(--accent); color: var(--primary); padding: 6px 16px; border-radius: 99px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; transition: var(--transition); }
-        .lang-btn:hover { background: var(--accent); color: var(--white); }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        
+        .home-btn { background: var(--primary); border: none; color: var(--white); padding: 8px 18px; border-radius: 99px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; transition: var(--transition); display: flex; align-items: center; gap: 6px; text-decoration: none; }
+        .home-btn:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(27, 67, 50, 0.2); }
+        
+        .lang-btn { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); padding: 6px 16px; border-radius: 99px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; transition: var(--transition); }
+        .lang-btn:hover { background: var(--primary); color: var(--white); }
 
         /* Main Layout */
         .main-content { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
@@ -87,7 +92,7 @@
         .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 2rem; }
         .btn { padding: 12px; border-radius: 99px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; border: 1.5px solid transparent; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary { background: var(--primary); color: var(--white); }
-        .btn-primary:hover { background: var(--primary-light); }
+        .btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(27, 67, 50, 0.2); }
         .btn-accent { background: var(--accent); color: var(--white); }
         .btn-accent:hover { background: var(--accent-soft); }
         .btn-outline { background: transparent; border-color: var(--gray-300); color: var(--gray-800); }
@@ -101,7 +106,7 @@
         .efield { margin-bottom: 1rem; text-align: start; }
         .efield label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 6px; color: var(--primary-dark); }
         .efield input, .efield textarea, .efield select { width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1.5px solid var(--gray-200); font-family: inherit; font-size: 0.9rem; color: var(--gray-800); background: var(--white); transition: var(--transition); }
-        .efield input:focus, .efield textarea:focus, .efield select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1); }
+        .efield input:focus, .efield textarea:focus, .efield select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.1); }
         .edit-item-row { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
         .qty-ctrl { display: flex; align-items: center; gap: 8px; background: var(--gray-50); padding: 4px; border-radius: 8px; }
         .qty-ctrl button { width: 28px; height: 28px; border-radius: 6px; border: none; background: var(--white); font-weight: 800; cursor: pointer; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
@@ -119,6 +124,12 @@
 
         /* Responsive */
         @media (max-width: 600px) {
+            .header { padding: 0.8rem 1rem; }
+            .header-logo { width: 40px; height: 40px; }
+            .header-title { font-size: 1.1rem; }
+            .header-title span { display: none; }
+            .home-btn span { display: none; }
+            .home-btn { padding: 8px 12px; }
             .order-info { grid-template-columns: 1fr; }
             .steps-container { flex-direction: column; gap: 1.5rem; padding-right: 20px; }
             .progress-line { display: none; }
@@ -135,7 +146,13 @@
         <img src="logo.png" alt="هَمَّ النَّمَّ" class="header-logo">
         <div class="header-title">هَمَّ النَّمَّ <span id="brandSub">Hum L Num</span></div>
     </a>
-    <button class="lang-btn" id="langToggle" type="button">EN</button>
+    <div class="header-actions">
+        <a href="index.html" class="home-btn" id="homeBtn">
+            <i class="fas fa-home"></i>
+            <span data-ar="الرئيسية" data-en="Home">الرئيسية</span>
+        </a>
+        <button class="lang-btn" id="langToggle" type="button">EN</button>
+    </div>
 </header>
 
 <main class="main-content">
@@ -151,7 +168,10 @@
             <h3 style="margin-bottom: 1rem; color: var(--primary);" data-ar="تابع طلبك" data-en="Track your order">تابع طلبك</h3>
             <input id="lookupInput" type="text" inputmode="numeric" placeholder="#1001" style="width: 100%; max-width: 300px; padding: 12px; border-radius: var(--radius-md); border: 1.5px solid var(--gray-200); font-size: 1.1rem; text-align: center; margin-bottom: 12px; font-family: 'IBM Plex Mono', monospace;">
             <div id="lookupError" class="error-box"></div>
-            <button id="lookupBtn" class="btn btn-accent" style="width: 100%; max-width: 300px;" data-ar="بحث" data-en="Search">بحث</button>
+            <button id="lookupBtn" class="btn btn-primary" style="width: 100%; max-width: 300px;" data-ar="بحث" data-en="Search">
+                <i class="fas fa-search"></i>
+                <span data-ar="بحث" data-en="Search">بحث</span>
+            </button>
         </div>
 
         <!-- Main Tracking Content -->
@@ -251,7 +271,7 @@
             <input type="file" id="ratingPhotoInput" accept="image/*" style="display: none;">
             <img id="ratingPhotoPreview" style="max-width: 150px; border-radius: var(--radius-md); margin: 0 auto 1rem; display: none;">
             <br>
-            <button class="btn btn-accent btn-full" id="submitRatingBtn" disabled data-ar="إرسال التقييم" data-en="Submit Rating">إرسال التقييم</button>
+            <button class="btn btn-primary btn-full" id="submitRatingBtn" disabled data-ar="إرسال التقييم" data-en="Submit Rating">إرسال التقييم</button>
             <button class="btn btn-outline btn-full" id="ratingBackBtn" style="margin-top: 10px;" data-ar="رجوع" data-en="Back">رجوع</button>
         </div>
 
