@@ -461,75 +461,79 @@
         }
 
         function loadOrders() {
-            onValue(ref(db, 'orders'), (snapshot) => {
-                const tbody = document.getElementById('ordersTableBody');
-                tbody.innerHTML = '';
-                
-                let total = 0, pending = 0, completed = 0, revenue = 0, todayOrdersCount = 0;
-                const today = new Date().toDateString();
+    onValue(ref(db, 'orders'), (snapshot) => {
+        const tbody = document.getElementById('ordersTableBody');
+        tbody.innerHTML = '';
+        
+        let total = 0, pending = 0, completed = 0, revenue = 0, todayOrdersCount = 0;
+        const today = new Date().toDateString();
 
-                if (!snapshot.exists()) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem;">لا توجد طلبات حالياً</td></tr>';
-                    updateStats(0, 0, 0, 0, 0);
-                    return;
-                }
-
-                const currentCount = snapshot.numChildren();
-                // تشغيل الصوت إذا زاد عدد الطلبات (مؤشر على طلب جديد)
-                if (currentCount > lastOrderCount && lastOrderCount !== 0) {
-                    playNotificationSound();
-                }
-                lastOrderCount = currentCount;
-
-                const statusLabels = { 
-                    received: 'تم الاستلام', 
-                    preparing: 'جاري التحضير', 
-                    out_for_delivery: 'خرج للتوصيل', // تم التعديل ليتطابق مع التتبع
-                    delivered: 'تم التوصيل', 
-                    cancelled: 'ملغي' 
-                };
-                const activeFilter = document.querySelector('.filter-tab.active').dataset.status;
-
-                snapshot.forEach((child) => {
-                    const order = child.val();
-                    const key = child.key;
-                    const orderDate = new Date(order.createdAt).toDateString();
-                    
-                    total++;
-                    if (order.status === 'preparing' || order.status === 'out_for_delivery' || order.status === 'received') pending++;
-                    if (order.status === 'delivered') completed++;
-                    if (orderDate === today && order.status !== 'cancelled') {
-                        revenue += (order.total || 0);
-                        todayOrdersCount++;
-                    }
-
-                    if (activeFilter !== 'all' && order.status !== activeFilter) return;
-
-                    const totalDisplay = order.pricingStatus === 'requires_custom_item_confirmation'
-                        ? `<span style="color:var(--warning)">${(order.total || 0).toFixed(2)} ج.م* (انتظار)</span>` 
-                        : `${(order.total || 0).toFixed(2)} ج.م`;
-                    
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>#${order.orderNumber}</strong></td>
-                        <td>${order.customerName}</td>
-                        <td>${order.customerPhone}</td>
-                        <td>${totalDisplay}</td>
-                        <td><span class="status-badge ${order.status}">${statusLabels[order.status] || order.status}</span></td>
-                        <td>${new Date(order.createdAt).toLocaleString('ar-EG')}</td>
-                        <td>
-                            <div class="action-btns">
-                                <button class="action-btn view" onclick="viewOrder('${key}')" title="عرض"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn delete" onclick="deleteOrder('${key}')" title="حذف"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-                updateStats(total, pending, completed, revenue, todayOrdersCount);
-            });
+        if (!snapshot.exists()) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem;">لا توجد طلبات حالياً</td></tr>';
+            updateStats(0, 0, 0, 0, 0);
+            return;
         }
 
+        const currentCount = snapshot.numChildren();
+        if (currentCount > lastOrderCount && lastOrderCount !== 0) {
+            playNotificationSound();
+        }
+        lastOrderCount = currentCount;
+
+        // ✅ تم إضافة 'ready' لدعم الطلبات القديمة
+        const statusLabels = { 
+            received: 'تم الاستلام', 
+            preparing: 'جاري التحضير', 
+            out_for_delivery: 'خرج للتوصيل', 
+            ready: 'خرج للتوصيل', // دعم إضافي للطلبات القديمة
+            delivered: 'تم التوصيل', 
+            cancelled: 'ملغي' 
+        };
+        const activeFilter = document.querySelector('.filter-tab.active').dataset.status;
+
+        snapshot.forEach((child) => {
+            const order = child.val();
+            const key = child.key;
+            const orderDate = new Date(order.createdAt).toDateString();
+            
+            total++;
+            // ✅ تم إضافة 'ready' هنا أيضاً
+            if (order.status === 'preparing' || order.status === 'out_for_delivery' || order.status === 'ready' || order.status === 'received') {
+                pending++;
+            }
+            if (order.status === 'delivered') completed++;
+            
+            if (orderDate === today && order.status !== 'cancelled') {
+                revenue += (order.total || 0);
+                todayOrdersCount++;
+            }
+
+            if (activeFilter !== 'all' && order.status !== activeFilter) return;
+
+            const totalDisplay = order.pricingStatus === 'requires_custom_item_confirmation'
+                ? `<span style="color:var(--warning)">${(order.total || 0).toFixed(2)} ج.م* (انتظار)</span>` 
+                : `${(order.total || 0).toFixed(2)} ج.م`;
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>#${order.orderNumber}</strong></td>
+                <td>${order.customerName || 'غير محدد'}</td>
+                <td>${order.customerPhone || 'غير محدد'}</td>
+                <td>${totalDisplay}</td>
+                <td><span class="status-badge ${order.status}">${statusLabels[order.status] || order.status}</span></td>
+                <td>${order.createdAt ? new Date(order.createdAt).toLocaleString('ar-EG') : 'غير محدد'}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="action-btn view" onclick="viewOrder('${key}')" title="عرض"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn delete" onclick="deleteOrder('${key}')" title="حذف"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        updateStats(total, pending, completed, revenue, todayOrdersCount);
+    });
+}
         function playNotificationSound() {
             const audio = document.getElementById('newOrderSound');
             audio.play().catch(e => console.log("Audio play blocked until user interacts with page"));
@@ -543,53 +547,63 @@
         }
 
         window.viewOrder = function(key) {
-            currentOrderKey = key;
-            onValue(ref(db, 'orders/' + key), (snapshot) => {
-                const order = snapshot.val();
-                document.getElementById('orderNumberDisplay').textContent = '#' + order.orderNumber;
-                document.getElementById('orderCustomer').textContent = order.customerName;
-                document.getElementById('orderPhone').textContent = order.customerPhone;
-                document.getElementById('orderAddress').textContent = order.customerAddress;
-                
-                // عرض موعد التسليم
-                const delTime = order.deliveryTimeTarget 
-                    ? new Date(order.deliveryTimeTarget).toLocaleString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' }) 
-                    : 'في أقرب وقت ممكن';
-                document.getElementById('orderDeliveryTime').textContent = delTime;
-                
-                document.getElementById('orderStatusSelect').value = order.status;
-                
-                // زر الواتساب
-                const cleanPhone = order.customerPhone.replace(/\D/g, '');
-                const waLink = cleanPhone.startsWith('20') ? `https://wa.me/${cleanPhone}` : `https://wa.me/20${cleanPhone}`;
-                document.getElementById('waCustomerBtn').href = waLink;
-                
-                const itemsList = document.getElementById('orderItemsList');
-                itemsList.innerHTML = order.items.map((item, index) => `
-                    <div class="order-item ${item.pricingStatus === 'pending' ? 'pending-price' : ''}">
-                        <div class="order-item-header">
-                            <div class="order-item-name">
-                                ${item.ar} ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning); font-size:0.8rem;">(طلب خاص)</span>' : ''}
-                                <span style="color:var(--gray-500); font-size:0.85rem;">x${item.qty}</span>
-                            </div>
-                            <div class="order-item-price">
-                                ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning);">⏳ انتظر التسعير</span>' : `${(item.price * item.qty).toFixed(2)} ج.م`}
-                            </div>
-                        </div>
-                        ${item.notes ? `<div style="font-size:0.85rem; color:var(--gray-600); margin-top:0.5rem; background: #fff; padding: 8px; border-radius: 6px; border-right: 3px solid var(--accent);">📝 ${item.notes}</div>` : ''}
-                        ${item.pricingStatus === 'pending' ? `
-                            <div class="price-input-group">
-                                <label style="font-size:0.85rem; color:var(--gray-600);">تحديد السعر:</label>
-                                <input type="number" placeholder="السعر" id="price-${index}" value="${item.price || 0}" step="0.01">
-                                <button class="btn btn-success btn-sm" onclick="setItemPrice(${index})"><i class="fas fa-check"></i> اعتماد</button>
-                            </div>
-                        ` : ''}
-                    </div>
-                `).join('');
-                
-                document.getElementById('orderDetailsModal').classList.add('open');
-            }, { onlyOnce: true });
+    currentOrderKey = key;
+    onValue(ref(db, 'orders/' + key), (snapshot) => {
+        const order = snapshot.val();
+        document.getElementById('orderNumberDisplay').textContent = '#' + order.orderNumber;
+        document.getElementById('orderCustomer').textContent = order.customerName || 'غير محدد';
+        document.getElementById('orderPhone').textContent = order.customerPhone || 'غير محدد';
+        document.getElementById('orderAddress').textContent = order.customerAddress || 'غير محدد';
+        
+        // ✅ التعامل الآمن مع موعد التسليم القديم أو الجديد
+        let delTimeText = 'في أقرب وقت ممكن';
+        if (order.deliveryTimeTarget) {
+            const d = new Date(order.deliveryTimeTarget);
+            if (!isNaN(d.getTime())) {
+                delTimeText = d.toLocaleString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+            }
         }
+        document.getElementById('orderDeliveryTime').textContent = delTimeText;
+        
+        // ✅ التعامل الآمن مع الحالة القديمة 'ready'
+        let currentStatus = order.status;
+        if (currentStatus === 'ready') currentStatus = 'out_for_delivery';
+        document.getElementById('orderStatusSelect').value = currentStatus;
+        
+        const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
+        const waLink = cleanPhone.startsWith('20') ? `https://wa.me/${cleanPhone}` : `https://wa.me/20${cleanPhone}`;
+        document.getElementById('waCustomerBtn').href = waLink;
+        
+        const itemsList = document.getElementById('orderItemsList');
+        if (order.items && Array.isArray(order.items)) {
+            itemsList.innerHTML = order.items.map((item, index) => `
+                <div class="order-item ${item.pricingStatus === 'pending' ? 'pending-price' : ''}">
+                    <div class="order-item-header">
+                        <div class="order-item-name">
+                            ${item.ar || 'صنف'} ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning); font-size:0.8rem;">(طلب خاص)</span>' : ''}
+                            <span style="color:var(--gray-500); font-size:0.85rem;">x${item.qty}</span>
+                        </div>
+                        <div class="order-item-price">
+                            ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning);">⏳ انتظر التسعير</span>' : `${((item.price || 0) * item.qty).toFixed(2)} ج.م`}
+                        </div>
+                    </div>
+                    ${item.notes ? `<div style="font-size:0.85rem; color:var(--gray-600); margin-top:0.5rem; background: #fff; padding: 8px; border-radius: 6px; border-right: 3px solid var(--accent);">📝 ${item.notes}</div>` : ''}
+                    ${item.pricingStatus === 'pending' ? `
+                        <div class="price-input-group">
+                            <label style="font-size:0.85rem; color:var(--gray-600);">تحديد السعر:</label>
+                            <input type="number" placeholder="السعر" id="price-${index}" value="${item.price || 0}" step="0.01">
+                            <button class="btn btn-success btn-sm" onclick="setItemPrice(${index})"><i class="fas fa-check"></i> اعتماد</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        } else {
+            itemsList.innerHTML = '<p>لا توجد أصناف في هذا الطلب</p>';
+        }
+        
+        document.getElementById('orderDetailsModal').classList.add('open');
+    }, { onlyOnce: true });
+}
 
         window.setItemPrice = function(itemIndex) {
             const priceInput = document.getElementById(`price-${itemIndex}`);
