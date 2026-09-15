@@ -463,7 +463,7 @@
         function loadOrders() {
     onValue(ref(db, 'orders'), (snapshot) => {
         const tbody = document.getElementById('ordersTableBody');
-        tbody.innerHTML = '';
+        tbody.innerHTML = ''; // تفريغ الجدول
         
         let total = 0, pending = 0, completed = 0, revenue = 0, todayOrdersCount = 0;
         const today = new Date().toDateString();
@@ -480,60 +480,79 @@
         }
         lastOrderCount = currentCount;
 
-        // ✅ تم إضافة 'ready' لدعم الطلبات القديمة
         const statusLabels = { 
             received: 'تم الاستلام', 
             preparing: 'جاري التحضير', 
             out_for_delivery: 'خرج للتوصيل', 
-            ready: 'خرج للتوصيل', // دعم إضافي للطلبات القديمة
+            ready: 'خرج للتوصيل', // دعم الحالات القديمة
             delivered: 'تم التوصيل', 
             cancelled: 'ملغي' 
         };
-        const activeFilter = document.querySelector('.filter-tab.active').dataset.status;
+        
+        const activeFilter = document.querySelector('.filter-tab.active')?.dataset.status || 'all';
 
         snapshot.forEach((child) => {
-            const order = child.val();
-            const key = child.key;
-            const orderDate = new Date(order.createdAt).toDateString();
-            
-            total++;
-            // ✅ تم إضافة 'ready' هنا أيضاً
-            if (order.status === 'preparing' || order.status === 'out_for_delivery' || order.status === 'ready' || order.status === 'received') {
-                pending++;
-            }
-            if (order.status === 'delivered') completed++;
-            
-            if (orderDate === today && order.status !== 'cancelled') {
-                revenue += (order.total || 0);
-                todayOrdersCount++;
-            }
+            try {
+                const order = child.val();
+                const key = child.key;
+                
+                // معالجة آمنة للتاريخ (تتعامل مع Timestamp أو String أو رقم)
+                let orderDateStr = 'غير محدد';
+                let isToday = false;
+                if (order.createdAt) {
+                    const dateVal = (typeof order.createdAt === 'object' && order.createdAt.seconds) 
+                        ? order.createdAt.seconds * 1000 
+                        : order.createdAt;
+                    const d = new Date(dateVal);
+                    if (!isNaN(d.getTime())) {
+                        orderDateStr = d.toLocaleString('ar-EG');
+                        if (d.toDateString() === today) isToday = true;
+                    }
+                }
 
-            if (activeFilter !== 'all' && order.status !== activeFilter) return;
+                // معالجة آمنة للحالة
+                const status = order.status || 'received'; 
+                
+                total++;
+                if (['preparing', 'out_for_delivery', 'ready', 'received'].includes(status)) pending++;
+                if (status === 'delivered') completed++;
+                
+                if (isToday && status !== 'cancelled') {
+                    revenue += (Number(order.total) || 0);
+                    todayOrdersCount++;
+                }
 
-            const totalDisplay = order.pricingStatus === 'requires_custom_item_confirmation'
-                ? `<span style="color:var(--warning)">${(order.total || 0).toFixed(2)} ج.م* (انتظار)</span>` 
-                : `${(order.total || 0).toFixed(2)} ج.م`;
-            
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>#${order.orderNumber}</strong></td>
-                <td>${order.customerName || 'غير محدد'}</td>
-                <td>${order.customerPhone || 'غير محدد'}</td>
-                <td>${totalDisplay}</td>
-                <td><span class="status-badge ${order.status}">${statusLabels[order.status] || order.status}</span></td>
-                <td>${order.createdAt ? new Date(order.createdAt).toLocaleString('ar-EG') : 'غير محدد'}</td>
-                <td>
-                    <div class="action-btns">
-                        <button class="action-btn view" onclick="viewOrder('${key}')" title="عرض"><i class="fas fa-eye"></i></button>
-                        <button class="action-btn delete" onclick="deleteOrder('${key}')" title="حذف"><i class="fas fa-trash"></i></button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(tr);
+                // تطبيق الفلتر
+                if (activeFilter !== 'all' && status !== activeFilter) return;
+
+                const totalDisplay = order.pricingStatus === 'requires_custom_item_confirmation'
+                    ? `<span style="color:var(--warning)">${(Number(order.total) || 0).toFixed(2)} ج.م* (انتظار)</span>` 
+                    : `${(Number(order.total) || 0).toFixed(2)} ج.م`;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${order.orderNumber || '---'}</strong></td>
+                    <td>${order.customerName || 'غير محدد'}</td>
+                    <td>${order.customerPhone || 'غير محدد'}</td>
+                    <td>${totalDisplay}</td>
+                    <td><span class="status-badge ${status}">${statusLabels[status] || status}</span></td>
+                    <td>${orderDateStr}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn view" onclick="viewOrder('${key}')" title="عرض"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn delete" onclick="deleteOrder('${key}')" title="حذف"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            } catch (err) {
+                console.error("خطأ في معالجة طلب:", child.key, err);
+            }
         });
         updateStats(total, pending, completed, revenue, todayOrdersCount);
     });
 }
+
         function playNotificationSound() {
             const audio = document.getElementById('newOrderSound');
             audio.play().catch(e => console.log("Audio play blocked until user interacts with page"));
@@ -546,16 +565,19 @@
             document.getElementById('todayRevenue').textContent = revenue.toFixed(2) + ' ج.م';
         }
 
-        window.viewOrder = function(key) {
+        // ===== دالة عرض تفاصيل الطلب (محدثة لتتحمل البيانات القديمة) =====
+window.viewOrder = function(key) {
     currentOrderKey = key;
     onValue(ref(db, 'orders/' + key), (snapshot) => {
         const order = snapshot.val();
-        document.getElementById('orderNumberDisplay').textContent = '#' + order.orderNumber;
+        if (!order) return;
+
+        document.getElementById('orderNumberDisplay').textContent = '#' + (order.orderNumber || '---');
         document.getElementById('orderCustomer').textContent = order.customerName || 'غير محدد';
         document.getElementById('orderPhone').textContent = order.customerPhone || 'غير محدد';
         document.getElementById('orderAddress').textContent = order.customerAddress || 'غير محدد';
         
-        // ✅ التعامل الآمن مع موعد التسليم القديم أو الجديد
+        // معالجة آمنة لموعد التسليم
         let delTimeText = 'في أقرب وقت ممكن';
         if (order.deliveryTimeTarget) {
             const d = new Date(order.deliveryTimeTarget);
@@ -565,46 +587,50 @@
         }
         document.getElementById('orderDeliveryTime').textContent = delTimeText;
         
-        // ✅ التعامل الآمن مع الحالة القديمة 'ready'
-        let currentStatus = order.status;
+        // معالجة آمنة للحالة (تحويل ready القديم إلى out_for_delivery الجديد)
+        let currentStatus = order.status || 'received';
         if (currentStatus === 'ready') currentStatus = 'out_for_delivery';
         document.getElementById('orderStatusSelect').value = currentStatus;
         
+        // زر الواتساب
         const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
         const waLink = cleanPhone.startsWith('20') ? `https://wa.me/${cleanPhone}` : `https://wa.me/20${cleanPhone}`;
         document.getElementById('waCustomerBtn').href = waLink;
         
+        // معالجة آمنة للأصناف
         const itemsList = document.getElementById('orderItemsList');
-        if (order.items && Array.isArray(order.items)) {
-            itemsList.innerHTML = order.items.map((item, index) => `
+        if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+            itemsList.innerHTML = order.items.map((item, index) => {
+                const price = Number(item.price) || 0;
+                const qty = Number(item.qty) || 1;
+                return `
                 <div class="order-item ${item.pricingStatus === 'pending' ? 'pending-price' : ''}">
                     <div class="order-item-header">
                         <div class="order-item-name">
-                            ${item.ar || 'صنف'} ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning); font-size:0.8rem;">(طلب خاص)</span>' : ''}
-                            <span style="color:var(--gray-500); font-size:0.85rem;">x${item.qty}</span>
+                            ${item.ar || 'صنف غير مسمى'} ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning); font-size:0.8rem;">(طلب خاص)</span>' : ''}
+                            <span style="color:var(--gray-500); font-size:0.85rem;">x${qty}</span>
                         </div>
                         <div class="order-item-price">
-                            ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning);">⏳ انتظر التسعير</span>' : `${((item.price || 0) * item.qty).toFixed(2)} ج.م`}
+                            ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning);">⏳ انتظر التسعير</span>' : `${(price * qty).toFixed(2)} ج.م`}
                         </div>
                     </div>
                     ${item.notes ? `<div style="font-size:0.85rem; color:var(--gray-600); margin-top:0.5rem; background: #fff; padding: 8px; border-radius: 6px; border-right: 3px solid var(--accent);">📝 ${item.notes}</div>` : ''}
                     ${item.pricingStatus === 'pending' ? `
                         <div class="price-input-group">
                             <label style="font-size:0.85rem; color:var(--gray-600);">تحديد السعر:</label>
-                            <input type="number" placeholder="السعر" id="price-${index}" value="${item.price || 0}" step="0.01">
+                            <input type="number" placeholder="السعر" id="price-${index}" value="${price}" step="0.01">
                             <button class="btn btn-success btn-sm" onclick="setItemPrice(${index})"><i class="fas fa-check"></i> اعتماد</button>
                         </div>
                     ` : ''}
                 </div>
-            `).join('');
+            `}).join('');
         } else {
-            itemsList.innerHTML = '<p>لا توجد أصناف في هذا الطلب</p>';
+            itemsList.innerHTML = '<p style="color:var(--gray-500); text-align:center;">لا توجد أصناف مسجلة في هذا الطلب</p>';
         }
         
         document.getElementById('orderDetailsModal').classList.add('open');
     }, { onlyOnce: true });
 }
-
         window.setItemPrice = function(itemIndex) {
             const priceInput = document.getElementById(`price-${itemIndex}`);
             const newPrice = parseFloat(priceInput.value);
