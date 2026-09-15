@@ -23,24 +23,39 @@
 
         .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--gray-200); transition: var(--transition); }
         .navbar.scrolled { box-shadow: var(--shadow-md); }
-        .navbar-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 72px; }
-        .navbar-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; min-width: 0; flex: 1; }
+        .navbar-container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 72px; position: relative; }
+        
+        .navbar-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; min-width: 0; }
         .navbar-logo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); flex-shrink: 0; }
-        .navbar-title-wrap { min-width: 0; overflow: hidden; }
-        .navbar-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .navbar-title span { color: var(--accent-dark); font-weight: 400; font-size: 0.85rem; display: block; margin-top: -4px; }
+        .navbar-title-wrap { min-width: 0; }
+        .navbar-title { font-size: 1.4rem; font-weight: 800; color: var(--primary); line-height: 1.1; }
+        .navbar-title .sub-title { font-size: 0.8rem; font-weight: 500; color: var(--accent-dark); display: block; margin-top: 2px; }
+        
         .navbar-menu { display: flex; align-items: center; gap: 2rem; list-style: none; }
-        .navbar-menu a { text-decoration: none; color: var(--gray-700); font-weight: 500; font-size: 0.95rem; transition: var(--transition); }
+        .navbar-menu a { text-decoration: none; color: var(--gray-700); font-weight: 600; font-size: 0.95rem; transition: var(--transition); }
         .navbar-menu a:hover { color: var(--primary); }
+        
         .navbar-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+        
+        /* زر القائمة للموبايل */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 5px;
+        }
+
         .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem; text-decoration: none; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; }
         .btn-primary { background: var(--primary); color: var(--white); }
-            }
         .btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
         .btn-outline:hover { background: var(--primary); color: var(--white); }
         .btn-ghost { background: transparent; color: var(--gray-700); }
         .btn-ghost:hover { background: var(--gray-100); }
+        
         .cart-btn { position: relative; width: 44px; height: 44px; border-radius: 50%; background: var(--gray-100); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
         .cart-btn:hover { background: var(--gray-200); }
         .cart-badge { position: absolute; top: -4px; left: -4px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--white); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
@@ -92,132 +107,156 @@
 
         .footer { background: var(--primary-dark); color: var(--white); padding: 2rem 2rem 1.5rem; }
         .footer-container { max-width: 1400px; margin: 0 auto; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; margin-bottom: 2rem; }
         .footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
         .footer-logo { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent); }
         .footer-brand-text { font-size: 1.3rem; font-weight: 700; }
-        .footer-brand-text span { color: var(--accent); font-weight: 400; font-size: 0.85rem; display: block; }
-        .footer-desc { color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1rem; }
+        .footer-desc { color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1.5rem; }
         .footer-social { display: flex; gap: 1rem; }
-        .footer-social a { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: var(--white); text-decoration: none; transition: var(--transition); font-size: 1.5rem; }
-        .footer-social a:hover { transform: translateY(-3px); }
-        .footer-social a.whatsapp:hover { background: var(--whatsapp); }
-        .footer-social a.facebook:hover { background: #1877f2; }
-        .footer-social a.instagram:hover { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-        .footer-title { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: var(--accent); }
+        .footer-social a { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: var(--white); text-decoration: none; transition: var(--transition); font-size: 1.2rem; }
+        .footer-social a:hover { background: var(--white); color: var(--primary); transform: translateY(-3px); }
+        .footer-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.5rem; position: relative; padding-bottom: 0.5rem; }
+        .footer-title::after { content: ''; position: absolute; bottom: 0; right: 0; width: 40px; height: 3px; background: var(--accent); border-radius: 2px; }
         .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 0.6rem; }
-        .footer-links a, .footer-links li { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.9rem; }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; text-align: center; color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+        .footer-links li { margin-bottom: 0.8rem; }
+        .footer-links a { color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .footer-links a:hover { color: var(--white); padding-right: 5px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 1.5rem; text-align: center; opacity: 0.8; font-size: 0.9rem; }
 
-        .cart-sidebar { position: fixed; top: 0; left: -450px; width: 450px; height: 100vh; background: var(--white); box-shadow: var(--shadow-lg); z-index: 2000; transition: var(--transition); display: flex; flex-direction: column; }
+        .cart-sidebar { position: fixed; top: 0; left: -450px; width: 450px; height: 100vh; background: var(--white); box-shadow: var(--shadow-lg); z-index: 2000; transition: left 0.3s ease; display: flex; flex-direction: column; }
         .cart-sidebar.open { left: 0; }
-        .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1999; opacity: 0; visibility: hidden; transition: var(--transition); }
+        .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1999; opacity: 0; visibility: hidden; transition: all 0.3s; }
         .cart-overlay.open { opacity: 1; visibility: visible; }
-        .cart-header { padding: 1.5rem; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
-        .cart-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
-        .cart-close { width: 36px; height: 36px; border-radius: 50%; background: var(--gray-100); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .cart-header { padding: 1.5rem; border-bottom: 2px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; background: var(--primary); color: var(--white); }
+        .cart-title { font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .cart-close { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .cart-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
         .cart-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
         .cart-empty { text-align: center; padding: 3rem 1rem; color: var(--gray-500); }
         .cart-empty i { font-size: 4rem; margin-bottom: 1rem; color: var(--gray-300); }
-        .cart-item { display: flex; gap: 1rem; padding: 1rem; background: var(--gray-50); border-radius: var(--radius-md); margin-bottom: 1rem; }
-        .cart-item-image { width: 70px; height: 70px; border-radius: var(--radius-sm); background: var(--gray-200); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .cart-item { display: flex; gap: 1rem; padding: 1rem; background: var(--gray-50); border-radius: 15px; margin-bottom: 1rem; }
+        .cart-item-image { width: 70px; height: 70px; border-radius: 12px; background: var(--gray-200); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
         .cart-item-content { flex: 1; }
-        .cart-item-title { font-weight: 600; color: var(--primary-dark); margin-bottom: 0.25rem; font-size: 0.95rem; }
-        .cart-item-price { font-weight: 700; font-size: 0.9rem; }
+        .cart-item-title { font-weight: 700; color: var(--primary-dark); margin-bottom: 0.3rem; }
+        .cart-item-price { font-weight: 800; color: var(--accent); font-size: 0.95rem; }
         .cart-item-qty { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
-        .qty-btn { width: 26px; height: 26px; border-radius: 50%; background: var(--white); border: 1px solid var(--gray-300); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
-        .qty-btn:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
-        .cart-footer { padding: 1.5rem; border-top: 1px solid var(--gray-200); background: var(--gray-50); }
-        .cart-total { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .cart-total.grand { font-size: 1.1rem; font-weight: 900; color: var(--primary); padding-top: 0.75rem; border-top: 1px solid var(--gray-300); margin-top: 0.75rem; }
-        .checkout-btn { width: 100%; padding: 14px; background: var(--primary); color: var(--white); border: none; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: var(--transition); margin-top: 1rem; font-family: inherit; }
-        .checkout-btn:hover { background: var(--primary-light); }
-        .checkout-btn:disabled { opacity: .6; cursor: not-allowed; background: var(--gray-400); }
-        .min-order-warning { color: var(--danger); font-size: 0.85rem; font-weight: 700; text-align: center; margin-top: 8px; padding: 10px; background: rgba(250, 82, 82, 0.1); border-radius: var(--radius-sm); display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .min-order-warning .remaining { font-size: 1rem; color: var(--accent-dark); font-weight: 900; }
+        .qty-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--white); border: 2px solid var(--primary); color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: all 0.3s; }
+        .qty-btn:hover { background: var(--primary); color: var(--white); }
+        .cart-footer { padding: 1.5rem; border-top: 2px solid var(--gray-200); background: var(--gray-50); }
+        .cart-total { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .cart-total.grand { font-size: 1.2rem; font-weight: 900; color: var(--primary); padding-top: 0.75rem; border-top: 2px dashed var(--gray-300); margin-top: 0.75rem; }
+        .checkout-btn { width: 100%; padding: 14px; background: var(--primary); color: var(--white); border: none; border-radius: 50px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s; margin-top: 1rem; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .checkout-btn:hover { background: var(--primary-light); transform: translateY(-2px); }
+        .checkout-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .min-order-warning { color: var(--danger); font-size: 0.85rem; font-weight: 700; text-align: center; margin-top: 8px; padding: 10px; background: rgba(250, 82, 82, 0.1); border-radius: 10px; }
+        .min-order-warning .remaining { display: block; font-size: 1rem; color: var(--accent-dark); margin-top: 4px; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: var(--transition); padding: 2rem; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 1rem; }
         .modal-overlay.open { opacity: 1; visibility: visible; }
-        .modal { background: var(--white); border-radius: var(--radius-xl); max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9); transition: var(--transition); }
+        .modal { background: var(--white); border-radius: 24px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9); transition: transform 0.3s; }
         .modal-overlay.open .modal { transform: scale(1); }
-        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
-        .modal-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+        .modal-header { padding: 1.5rem; border-bottom: 2px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; background: var(--primary); color: var(--white); border-radius: 24px 24px 0 0; }
+        .modal-title { font-size: 1.3rem; font-weight: 800; }
         .modal-body { padding: 1.5rem; }
         .form-group { margin-bottom: 1.25rem; }
-        .form-label { display: block; font-weight: 600; color: var(--gray-800); margin-bottom: 0.5rem; font-size: 0.85rem; }
-        .form-input { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; transition: var(--transition); }
-        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-label { display: block; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-input { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: 12px; font-family: 'Cairo', sans-serif; font-size: 0.95rem; transition: all 0.3s; background: var(--gray-50); }
+        .form-input:focus { outline: none; border-color: var(--primary); background: var(--white); }
         .form-textarea { resize: vertical; min-height: 80px; }
         .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-        .payment-option { padding: 0.75rem; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); cursor: pointer; text-align: center; transition: var(--transition); }
+        .payment-option { padding: 1rem; border: 2px solid var(--gray-200); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: var(--gray-50); }
+        .payment-option:hover { border-color: var(--primary); }
         .payment-option.selected { border-color: var(--primary); background: rgba(31, 77, 52, 0.05); }
-        .payment-option i { font-size: 1.3rem; color: var(--primary); margin-bottom: 0.4rem; }
-        .payment-option-text { font-weight: 600; font-size: 0.85rem; }
-        .modal-footer { padding: 1.5rem; border-top: 1px solid var(--gray-200); display: flex; gap: 1rem; }
-        .modal-footer .btn { flex: 1; justify-content: center; padding: 12px; }
-        .success-content { text-align: center; padding: 2.5rem 2rem; }
-        .success-icon { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--success), #20C997); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: var(--white); font-size: 1.75rem; }
-        .success-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; }
-        .success-order-number { display: inline-block; padding: 6px 20px; background: var(--gray-100); border-radius: 50px; font-weight: 700; color: var(--primary); font-size: 1.1rem; margin: 1rem 0; }
+        .payment-option i { font-size: 1.5rem; color: var(--primary); margin-bottom: 0.5rem; display: block; }
+        .payment-option-text { font-weight: 700; font-size: 0.9rem; color: var(--primary-dark); }
+        .modal-footer { padding: 1.5rem; border-top: 2px solid var(--gray-200); display: flex; gap: 1rem; }
+        .modal-footer .btn { flex: 1; justify-content: center; }
+        .success-content { text-align: center; padding: 3rem 2rem; }
+        .success-icon { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--white); font-size: 2rem; }
+        .success-title { font-size: 1.5rem; font-weight: 900; color: var(--primary-dark); margin-bottom: 0.5rem; }
+        .success-order-number { display: inline-block; padding: 8px 24px; background: var(--gray-50); border-radius: 50px; font-weight: 900; color: var(--primary); font-size: 1.2rem; margin: 1rem 0; border: 2px dashed var(--primary); }
+        .custom-order-section { margin-bottom: 1.5rem; padding: 1.25rem; background: var(--gray-50); border-radius: 15px; border-right: 4px solid var(--primary); }
+        .custom-order-section-title { font-size: 1rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+        .custom-order-error { color: var(--danger); font-size: 0.9rem; font-weight: 700; margin-top: 10px; text-align: center; min-height: 1.5em; }
 
-        .custom-order-section { margin-bottom: 1rem; padding: 1rem; background: var(--gray-50); border-radius: var(--radius-sm); }
-        .custom-order-section-title { font-size: 0.85rem; font-weight: 700; color: var(--primary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px; }
-        .custom-order-section-title i { color: var(--accent); }
-        .custom-order-error { color: var(--danger); font-size: 0.85rem; font-weight: 600; margin-top: 10px; min-height: 1em; text-align: center; }
-
+        /* ===== Responsive Design ===== */
         @media (max-width: 1024px) {
             .hero-container { grid-template-columns: 1fr; text-align: center; }
             .hero-title { font-size: 2.5rem; }
             .hero-visual { order: -1; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
         }
+
         @media (max-width: 768px) {
-            .navbar-menu { display: none; }
             .navbar-container { padding: 0 1rem; height: 64px; }
             .navbar-logo { width: 40px; height: 40px; }
-            .navbar-title { font-size: 1.1rem; }
-            .navbar-title span { display: none; }
+            .navbar-title { font-size: 1.2rem; }
+            .navbar-title .sub-title { font-size: 0.7rem; }
+            
+            /* إظهار زر الموبايل وإخفاء القائمة افتراضياً */
+            .mobile-menu-btn { display: block; }
+            .navbar-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--white);
+                flex-direction: column;
+                padding: 1.5rem;
+                box-shadow: var(--shadow-lg);
+                border-top: 1px solid var(--gray-200);
+                gap: 1rem;
+                z-index: 999;
+            }
+            .navbar-menu.active { display: flex; }
+            
             .hero-title { font-size: 2rem; }
-            .footer-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
             .cart-sidebar { width: 100%; left: -100%; }
             .payment-options { grid-template-columns: 1fr; }
-            .footer-social a { width: 45px; height: 45px; font-size: 1.3rem; }
-            .btn-primary.nav-order-btn span { display: none; }
+            .footer-social a { width: 45px; height: 45px; font-size: 1.2rem; }
         }
-        @media (max-width: 400px) {
-            .navbar-title { font-size: 1rem; }
-            .navbar-actions { gap: 0.5rem; }
-            .cart-btn { width: 38px; height: 38px; }
+
+        @media (max-width: 480px) {
+            .hero-title { font-size: 1.8rem; }
+            .btn { padding: 12px 20px; font-size: 0.9rem; }
+            .hero-actions { flex-direction: column; align-items: center; }
+            .hero-actions .btn { width: 100%; max-width: 280px; justify-content: center; }
         }
     </style>
 </head>
 <body>
     <nav class="navbar" id="navbar">
         <div class="navbar-container">
-            <a href="#" class="navbar-brand">
+            <a href="index.html" class="navbar-brand">
                 <img src="logo.png" alt="هَمَّ النَّمَّ" class="navbar-logo">
                 <div class="navbar-title-wrap">
                     <div class="navbar-title">
-                        <span data-ar="هَمَّ النَّمَّ" data-en="Hum L Num">هَمَّ النَّمَّ</span>
+                        هَمَّ النَّمَّ
+                        <span class="sub-title" data-ar="Hum L Num" data-en="Hum L Num">Hum L Num</span>
                     </div>
                 </div>
             </a>
-            <ul class="navbar-menu">
+
+            <!-- زر القائمة للموبايل -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="القائمة">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <ul class="navbar-menu" id="navbarMenu">
                 <li><a href="#home" data-ar="الرئيسية" data-en="Home">الرئيسية</a></li>
                 <li><a href="#menu" data-ar="المنيو" data-en="Menu">المنيو</a></li>
+                <li><a href="tracking.html" data-ar="تتبع طلبك" data-en="Track Order">تتبع طلبك</a></li>
                 <li><a href="#contact" data-ar="تواصل معنا" data-en="Contact">تواصل معنا</a></li>
             </ul>
+
             <div class="navbar-actions">
                 <button class="lang-switch" onclick="toggleLanguage()" id="langSwitch">EN</button>
                 <div class="cart-btn" onclick="toggleCart()">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="cart-badge" id="cartCount">0</span>
                 </div>
-                <a href="#menu" class="btn btn-primary nav-order-btn">
-                    <i class="fas fa-utensils"></i> 
-                    <span data-ar="اطلب الآن" data-en="Order Now">اطلب الآن</span>
-                </a>
             </div>
         </div>
     </nav>
@@ -275,11 +314,9 @@
                 <div>
                     <div class="footer-brand">
                         <img src="logo.png" alt="هَمَّ النَّمَّ" class="footer-logo">
-                        <div class="footer-brand-text">
-                            <span data-ar="هَمَّ النَّمَّ" data-en="Hum L Num">هَمَّ النَّمَّ</span>
-                        </div>
+                        <div class="footer-brand-text" data-ar="هَمَّ النَّمَّ" data-en="Hum L Num">هَمَّ النَّمَّ</div>
                     </div>
-                    <p class="footer-desc" data-ar="طعم البيت، لحد باب بيتك 🏡" data-en="Home taste, delivered to your door 🏡">طعم البيت، لحد باب بيتك 🏡</p>
+                    <p class="footer-desc" data-ar="طعم البيت، لحد باب بيتك 🏡<br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك" data-en="Home taste, delivered to your door 🏡<br>Fresh dishes prepared with love and care from our kitchen to your home">طعم البيت، لحد باب بيتك 🏡<br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك</p>
                     <div class="footer-social">
                         <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="instagram"><i class="fab fa-instagram"></i></a>
@@ -297,8 +334,9 @@
                 <div>
                     <h4 class="footer-title" data-ar="تواصل معنا" data-en="Contact Us">تواصل معنا</h4>
                     <ul class="footer-links">
-                        <li><i class="fas fa-phone"></i> +20 115 889 9779</li>
-                        <li><i class="fas fa-map-marker-alt"></i> <span data-ar="القاهرة، مصر" data-en="Cairo, Egypt">القاهرة، مصر</span></li>
+                        <li><a href="tel:+201158899779"><i class="fas fa-phone"></i> +20 115 889 9779</a></li>
+                        <li><a href="https://wa.me/201158899779" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a></li>
+                        <li><a href="#"><i class="fas fa-map-marker-alt"></i> <span data-ar="القاهرة، مصر" data-en="Cairo, Egypt">القاهرة، مصر</span></a></li>
                     </ul>
                 </div>
             </div>
@@ -323,7 +361,7 @@
             <div class="cart-total grand"><span data-ar="الإجمالي الكلي" data-en="Grand Total">الإجمالي الكلي</span><span id="grandTotal">0.00 ج.م</span></div>
             <div id="minOrderWarning" class="min-order-warning" style="display: none;">
                 <i class="fas fa-exclamation-circle"></i>
-                <span id="minOrderText">الحد الأدنى للطلب 150 ج.م</span>
+                <span id="minOrderText" data-ar="الحد الأدنى للطلب 150 ج.م" data-en="Minimum order 150 EGP">الحد الأدنى للطلب 150 ج.م</span>
                 <span class="remaining" id="remainingAmount"></span>
             </div>
             <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled>
@@ -336,7 +374,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h3 class="modal-title" data-ar="🎯 طلب خاص" data-en="🎯 Custom Order">🎯 طلب خاص</h3>
-                <button class="cart-close" onclick="closeCustomOrderModal()"><i class="fas fa-times"></i></button>
+                <button class="cart-close" onclick="closeCustomOrderModal()" style="background: rgba(255,255,255,0.2);"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="custom-order-section">
@@ -346,7 +384,7 @@
                         <input type="text" class="form-input" id="customItemName" data-ar-placeholder="مثال: كشري باللحمة زيادة" data-en-placeholder="Example: Koshary with extra meat" placeholder="مثال: كشري باللحمة زيادة">
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label" data-ar="ملاحظات إضافية (اختياري)" data-en="Additional Notes (Optional)">ملاحظات إضافية (اختياري)</label>
+                        <label class="form-label" data-ar="ملاحظات إضافية" data-en="Additional Notes">ملاحظات إضافية</label>
                         <textarea class="form-input form-textarea" id="customItemNotes" data-ar-placeholder="مثال: من غير بصل، حراق زيادة..." data-en-placeholder="Example: No onions, extra spicy..." placeholder="مثال: من غير بصل، حراق زيادة..."></textarea>
                     </div>
                 </div>
@@ -368,7 +406,7 @@
                 <div class="custom-order-error" id="customError"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="closeCustomOrderModal()" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
+                <button class="btn btn-outline" onclick="closeCustomOrderModal()" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
                 <button class="btn btn-primary" style="background: var(--whatsapp);" onclick="sendCustomOrderToWhatsApp()">
                     <i class="fab fa-whatsapp"></i> <span data-ar="إرسال عبر واتساب" data-en="Send via WhatsApp">إرسال عبر واتساب</span>
                 </button>
@@ -380,15 +418,18 @@
         <div class="modal">
             <div class="modal-header">
                 <h3 class="modal-title" data-ar="إتمام الطلب" data-en="Complete Order">إتمام الطلب</h3>
-                <button class="cart-close" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
+                <button class="cart-close" onclick="closeCheckout()" style="background: rgba(255,255,255,0.2);"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label" data-ar="تاريخ ووقت الاستلام" data-en="Delivery Date & Time">تاريخ ووقت الاستلام <span style="color:var(--danger); font-size:0.75rem;" data-ar="(بعد يومين على الأقل)" data-en="(at least 2 days ahead)">(بعد يومين على الأقل)</span></label>
+                    <label class="form-label" data-ar="تاريخ ووقت الاستلام" data-en="Delivery Date & Time">
+                        تاريخ ووقت الاستلام
+                        <span style="color:var(--danger); font-size:0.75rem;" data-ar="(بعد يومين على الأقل)" data-en="(at least 2 days ahead)">(بعد يومين على الأقل)</span>
+                    </label>
                     <input type="datetime-local" class="form-input" id="deliveryTime">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" data-ar="ملاحظة على الطلب (اختياري)" data-en="Order Note (Optional)">ملاحظة على الطلب (اختياري)</label>
+                    <label class="form-label" data-ar="ملاحظة على الطلب" data-en="Order Note">ملاحظة على الطلب</label>
                     <textarea class="form-input form-textarea" id="orderNote" data-ar-placeholder="أي ملاحظات..." data-en-placeholder="Any notes..." placeholder="أي ملاحظات..."></textarea>
                 </div>
                 <div class="form-group">
@@ -416,10 +457,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="checkoutError" style="color:var(--danger);font-size:.85rem;min-height:1em; font-weight:600;"></div>
+                <div id="checkoutError" style="color:var(--danger);font-size:0.9rem;min-height:1.5em; font-weight:700; text-align:center;"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="closeCheckout()" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
+                <button class="btn btn-outline" onclick="closeCheckout()" data-ar="إلغاء" data-en="Cancel">إلغاء</button>
                 <button class="btn btn-primary" id="submitOrderBtn" onclick="submitOrder()">
                     <i class="fas fa-check"></i> <span id="submitOrderText" data-ar="تأكيد الطلب" data-en="Confirm Order">تأكيد الطلب</span>
                 </button>
@@ -439,7 +480,7 @@
                         <i class="fas fa-map-marker-alt"></i> <span data-ar="تابع حالة طلبك" data-en="Track Your Order">تابع حالة طلبك</span>
                     </a>
                 </div>
-                <button class="btn btn-ghost" style="margin-top: 1rem;" onclick="closeSuccess()" data-ar="إغلاق" data-en="Close">إغلاق</button>
+                <button class="btn btn-outline" style="margin-top: 1rem;" onclick="closeSuccess()" data-ar="إغلاق" data-en="Close">إغلاق</button>
             </div>
         </div>
     </div>
@@ -477,22 +518,6 @@
         let orderSubmitting = false;
         let currentLang = 'ar';
 
-        // ===== اختبار اتصال Firebase =====
-        async function testFirebaseConnection() {
-            try {
-                console.log('🔍 Testing Firebase connection...');
-                const snapshot = await get(ref(db, 'menu'));
-                console.log('✅ Firebase connection OK - Menu loaded:', snapshot.exists());
-                return true;
-            } catch (error) {
-                console.error('❌ Firebase connection FAILED:', error);
-                console.error('Error code:', error.code);
-                console.error('Error message:', error.message);
-                return false;
-            }
-        }
-
-        // ===== LANGUAGE SYSTEM =====
         window.toggleLanguage = function() {
             currentLang = currentLang === 'ar' ? 'en' : 'ar';
             applyLanguage();
@@ -524,12 +549,6 @@
             MENU = Object.entries(data).map(([id, item]) => ({ id, ...item })).filter(item => item.available !== false);
             document.getElementById('statItems').textContent = MENU.length + '+';
             renderMenu();
-        }, (error) => {
-            console.error('❌ Menu loading error:', error);
-        });
-
-        onValue(ref(db, 'orders'), (snapshot) => {
-            document.getElementById('statOrders').textContent = (snapshot.size || 0) + '+';
         });
 
         function cleanText(value, maxLength = 500) {
@@ -706,7 +725,7 @@
                 const remaining = CONFIG.minOrderLimit - subtotal;
                 checkoutBtn.disabled = true;
                 checkoutBtn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span>${currentLang === 'ar' ? `الحد الأدنى ${CONFIG.minOrderLimit} ج.م` : `Min. ${CONFIG.minOrderLimit} EGP`}</span>`;
-                warningEl.style.display = 'flex';
+                warningEl.style.display = 'block';
                 document.getElementById('minOrderText').textContent = currentLang === 'ar' ? 'الحد الأدنى للطلب 150 ج.م' : 'Minimum order is 150 EGP';
                 document.getElementById('remainingAmount').textContent = currentLang === 'ar' 
                     ? `ضيف ${remaining.toFixed(2)} ج.م علشان توصل للحد الأدنى` 
@@ -728,16 +747,18 @@
             }
         };
 
+        // ===== دالة فتح نافذة الدفع (تم تعديل التقويم هنا) =====
         window.openCheckout = function () {
             if (cart.length === 0) return;
             
+            // حساب أقل تاريخ مسموح (بعد يومين)
             const futureDate = new Date();
             futureDate.setDate(futureDate.getDate() + 2);
-            const defaultDate = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, '0')}-${String(futureDate.getDate()).padStart(2, '0')}T00:00`;
+            const minDateStr = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, '0')}-${String(futureDate.getDate()).padStart(2, '0')}T00:00`;
             
             const deliveryTimeInput = document.getElementById('deliveryTime');
-            deliveryTimeInput.min = defaultDate;
-            deliveryTimeInput.value = defaultDate;
+            deliveryTimeInput.min = minDateStr; // منع اختيار تواريخ قبل يومين
+            deliveryTimeInput.value = ''; // تفريغ الحقل ليختار العميل بنفسه
             
             document.getElementById('checkoutModal').classList.add('open');
             toggleCart();
@@ -758,15 +779,6 @@
             const errBox = document.getElementById('checkoutError');
             errBox.textContent = '';
 
-            // 🔍 اختبار الاتصال قبل الحفظ
-            const isConnected = await testFirebaseConnection();
-            if (!isConnected) {
-                errBox.textContent = currentLang === 'ar' 
-                    ? '⚠️ مشكلة في الاتصال بقاعدة البيانات. تأكد من إعدادات Firebase.' 
-                    : '⚠️ Database connection issue. Please check Firebase settings.';
-                return;
-            }
-            
             const name = cleanText(document.getElementById('customerName').value, 100);
             const phoneRaw = document.getElementById('customerPhone').value;
             const address = cleanText(document.getElementById('customerAddress').value, 500);
@@ -814,18 +826,13 @@
             document.getElementById('submitOrderText').textContent = currentLang === 'ar' ? 'جاري الإرسال...' : 'Sending...';
 
             try {
-                console.log('📝 Starting order submission...');
-                
-                // توليد رقم الطلب
                 let orderNumber;
                 try {
                     const counterResult = await runTransaction(ref(db, 'counters/orderNumber'), current => {
                         return Number.isFinite(Number(current)) ? Number(current) + 1 : 1001;
                     });
                     orderNumber = counterResult.committed ? Number(counterResult.snapshot.val()) : 1000 + Math.floor(Math.random() * 9000);
-                    console.log('✅ Order number generated:', orderNumber);
-                } catch (counterError) {
-                    console.warn('⚠️ Counter transaction failed, using fallback:', counterError);
+                } catch (e) {
                     orderNumber = 1000 + Math.floor(Math.random() * 9000);
                 }
 
@@ -847,57 +854,11 @@
                     createdAt: serverTimestamp(), updatedAt: serverTimestamp()
                 };
 
-                console.log('💾 Saving order to Firebase...', order);
-
-                // ✅ محاولة الحفظ بطريقة بسيطة ومباشرة
-                try {
-                    // أولاً: حفظ الطلب
-                    await set(ref(db, 'orders/' + orderId), order);
-                    console.log('✅ Order saved successfully');
-                    
-                    // ثانياً: حفظ رابط البحث
-                    try {
-                        await set(ref(db, 'orderLookup/' + orderNumber), orderId);
-                        console.log('✅ Lookup saved');
-                    } catch (lookupError) {
-                        console.warn('⚠️ Lookup save failed (non-critical):', lookupError);
-                    }
-                    
-                    // ثالثاً: حفظ فهرس المستخدم
-                    try {
-                        await set(ref(db, 'userOrders/' + guestId + '/' + orderId), true);
-                        console.log('✅ User order index saved');
-                    } catch (userOrderError) {
-                        console.warn('⚠️ User order index save failed (non-critical):', userOrderError);
-                    }
-                } catch (saveError) {
-                    console.error('❌ Save error:', saveError);
-                    console.error('Error code:', saveError.code);
-                    console.error('Error message:', saveError.message);
-                    
-                    // عرض رسالة الخطأ الحقيقية
-                    let errorMessage = currentLang === 'ar' 
-                        ? 'حصل خطأ أثناء حفظ الطلب. ' 
-                        : 'Error saving order. ';
-                    
-                    if (saveError.code === 'PERMISSION_DENIED') {
-                        errorMessage += currentLang === 'ar'
-                            ? '⚠️ مشكلة في الصلاحيات. تأكد من تحديث قواعد Firebase.'
-                            : '⚠️ Permission denied. Please update Firebase rules.';
-                    } else {
-                        errorMessage += saveError.message || '';
-                    }
-                    
-                    throw new Error(errorMessage);
-                }
+                await set(ref(db, 'orders/' + orderId), order);
+                try { await set(ref(db, 'orderLookup/' + orderNumber), orderId); } catch (e) {}
 
                 const waMessage = `طلب جديد من ${CONFIG.businessNameAr}\nرقم الطلب: #${orderNumber}\nالإجمالي: ${totals.grandTotal.toFixed(2)} ج.م\nالاسم: ${name}\nالموبايل: ${phoneRaw}\nالعنوان: ${address}`;
-                
-                try {
-                    window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(waMessage)}`, '_blank');
-                } catch (waError) {
-                    console.warn('⚠️ WhatsApp open failed:', waError);
-                }
+                window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(waMessage)}`, '_blank');
 
                 document.getElementById('orderNumber').textContent = '#' + orderNumber;
                 document.getElementById('successTrackLink').href = `tracking.html?id=${encodeURIComponent(orderId)}`;
@@ -910,10 +871,10 @@
                 ['customerName', 'customerPhone', 'customerAddress', 'orderNote', 'deliveryTime'].forEach(id => document.getElementById(id).value = '');
 
             } catch (error) {
-                console.error('❌ Order submission failed:', error);
-                errBox.textContent = error.message || (currentLang === 'ar' 
+                console.error('Order error:', error);
+                errBox.textContent = currentLang === 'ar' 
                     ? 'حصل خطأ أثناء حفظ الطلب. تأكد من اتصال الإنترنت.' 
-                    : 'Error saving order. Please check your internet connection.');
+                    : 'Error saving order. Please check your internet connection.';
             } finally {
                 orderSubmitting = false;
                 submitBtn.disabled = false;
@@ -922,6 +883,19 @@
         };
 
         window.closeSuccess = function () { document.getElementById('successModal').classList.remove('open'); };
+
+        // ===== دالة فتح وإغلاق قائمة الموبايل =====
+        window.toggleMobileMenu = function() {
+            const menu = document.getElementById('navbarMenu');
+            menu.classList.toggle('active');
+        };
+
+        // إغلاق القائمة عند الضغط على أي رابط
+        document.querySelectorAll('.navbar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navbarMenu').classList.remove('active');
+            });
+        });
 
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
@@ -932,9 +906,6 @@
         });
 
         applyLanguage();
-        
-        // اختبار الاتصال عند تحميل الصفحة
-        testFirebaseConnection();
     </script>
 </body>
 </html>
