@@ -1067,35 +1067,55 @@
     }
 
     function renderMenu() {
-      const container = document.getElementById("menuGrid");
-      console.log("🎨 عرض المنيو:", menuItems.length, "صنف");
-      if (!menuItems.length) {
-        container.innerHTML = `<div class="panel" style="grid-column:1/-1"><div class="empty">لا توجد أصناف في المنيو<br><small style="color:var(--gray-500);margin-top:10px;display:block;">اضغط "إضافة صنف" لإضافة أول صنف</small></div></div>`;
-        return;
-      }
-      container.innerHTML = menuItems.map(item => {
-        const image = item.image || item.imageUrl || "https://via.placeholder.com/600x400?text=Hum+L+Num";
-        const name = item.nameAr || item.name || "بدون اسم";
-        return `<div class="menu-card">
-          <div class="menu-image"><img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" onerror="this.src='https://via.placeholder.com/600x400?text=Hum+L+Num'"></div>
-          <div class="menu-body">
-            <h3>${escapeHtml(name)}</h3><p>${escapeHtml(item.category || "بدون تصنيف")}</p>
-            <div class="menu-price">${formatMoney(item.price)}</div>
-            <div class="menu-footer">
-              <button class="toggle ${item.available !== false ? "on" : ""}" title="تغيير التوفر" data-toggle-menu="${item.key}" data-available="${item.available !== false}"></button>
-              <div class="actions">
-                <button class="icon-btn" title="تعديل" data-edit-menu="${item.key}"><i class="fa-solid fa-pen"></i></button>
-                <button class="icon-btn" title="حذف" data-delete-menu="${item.key}"><i class="fa-solid fa-trash"></i></button>
-              </div>
-            </div>
-          </div>
-        </div>`;
-      }).join("");
-      container.querySelectorAll("[data-toggle-menu]").forEach(button => button.addEventListener("click", () => toggleMenuAvailability(button.dataset.toggleMenu, button.dataset.available === "true")));
-      container.querySelectorAll("[data-edit-menu]").forEach(button => button.addEventListener("click", () => editItem(button.dataset.editMenu)));
-      container.querySelectorAll("[data-delete-menu]").forEach(button => button.addEventListener("click", () => deleteItem(button.dataset.deleteMenu)));
-    }
+  const container = document.getElementById("menuGrid");
+  console.log("🎨 عرض المنيو:", menuItems.length, "صنف");
+  
+  // عرض بيانات أول صنف في Console للتشخيص
+  if (menuItems.length > 0) {
+    console.log("📋 بيانات أول صنف:", menuItems[0]);
+    console.log("🔑 جميع المفاتيح المتاحة:", Object.keys(menuItems[0]));
+  }
 
+  if (!menuItems.length) {
+    container.innerHTML = `<div class="panel" style="grid-column:1/-1"><div class="empty">لا توجد أصناف في المنيو<br><small style="color:var(--gray-500);margin-top:10px;display:block;">اضغط "إضافة صنف" لإضافة أول صنف</small></div></div>`;
+    return;
+  }
+
+  container.innerHTML = menuItems.map(item => {
+    // فحص جميع الحقول الممكنة للاسم
+    const name = item.nameAr || item.name || item.ar || item.title || item.itemName || item.label || "بدون اسم";
+    
+    // فحص جميع الحقول الممكنة للصورة
+    const image = item.image || item.imageUrl || item.img || item.photo || item.picture || item.imageURL || "https://via.placeholder.com/600x400?text=Hum+L+Num";
+    
+    // فحص التصنيف
+    const category = item.category || item.cat || item.type || "بدون تصنيف";
+    
+    // فحص السعر
+    const price = item.price || item.cost || item.amount || 0;
+
+    console.log(`✅ صنف: "${name}" | صورة: ${image.substring(0, 50)}...`);
+
+    return `<div class="menu-card">
+      <div class="menu-image"><img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" onerror="this.src='https://via.placeholder.com/600x400?text=Hum+L+Num'"></div>
+      <div class="menu-body">
+        <h3>${escapeHtml(name)}</h3><p>${escapeHtml(category)}</p>
+        <div class="menu-price">${formatMoney(price)}</div>
+        <div class="menu-footer">
+          <button class="toggle ${item.available !== false ? "on" : ""}" title="تغيير التوفر" data-toggle-menu="${item.key}" data-available="${item.available !== false}"></button>
+          <div class="actions">
+            <button class="icon-btn" title="تعديل" data-edit-menu="${item.key}"><i class="fa-solid fa-pen"></i></button>
+            <button class="icon-btn" title="حذف" data-delete-menu="${item.key}"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  container.querySelectorAll("[data-toggle-menu]").forEach(button => button.addEventListener("click", () => toggleMenuAvailability(button.dataset.toggleMenu, button.dataset.available === "true")));
+  container.querySelectorAll("[data-edit-menu]").forEach(button => button.addEventListener("click", () => editItem(button.dataset.editMenu)));
+  container.querySelectorAll("[data-delete-menu]").forEach(button => button.addEventListener("click", () => deleteItem(button.dataset.deleteMenu)));
+}
     async function toggleMenuAvailability(key, currentValue) {
       try {
         await update(ref(db, `menu/${key}`), { available: !currentValue, updatedAt: Date.now() });
