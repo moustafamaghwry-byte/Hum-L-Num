@@ -812,54 +812,141 @@
       selectedPayMethod = el.dataset.value || 'cash';
     };
 
-    window.submitOrder = async function () {
-      if (orderSubmitting) return;
-      
-      const errBox = document.getElementById('checkoutError');
-      errBox.textContent = '';
+   window.submitOrder = async function () {
+  if (orderSubmitting) return;
+  
+  const errBox = document.getElementById('checkoutError');
+  errBox.textContent = '';
 
-      const name = cleanText(document.getElementById('customerName').value, 100);
-      const phoneRaw = document.getElementById('customerPhone').value;
-      const address = cleanText(document.getElementById('customerAddress').value, 500);
-      const note = cleanText(document.getElementById('orderNote').value, 1000);
-      const deliveryTime = document.getElementById('deliveryTime').value;
+  const name = cleanText(document.getElementById('customerName').value, 100);
+  const phoneRaw = document.getElementById('customerPhone').value;
+  const address = cleanText(document.getElementById('customerAddress').value, 500);
+  const note = cleanText(document.getElementById('orderNote').value, 1000);
+  const deliveryTime = document.getElementById('deliveryTime').value;
 
-      if (!name || !isValidEgyptianPhone(phoneRaw) || !address) {
-        errBox.textContent = currentLang === 'ar' ? 'من فضلك راجع البيانات المطلوبة (الاسم، الموبايل، العنوان)' : 'Please check required fields';
-        return;
-      }
-      if (cart.length === 0) { 
-        errBox.textContent = currentLang === 'ar' ? 'السلة فارغة' : 'Cart is empty'; 
-        return; 
-      }
+  // التحقق من البيانات
+  if (!name || !isValidEgyptianPhone(phoneRaw) || !address) {
+    errBox.textContent = currentLang === 'ar' 
+      ? 'من فضلك راجع البيانات المطلوبة (الاسم، الموبايل، العنوان)' 
+      : 'Please check required fields';
+    return;
+  }
+  
+  if (cart.length === 0) { 
+    errBox.textContent = currentLang === 'ar' ? 'السلة فارغة' : 'Cart is empty'; 
+    return; 
+  }
 
-      const totals = computeTotals();
-      if (totals.subtotal < CONFIG.minOrderLimit) {
-        errBox.textContent = currentLang === 'ar' 
-          ? `الحد الأدنى للطلب هو ${CONFIG.minOrderLimit} ج.م.` 
-          : `Minimum order is ${CONFIG.minOrderLimit} EGP`;
-        return;
-      }
+  const totals = computeTotals();
+  if (totals.subtotal < CONFIG.minOrderLimit) {
+    errBox.textContent = currentLang === 'ar' 
+      ? `الحد الأدنى للطلب هو ${CONFIG.minOrderLimit} ج.م.` 
+      : `Minimum order is ${CONFIG.minOrderLimit} EGP`;
+    return;
+  }
 
-      if (deliveryTime) {
-        const selectedDate = new Date(deliveryTime);
-        const minDate = new Date();
-        minDate.setDate(minDate.getDate() + 2);
-        minDate.setHours(0, 0, 0, 0);
-        selectedDate.setHours(0, 0, 0, 0);
-        if (selectedDate < minDate) {
-          errBox.textContent = currentLang === 'ar' 
-            ? 'يجب أن يكون موعد الاستلام بعد يومين على الأقل.' 
-            : 'Delivery must be at least 2 days from now.';
-          return;
-        }
-      }
+  if (deliveryTime) {
+    const selectedDate = new Date(deliveryTime);
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() + 2);
+    minDate.setHours(0, 0, 0, 0);
+    selectedDate.setHours(0, 0, 0, 0);
+    if (selectedDate < minDate) {
+      errBox.textContent = currentLang === 'ar' 
+        ? 'يجب أن يكون موعد الاستلام بعد يومين على الأقل.' 
+        : 'Delivery must be at least 2 days from now.';
+      return;
+    }
+  }
 
-      orderSubmitting = true;
-      const submitBtn = document.getElementById('submitOrderBtn');
-      submitBtn.disabled = true;
-      document.getElementById('submitOrderText').textContent = currentLang === 'ar' ? 'جاري الإرسال...' : 'Sending...';
+  orderSubmitting = true;
+  const submitBtn = document.getElementById('submitOrderBtn');
+  submitBtn.disabled = true;
+  document.getElementById('submitOrderText').textContent = currentLang === 'ar' ? 'جاري الإرسال...' : 'Sending...';
 
+  try {
+    // ✅ 1. إنشاء رقم الطلب باستخدام transaction صحيح
+    let orderNumber;
+    const counterRef = ref(db, 'counters/orderNumber');
+    
+    const transactionResult = await runTransaction(counterRef, (currentValue) => {
+      const currentNumber = Number(currentValue) || 1000;
+      return currentNumber + 1;
+    });
+    
+    if (transactionResult.committed) {
+      orderNumber = transactionResult.snapshot.val();
+    } else {
+      orderNumber = 1000 + Math.floor(Math.random() * 9000);
+    }
+
+    // ✅ 2. إنشاء معرف الطلب
+    const newOrderRef = push(ref(db, 'orders'));
+    const orderId = newOrderRef.key;
+    const guestId = 'guest_' + Date.now();
+
+    // ✅ 3. بناء بيانات الطلب
+    const order = {
+      orderNumber, 
+      status: 'received', 
+      customerName: name,
+      customerPhone: phoneRaw.trim(), 
+      customerAddress: address,
+      payMethod: selectedPayMethod, 
+      deliveryTimeTarget: deliveryTime || '',
+      note, 
+      items: cart.map(it => ({
+        id: it.id, 
+        ar: it.ar, 
+        en: it.en, 
+        price: it.pendingPrice ? 0 : it.price, 
+        qty: it.qty,
+        notes: it.notes || '',
+        ...(it.pendingPrice ? { pricingStatus: 'pending' } : {})
+      })),
+      subtotal: totals.subtotal, 
+      deliveryFee: totals.deliveryFee, 
+      total: totals.grandTotal,
+      userId: guestId,
+      pricingStatus: cart.some(it => it.pendingPrice) ? 'requires_custom_item_confirmation' : 'confirmed',
+      createdAt: serverTimestamp(), 
+      updatedAt: serverTimestamp()
+    };
+
+    // ✅ 4. حفظ الطلب والـ lookup في نفس العملية
+    const updates = {};
+    updates[`orders/${orderId}`] = order;
+    updates[`orderLookup/${orderNumber}`] = orderId;
+    
+    await update(ref(db), updates);
+
+    // ✅ 5. إرسال واتساب
+    const waMessage = `طلب جديد من ${CONFIG.businessNameAr}\nرقم الطلب: #${orderNumber}\nالإجمالي: ${totals.grandTotal.toFixed(2)} ج.م\nالاسم: ${name}\nالموبايل: ${phoneRaw}\nالعنوان: ${address}`;
+    window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(waMessage)}`, '_blank');
+
+    // ✅ 6. عرض النجاح
+    document.getElementById('orderNumber').textContent = '#' + orderNumber;
+    document.getElementById('successTrackLink').href = `tracking.html?id=${encodeURIComponent(orderId)}`;
+    
+    closeCheckout();
+    document.getElementById('successModal').classList.add('open');
+
+    // ✅ 7. تنظيف
+    cart = [];
+    updateCart();
+    ['customerName', 'customerPhone', 'customerAddress', 'orderNote', 'deliveryTime'].forEach(id => document.getElementById(id).value = '');
+
+  } catch (error) {
+    console.error('Order error:', error);
+    errBox.textContent = currentLang === 'ar' 
+      ? 'حصل خطأ أثناء حفظ الطلب. تأكد من اتصال الإنترنت.' 
+      : 'Error saving order. Please check your internet connection.';
+  } finally {
+    orderSubmitting = false;
+    submitBtn.disabled = false;
+    document.getElementById('submitOrderText').textContent = currentLang === 'ar' ? 'تأكيد الطلب' : 'Confirm Order';
+  }
+};
       try {
         let orderNumber;
         try {
