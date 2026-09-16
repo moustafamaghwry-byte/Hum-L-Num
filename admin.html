@@ -525,7 +525,13 @@
                     const orderDate = new Date(order.createdAt).toDateString();
                     
                     total++;
-                    if (order.status === 'preparing') pending++;
+                    if (
+    order.status === 'received' ||
+    order.status === 'preparing' ||
+    order.status === 'out_for_delivery'
+) {
+    pending++;
+}
                     if (order.status === 'delivered') completed++;
                     if (orderDate === today && order.status !== 'cancelled') revenue += (order.total || 0);
 
