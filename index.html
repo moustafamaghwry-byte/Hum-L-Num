@@ -721,7 +721,10 @@
         }
 
         function getItemName(item) {
-            return currentLang === 'ar' ? (item.ar || item.name) : (item.en || item.name || item.ar);
+            const ar = item.nameAr || item.ar || item.name;
+    const en = item.nameEn || item.en || item.name || ar;
+    return currentLang === 'ar' ? ar : en;
+            
         }
 
         function getCurrency() {
@@ -794,12 +797,12 @@
                 if (notes) existing.notes = notes;
             } else {
                 cart.push({ 
-                    id: item.id, 
-                    ar: item.ar || item.name, 
-                    en: item.en || item.name, 
-                    price: item.price, 
-                    qty: 1,
-                    notes: notes
+                     id: item.id, 
+    ar: item.nameAr || item.ar || item.name, 
+    en: item.nameEn || item.en || item.name, 
+    price: item.price, 
+    qty: 1,
+    notes: notes
                 });
             }
             
