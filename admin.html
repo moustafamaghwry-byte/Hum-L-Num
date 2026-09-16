@@ -489,7 +489,13 @@
                     return;
                 }
 
-                const statusLabels = { received: 'تم الاستلام', preparing: 'جاري التحضير', ready: 'خرج للتوصيل', delivered: 'تم التوصيل', cancelled: 'ملغي' };
+                const statusLabels = {
+    received: 'تم الاستلام',
+    preparing: 'جاري التحضير',
+    out_for_delivery: 'خرج للتوصيل',
+    delivered: 'تم التوصيل',
+    cancelled: 'ملغي'
+};
                 const activeFilter = document.querySelector('.filter-tab.active').dataset.status;
 
                 snapshot.forEach((child) => {
