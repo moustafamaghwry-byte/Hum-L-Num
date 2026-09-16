@@ -431,7 +431,7 @@
         </div>
     </div>
 
-    <script type="module">
+        <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getDatabase, ref, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -475,6 +475,7 @@
             });
         }
 
+        // ===== دالة عرض الطلبات (محدثة لتتحمل بيانات Firebase القديمة بأمان) =====
         function loadOrders() {
             onValue(ref(db, 'orders'), (snapshot) => {
                 const tbody = document.getElementById('ordersTableBody');
@@ -489,41 +490,64 @@
                     return;
                 }
 
-                const statusLabels = { received: 'تم الاستلام', preparing: 'جاري التحضير', ready: 'خرج للتوصيل', delivered: 'تم التوصيل', cancelled: 'ملغي' };
-                const activeFilter = document.querySelector('.filter-tab.active').dataset.status;
+                const statusLabels = { 
+                    received: 'تم الاستلام', 
+                    preparing: 'جاري التحضير', 
+                    ready: 'خرج للتوصيل', 
+                    out_for_delivery: 'خرج للتوصيل',
+                    delivered: 'تم التوصيل', 
+                    cancelled: 'ملغي' 
+                };
+                const activeFilter = document.querySelector('.filter-tab.active')?.dataset.status || 'all';
 
                 snapshot.forEach((child) => {
-                    const order = child.val();
-                    const key = child.key;
-                    const orderDate = new Date(order.createdAt).toDateString();
-                    
-                    total++;
-                    if (order.status === 'preparing') pending++;
-                    if (order.status === 'delivered') completed++;
-                    if (orderDate === today && order.status !== 'cancelled') revenue += (order.total || 0);
+                    try {
+                        const order = child.val();
+                        const key = child.key;
+                        
+                        // معالجة آمنة للتاريخ (تتعامل مع Timestamp القديم أو النص الجديد)
+                        let dateObj = new Date();
+                        if (order.createdAt) {
+                            if (typeof order.createdAt === 'object' && order.createdAt.seconds) {
+                                dateObj = new Date(order.createdAt.seconds * 1000);
+                            } else {
+                                dateObj = new Date(order.createdAt);
+                            }
+                        }
+                        const orderDate = dateObj.toDateString();
+                        const orderDateTime = isNaN(dateObj.getTime()) ? 'غير محدد' : dateObj.toLocaleString('ar-EG');
+                        
+                        total++;
+                        const status = order.status || 'received';
+                        if (status === 'preparing' || status === 'ready' || status === 'out_for_delivery') pending++;
+                        if (status === 'delivered') completed++;
+                        if (orderDate === today && status !== 'cancelled') revenue += (Number(order.total) || 0);
 
-                    if (activeFilter !== 'all' && order.status !== activeFilter) return;
+                        if (activeFilter !== 'all' && status !== activeFilter) return;
 
-                    const totalDisplay = order.pricingStatus === 'requires_custom_item_confirmation'
-                        ? `<span style="color:var(--warning)">${(order.total || 0).toFixed(2)} ج.م* (في انتظار التسعير)</span>` 
-                        : `${(order.total || 0).toFixed(2)} ج.م`;
-                    
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>#${order.orderNumber}</strong></td>
-                        <td>${order.customerName}</td>
-                        <td>${order.customerPhone}</td>
-                        <td>${totalDisplay}</td>
-                        <td><span class="status-badge ${order.status}">${statusLabels[order.status] || order.status}</span></td>
-                        <td>${new Date(order.createdAt).toLocaleString('ar-EG')}</td>
-                        <td>
-                            <div class="action-btns">
-                                <button class="action-btn view" onclick="viewOrder('${key}')" title="عرض"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn delete" onclick="deleteOrder('${key}')" title="حذف"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
+                        const totalDisplay = order.pricingStatus === 'requires_custom_item_confirmation'
+                            ? `<span style="color:var(--warning)">${(Number(order.total) || 0).toFixed(2)} ج.م* (انتظار)</span>` 
+                            : `${(Number(order.total) || 0).toFixed(2)} ج.م`;
+                        
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><strong>#${order.orderNumber || '---'}</strong></td>
+                            <td>${order.customerName || 'غير محدد'}</td>
+                            <td>${order.customerPhone || 'غير محدد'}</td>
+                            <td>${totalDisplay}</td>
+                            <td><span class="status-badge ${status}">${statusLabels[status] || status}</span></td>
+                            <td>${orderDateTime}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn view" onclick="viewOrder('${key}')" title="عرض"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn delete" onclick="deleteOrder('${key}')" title="حذف"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    } catch (err) {
+                        console.error("خطأ في معالجة طلب:", child.key, err);
+                    }
                 });
                 updateStats(total, pending, completed, revenue);
             });
@@ -536,39 +560,60 @@
             document.getElementById('todayRevenue').textContent = revenue.toFixed(2) + ' ج.م';
         }
 
+        // ===== دالة عرض تفاصيل الطلب (محدثة لتتحمل البيانات القديمة) =====
         window.viewOrder = function(key) {
             currentOrderKey = key;
             onValue(ref(db, 'orders/' + key), (snapshot) => {
                 const order = snapshot.val();
-                document.getElementById('orderNumberDisplay').textContent = '#' + order.orderNumber;
-                document.getElementById('orderCustomer').textContent = order.customerName;
-                document.getElementById('orderPhone').textContent = order.customerPhone;
-                document.getElementById('orderAddress').textContent = order.customerAddress;
-                document.getElementById('orderTime').textContent = new Date(order.createdAt).toLocaleString('ar-EG');
-                document.getElementById('orderStatusSelect').value = order.status;
+                if (!order) return;
+
+                document.getElementById('orderNumberDisplay').textContent = '#' + (order.orderNumber || '---');
+                document.getElementById('orderCustomer').textContent = order.customerName || 'غير محدد';
+                document.getElementById('orderPhone').textContent = order.customerPhone || 'غير محدد';
+                document.getElementById('orderAddress').textContent = order.customerAddress || 'غير محدد';
+                
+                let dateObj = new Date();
+                if (order.createdAt) {
+                    if (typeof order.createdAt === 'object' && order.createdAt.seconds) {
+                        dateObj = new Date(order.createdAt.seconds * 1000);
+                    } else {
+                        dateObj = new Date(order.createdAt);
+                    }
+                }
+                document.getElementById('orderTime').textContent = isNaN(dateObj.getTime()) ? 'غير محدد' : dateObj.toLocaleString('ar-EG');
+                
+                let currentStatus = order.status || 'received';
+                document.getElementById('orderStatusSelect').value = currentStatus;
                 
                 const itemsList = document.getElementById('orderItemsList');
-                itemsList.innerHTML = order.items.map((item, index) => `
-                    <div class="order-item ${item.pricingStatus === 'pending' ? 'pending-price' : ''}">
-                        <div class="order-item-header">
-                            <div class="order-item-name">
-                                ${item.ar} ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning); font-size:0.8rem;">(طلب خاص)</span>' : ''}
-                                <span style="color:var(--gray-500); font-size:0.85rem;">x${item.qty}</span>
+                if (order.items && Array.isArray(order.items)) {
+                    itemsList.innerHTML = order.items.map((item, index) => {
+                        const price = Number(item.price) || 0;
+                        const qty = Number(item.qty) || 1;
+                        return `
+                        <div class="order-item ${item.pricingStatus === 'pending' ? 'pending-price' : ''}">
+                            <div class="order-item-header">
+                                <div class="order-item-name">
+                                    ${item.ar || 'صنف'} ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning); font-size:0.8rem;">(طلب خاص)</span>' : ''}
+                                    <span style="color:var(--gray-500); font-size:0.85rem;">x${qty}</span>
+                                </div>
+                                <div class="order-item-price">
+                                    ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning);">⏳ انتظر التسعير</span>' : `${(price * qty).toFixed(2)} ج.م`}
+                                </div>
                             </div>
-                            <div class="order-item-price">
-                                ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning);">⏳ في انتظار التسعير</span>' : `${(item.price * item.qty).toFixed(2)} ج.م`}
-                            </div>
+                            ${item.notes ? `<div style="font-size:0.85rem; color:var(--gray-600); margin-top:0.5rem; background: #fff; padding: 8px; border-radius: 6px; border-right: 3px solid var(--accent);">📝 ${item.notes}</div>` : ''}
+                            ${item.pricingStatus === 'pending' ? `
+                                <div class="price-input-group">
+                                    <label style="font-size:0.85rem; color:var(--gray-600);">تحديد السعر:</label>
+                                    <input type="number" placeholder="السعر" id="price-${index}" value="${price}" step="0.01">
+                                    <button class="btn btn-success btn-sm" onclick="setItemPrice(${index})"><i class="fas fa-check"></i> اعتماد</button>
+                                </div>
+                            ` : ''}
                         </div>
-                        ${item.notes ? `<div style="font-size:0.85rem; color:var(--gray-600); margin-top:0.5rem;">📝 ${item.notes}</div>` : ''}
-                        ${item.pricingStatus === 'pending' ? `
-                            <div class="price-input-group">
-                                <label style="font-size:0.85rem; color:var(--gray-600);">حدد السعر:</label>
-                                <input type="number" placeholder="السعر" id="price-${index}" value="${item.price || 0}" step="0.01">
-                                <button class="btn btn-success btn-sm" onclick="setItemPrice(${index})"><i class="fas fa-check"></i> اعتماد</button>
-                            </div>
-                        ` : ''}
-                    </div>
-                `).join('');
+                    `}).join('');
+                } else {
+                    itemsList.innerHTML = '<p style="color:var(--gray-500); text-align:center;">لا توجد أصناف مسجلة</p>';
+                }
                 
                 document.getElementById('orderDetailsModal').classList.add('open');
             }, { onlyOnce: true });
@@ -586,20 +631,19 @@
                 onValue(ref(db, `orders/${currentOrderKey}`), (snap) => {
                     const order = snap.val();
                     let subtotal = 0;
-                    order.items.forEach(i => { subtotal += (i.price * i.qty); });
+                    order.items.forEach(i => { subtotal += ((Number(i.price) || 0) * (Number(i.qty) || 1)); });
                     const deliveryFee = subtotal > 0 ? 30 : 0;
-                    const tax = subtotal * 0.14;
                     
+                    // تم إزالة الضريبة هنا ليتطابق مع تحديث الموقع الرئيسي
                     update(ref(db, `orders/${currentOrderKey}`), {
                         subtotal: subtotal,
                         deliveryFee: deliveryFee,
-                        tax: tax,
-                        total: subtotal + deliveryFee + tax,
+                        total: subtotal + deliveryFee,
                         pricingStatus: order.items.some(i => i.pricingStatus === 'pending') ? 'requires_custom_item_confirmation' : 'confirmed'
                     });
                 }, { onlyOnce: true });
                 viewOrder(currentOrderKey);
-                alert('تم تحديد السعر بنجاح!');
+                alert('تم تحديد السعر وتحديث الإجمالي بنجاح!');
             });
         }
 
@@ -616,12 +660,12 @@
                 updatedAt: Date.now()
             }).then(() => {
                 closeOrderDetails();
-                alert('تم تحديث حالة الطلب');
+                alert('تم تحديث حالة الطلب بنجاح');
             });
         }
 
         window.deleteOrder = function(key) {
-            if (confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
+            if (confirm('هل أنت متأكد من حذف هذا الطلب نهائياً؟')) {
                 remove(ref(db, 'orders/' + key));
             }
         }
@@ -635,7 +679,6 @@
         });
 
         // ===== MENU MANAGEMENT =====
-        
         window.openAddItemModal = function() {
             currentEditItemId = null;
             document.getElementById('modalTitle').textContent = 'إضافة صنف جديد';
@@ -654,19 +697,13 @@
             currentEditItemId = null;
         }
 
-        // Preview image from URL
         window.previewImageUrl = function(url) {
             const previewContainer = document.getElementById('imagePreviewContainer');
             const previewImg = document.getElementById('imagePreview');
-            
             if (url && url.trim() !== '') {
                 previewImg.src = url;
-                previewImg.onerror = function() {
-                    previewContainer.style.display = 'none';
-                };
-                previewImg.onload = function() {
-                    previewContainer.style.display = 'block';
-                };
+                previewImg.onerror = function() { previewContainer.style.display = 'none'; };
+                previewImg.onload = function() { previewContainer.style.display = 'block'; };
             } else {
                 previewContainer.style.display = 'none';
             }
@@ -691,12 +728,8 @@
                 document.getElementById('itemAvailable').checked = item.available !== false;
                 document.getElementById('itemBestSeller').checked = item.bestSeller === true;
                 
-                // Show image preview if exists
-                if (item.image) {
-                    previewImageUrl(item.image);
-                } else {
-                    document.getElementById('imagePreviewContainer').style.display = 'none';
-                }
+                if (item.image) previewImageUrl(item.image);
+                else document.getElementById('imagePreviewContainer').style.display = 'none';
                 
                 document.getElementById('addItemModal').classList.add('open');
             }, { onlyOnce: true });
@@ -713,56 +746,31 @@
             const bestSeller = document.getElementById('itemBestSeller').checked;
             const imageUrl = document.getElementById('itemImageUrl').value.trim();
             
-            if (!nameAr || !nameEn || !price) { 
-                alert('الرجاء إدخال الاسم والسعر'); 
+            if (!nameAr || !nameEn || isNaN(price)) { 
+                alert('الرجاء إدخال الاسم والسعر بشكل صحيح'); 
                 return; 
             }
             
             const itemData = { 
-                ar: nameAr, 
-                en: nameEn,
-                dAr: descAr,
-                dEn: descEn,
-                price: price, 
-                cat: category, 
-                available: available,
-                bestSeller: bestSeller,
-                image: imageUrl || '',
-                updatedAt: Date.now()
+                ar: nameAr, en: nameEn, dAr: descAr, dEn: descEn,
+                price: price, cat: category, available: available,
+                bestSeller: bestSeller, image: imageUrl || '', updatedAt: Date.now()
             };
 
             if (currentEditItemId) {
-                // Update existing item
                 update(ref(db, 'menu/' + currentEditItemId), itemData)
-                    .then(() => {
-                        alert('تم تحديث الصنف بنجاح!');
-                        closeAddItemModal();
-                    })
-                    .catch(error => {
-                        alert('خطأ في التحديث: ' + error.message);
-                    });
+                    .then(() => { alert('تم تحديث الصنف بنجاح!'); closeAddItemModal(); })
+                    .catch(error => alert('خطأ: ' + error.message));
             } else {
-                // Add new item
                 push(ref(db, 'menu'), itemData)
-                    .then(() => {
-                        alert('تم إضافة الصنف بنجاح!');
-                        closeAddItemModal();
-                    })
-                    .catch(error => {
-                        alert('خطأ في الإضافة: ' + error.message);
-                    });
+                    .then(() => { alert('تم إضافة الصنف بنجاح!'); closeAddItemModal(); })
+                    .catch(error => alert('خطأ: ' + error.message));
             }
         }
 
         window.deleteItem = function(key) {
             if (confirm('هل أنت متأكد من حذف هذا الصنف؟')) {
-                remove(ref(db, 'menu/' + key))
-                    .then(() => {
-                        alert('تم حذف الصنف');
-                    })
-                    .catch(error => {
-                        alert('خطأ في الحذف: ' + error.message);
-                    });
+                remove(ref(db, 'menu/' + key)).catch(error => alert('خطأ في الحذف: ' + error.message));
             }
         }
 
@@ -771,7 +779,7 @@
                 const tbody = document.getElementById('menuTableBody');
                 tbody.innerHTML = '';
                 if (!snapshot.exists()) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">لا توجد أصناف - اضغط "إضافة صنف جديد" للبدء</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">لا توجد أصناف</td></tr>';
                     return;
                 }
                 snapshot.forEach((child) => {
@@ -783,12 +791,14 @@
                         ? `<img src="${item.image}" class="menu-item-thumb" alt="${item.ar}" onerror="this.outerHTML='<div class=\\'no-image\\'><i class=\\'fas fa-image\\'></i></div>'">`
                         : `<div class="no-image"><i class="fas fa-image"></i></div>`;
                     
+                    const catNames = { 'appetizers': 'مقبلات', 'mains': 'أطباق رئيسية', 'desserts': 'حلويات', 'drinks': 'مشروبات' };
+                    
                     tr.innerHTML = `
                         <td>${imageCell}</td>
                         <td><strong>${item.ar}</strong><br><small style="color:var(--gray-500)">${item.en || ''}</small></td>
-                        <td>${getCategoryName(item.cat)}</td>
+                        <td>${catNames[item.cat] || item.cat}</td>
                         <td>${item.price} ج.م</td>
-                        <td><span class="status-badge ${item.available ? 'delivered' : 'cancelled'}">${item.available ? 'متاح' : 'غير متاح'}</span></td>
+                        <td><span class="status-badge ${item.available ? 'delivered' : 'cancelled'}">${item.available ? 'متاح' : 'مخفي'}</span></td>
                         <td>
                             <div class="action-btns">
                                 <button class="action-btn edit" onclick="editItem('${key}')" title="تعديل"><i class="fas fa-edit"></i></button>
@@ -801,17 +811,6 @@
             });
         }
 
-        function getCategoryName(cat) {
-            const categories = {
-                'appetizers': 'مقبلات',
-                'mains': 'أطباق رئيسية',
-                'desserts': 'حلويات',
-                'drinks': 'مشروبات'
-            };
-            return categories[cat] || cat;
-        }
-
-        // Close modals on overlay click
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => { 
                 if (e.target === overlay) {
