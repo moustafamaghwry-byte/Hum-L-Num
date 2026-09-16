@@ -456,93 +456,110 @@
 
         // ===== دالة عرض الطلبات (محدثة لتتحمل البيانات القديمة بأمان) =====
         function loadOrders() {
-            onValue(ref(db, 'orders'), (snapshot) => {
-                const tbody = document.getElementById('ordersTableBody');
-                tbody.innerHTML = '';
-                
-                let total = 0, pending = 0, completed = 0, revenue = 0, todayOrdersCount = 0;
-                const today = new Date().toDateString();
+    console.log("🔄 جاري محاولة تحميل الطلبات من Firebase...");
+    
+    onValue(ref(db, 'orders'), (snapshot) => {
+        const tbody = document.getElementById('ordersTableBody');
+        tbody.innerHTML = ''; // تفريغ الجدول
+        
+        let total = 0, pending = 0, completed = 0, revenue = 0, todayOrdersCount = 0;
+        const today = new Date().toDateString();
 
-                if (!snapshot.exists()) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem;">لا توجد طلبات حالياً</td></tr>';
-                    updateStats(0, 0, 0, 0, 0);
-                    return;
-                }
-
-                const currentCount = snapshot.numChildren();
-                if (currentCount > lastOrderCount && lastOrderCount !== 0) {
-                    playNotificationSound();
-                }
-                lastOrderCount = currentCount;
-
-                const statusLabels = { 
-                    received: 'تم الاستلام', 
-                    preparing: 'جاري التحضير', 
-                    out_for_delivery: 'خرج للتوصيل', 
-                    ready: 'خرج للتوصيل', // دعم الحالات القديمة
-                    delivered: 'تم التوصيل', 
-                    cancelled: 'ملغي' 
-                };
-                const activeFilter = document.querySelector('.filter-tab.active')?.dataset.status || 'all';
-
-                snapshot.forEach((child) => {
-                    try {
-                        const order = child.val();
-                        const key = child.key;
-                        
-                        // معالجة آمنة للتاريخ (تتعامل مع Timestamp القديم أو النص الجديد)
-                        let dateObj = new Date();
-                        if (order.createdAt) {
-                            if (typeof order.createdAt === 'object' && order.createdAt.seconds) {
-                                dateObj = new Date(order.createdAt.seconds * 1000);
-                            } else {
-                                dateObj = new Date(order.createdAt);
-                            }
-                        }
-                        const orderDate = dateObj.toDateString();
-                        const orderDateTime = isNaN(dateObj.getTime()) ? 'غير محدد' : dateObj.toLocaleString('ar-EG');
-                        
-                        total++;
-                        const status = order.status || 'received';
-                        if (['preparing', 'out_for_delivery', 'ready', 'received'].includes(status)) pending++;
-                        if (status === 'delivered') completed++;
-                        
-                        if (orderDate === today && status !== 'cancelled') {
-                            revenue += (Number(order.total) || 0);
-                            todayOrdersCount++;
-                        }
-
-                        if (activeFilter !== 'all' && status !== activeFilter) return;
-
-                        const totalDisplay = order.pricingStatus === 'requires_custom_item_confirmation'
-                            ? `<span style="color:var(--warning)">${(Number(order.total) || 0).toFixed(2)} ج.م* (انتظار)</span>` 
-                            : `${(Number(order.total) || 0).toFixed(2)} ج.م`;
-                        
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td><strong>#${order.orderNumber || '---'}</strong></td>
-                            <td>${order.customerName || 'غير محدد'}</td>
-                            <td>${order.customerPhone || 'غير محدد'}</td>
-                            <td>${totalDisplay}</td>
-                            <td><span class="status-badge ${status}">${statusLabels[status] || status}</span></td>
-                            <td>${orderDateTime}</td>
-                            <td>
-                                <div class="action-btns">
-                                    <button class="action-btn view" onclick="viewOrder('${key}')" title="عرض"><i class="fas fa-eye"></i></button>
-                                    <button class="action-btn delete" onclick="deleteOrder('${key}')" title="حذف"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    } catch (err) {
-                        console.error("خطأ في معالجة طلب:", child.key, err);
-                    }
-                });
-                updateStats(total, pending, completed, revenue, todayOrdersCount);
-            });
+        if (!snapshot.exists()) {
+            console.log("⚠️ قاعدة البيانات لا تحتوي على أي طلبات.");
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem;">لا توجد طلبات حالياً</td></tr>';
+            updateStats(0, 0, 0, 0, 0);
+            return;
         }
 
-        function updateStats(total, pending, completed, revenue, todayOrders) {
+        console.log("✅ تم العثور على طلبات! العدد الإجمالي:", snapshot.numChildren());
+
+        const statusLabels = { 
+            received: 'تم الاستلام', 
+            preparing: 'جاري التحضير', 
+            out_for_delivery: 'خرج للتوصيل', 
+            ready: 'خرج للتوصيل', // دعم القديم
+            delivered: 'تم التوصيل', 
+            cancelled: 'ملغي' 
+        };
+        const activeFilter = document.querySelector('.filter-tab.active')?.dataset.status || 'all';
+
+        let renderedCount = 0;
+
+        snapshot.forEach((child) => {
+            try {
+                const order = child.val();
+                const key = child.key;
+                
+                console.log(`📦 معالجة الطلب رقم: ${key}`, order); // طباعة البيانات الخام للتشخيص
+
+                // استخراج آمن جداً للأرقام والنصوص مع بدائل احتياطية
+                const orderNum = order.orderNumber || order.id || '---';
+                const customerName = order.customerName || 'غير محدد';
+                const customerPhone = order.customerPhone || '---';
+                const totalAmount = (order.total !== undefined && order.total !== null) ? Number(order.total).toFixed(2) : '0.00';
+                const status = order.status || 'received';
+                
+                // معالجة آمنة للتاريخ
+                let orderDateTime = 'غير محدد';
+                let isToday = false;
+                if (order.createdAt) {
+                    let timeVal = order.createdAt;
+                    if (typeof timeVal === 'object' && timeVal.seconds) {
+                        timeVal = timeVal.seconds * 1000;
+                    }
+                    const d = new Date(timeVal);
+                    if (!isNaN(d.getTime())) {
+                        orderDateTime = d.toLocaleString('ar-EG');
+                        if (d.toDateString() === today) isToday = true;
+                    }
+                }
+
+                // تحديث الإحصائيات
+                total++;
+                if (['preparing', 'out_for_delivery', 'ready', 'received'].includes(status)) pending++;
+                if (status === 'delivered') completed++;
+                if (isToday && status !== 'cancelled') {
+                    revenue += Number(totalAmount);
+                    todayOrdersCount++;
+                }
+
+                // تطبيق الفلتر
+                if (activeFilter !== 'all' && status !== activeFilter) return;
+
+                const totalDisplay = order.pricingStatus === 'requires_custom_item_confirmation'
+                    ? `<span style="color:var(--warning)">${totalAmount} ج.م* (انتظار)</span>` 
+                    : `${totalAmount} ج.م`;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${orderNum}</strong></td>
+                    <td>${customerName}</td>
+                    <td>${customerPhone}</td>
+                    <td>${totalDisplay}</td>
+                    <td><span class="status-badge ${status}">${statusLabels[status] || status}</span></td>
+                    <td>${orderDateTime}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn view" onclick="viewOrder('${key}')" title="عرض"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn delete" onclick="deleteOrder('${key}')" title="حذف"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+                renderedCount++;
+            } catch (err) {
+                console.error("❌ خطأ فادح في معالجة هذا الطلب تحديداً:", child.key, err);
+            }
+        });
+        
+        console.log(`🎉 تم رسم ${renderedCount} طلب بنجاح في الجدول.`);
+        updateStats(total, pending, completed, revenue, todayOrdersCount);
+    }, (error) => {
+        console.error("🔥 فشل الاتصال بقاعدة البيانات أو مشكلة في الصلاحيات:", error);
+        document.getElementById('ordersTableBody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2rem; color:red;">خطأ في تحميل البيانات: ${error.message}</td></tr>`;
+    });
+}        function updateStats(total, pending, completed, revenue, todayOrders) {
             document.getElementById('totalOrders').textContent = total;
             document.getElementById('pendingOrders').textContent = pending;
             document.getElementById('todayOrders').textContent = todayOrders;
