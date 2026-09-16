@@ -8,31 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #1F4D34;
-            --primary-light: #2D6A4F;
-            --primary-dark: #081C15;
-            --accent: #C9A227;
-            --accent-light: #E4C878;
-            --accent-dark: #A67F1D;
-            --white: #FFFFFF;
-            --gray-50: #F8F9FA;
-            --gray-100: #F1F3F5;
-            --gray-200: #E9ECEF;
-            --gray-300: #DEE2E6;
-            --gray-400: #CED4DA;
-            --gray-500: #ADB5BD;
-            --gray-600: #868E96;
-            --gray-700: #495057;
-            --gray-800: #343A40;
-            --gray-900: #212529;
-            --success: #40C057;
-            --warning: #FAB005;
-            --danger: #FA5252;
-            --info: #339AF0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
+            --primary: #1F4D34; --primary-light: #2D6A4F; --primary-dark: #081C15;
+            --accent: #C9A227; --accent-light: #E4C878; --accent-dark: #A67F1D;
+            --white: #FFFFFF; --gray-50: #F8F9FA; --gray-100: #F1F3F5; --gray-200: #E9ECEF;
+            --gray-300: #DEE2E6; --gray-400: #CED4DA; --gray-500: #ADB5BD; --gray-600: #868E96;
+            --gray-700: #495057; --gray-800: #343A40; --gray-900: #212529;
+            --success: #40C057; --warning: #FAB005; --danger: #FA5252; --info: #339AF0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08); --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -41,7 +23,7 @@
         .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 2rem; }
         .login-container { background: var(--white); border-radius: var(--radius-lg); padding: 3rem; max-width: 450px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
         .login-header { text-align: center; margin-bottom: 2rem; }
-        .login-logo { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 1rem; border: 3px solid var(--accent); }
+        .login-logo { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 1rem; border: 3px solid var(--accent); object-fit: cover; }
         .login-title { font-size: 1.8rem; font-weight: 900; color: var(--primary); margin-bottom: 0.5rem; }
         .form-group { margin-bottom: 1.5rem; }
         .form-label { display: block; font-weight: 600; color: var(--gray-800); margin-bottom: 0.5rem; font-size: 0.9rem; }
@@ -61,7 +43,7 @@
         .sidebar { position: fixed; right: 0; top: 0; width: 260px; height: 100vh; background: var(--primary-dark); color: var(--white); padding: 2rem 0; overflow-y: auto; z-index: 100; }
         .sidebar-header { padding: 0 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 1.5rem; }
         .sidebar-brand { display: flex; align-items: center; gap: 12px; }
-        .sidebar-logo { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent); }
+        .sidebar-logo { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
         .sidebar-title { font-size: 1.2rem; font-weight: 700; }
         .sidebar-title span { color: var(--accent); font-size: 0.8rem; display: block; }
         .sidebar-menu { list-style: none; padding: 0 1rem; }
@@ -99,7 +81,7 @@
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; }
         .status-badge.received { background: rgba(250, 176, 5, 0.2); color: var(--warning); }
         .status-badge.preparing { background: rgba(51, 154, 240, 0.2); color: var(--info); }
-        .status-badge.ready { background: rgba(64, 192, 87, 0.2); color: var(--success); }
+        .status-badge.ready, .status-badge.out_for_delivery { background: rgba(64, 192, 87, 0.2); color: var(--success); }
         .status-badge.delivered { background: rgba(31, 77, 52, 0.2); color: var(--primary); }
         .status-badge.cancelled { background: rgba(250, 82, 82, 0.2); color: var(--danger); }
         .action-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
@@ -134,47 +116,27 @@
         .checkbox-group { display: flex; align-items: center; gap: 8px; }
         .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); }
 
-        /* Image URL Input Styles */
-        .image-url-container {
-            border: 2px dashed var(--gray-300);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            background: var(--gray-50);
-        }
-        .image-url-input {
-            width: 100%;
-            margin-bottom: 0.5rem;
-        }
-        .image-preview-container {
-            margin-top: 1rem;
-            text-align: center;
-        }
-        .image-preview {
-            max-width: 200px;
-            max-height: 200px;
-            border-radius: var(--radius-sm);
-            object-fit: cover;
-            border: 2px solid var(--gray-200);
-        }
-        .image-help {
-            font-size: 0.8rem;
-            color: var(--gray-600);
-            margin-top: 0.5rem;
-            line-height: 1.6;
-        }
-        .image-help a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-        .image-help a:hover {
-            text-decoration: underline;
-        }
+        .image-url-container { border: 2px dashed var(--gray-300); border-radius: var(--radius-md); padding: 1.5rem; background: var(--gray-50); }
+        .image-url-input { width: 100%; margin-bottom: 0.5rem; }
+        .image-preview-container { margin-top: 1rem; text-align: center; }
+        .image-preview { max-width: 200px; max-height: 200px; border-radius: var(--radius-sm); object-fit: cover; border: 2px solid var(--gray-200); }
+        .image-help { font-size: 0.8rem; color: var(--gray-600); margin-top: 0.5rem; line-height: 1.6; }
+        .image-help a { color: var(--primary); text-decoration: none; }
+        .image-help a:hover { text-decoration: underline; }
 
         .menu-item-thumb { width: 50px; height: 50px; border-radius: var(--radius-sm); object-fit: cover; border: 1px solid var(--gray-200); }
         .no-image { width: 50px; height: 50px; border-radius: var(--radius-sm); background: var(--gray-100); display: flex; align-items: center; justify-content: center; color: var(--gray-400); }
 
+        .sound-indicator {
+            position: fixed; bottom: 20px; left: 20px; background: var(--white); padding: 10px 15px;
+            border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200);
+            display: flex; align-items: center; gap: 10px; font-size: 0.85rem; z-index: 50;
+        }
+        .sound-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(100%); width: 260px; }
+            .sidebar { transform: translateX(100%); width: 260px; transition: transform 0.3s; }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-right: 0; }
             .menu-form { grid-template-columns: 1fr; }
@@ -183,6 +145,9 @@
     </style>
 </head>
 <body>
+    <!-- صوت الإشعار للطلبات الجديدة -->
+    <audio id="newOrderSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
     <div class="login-page" id="loginPage">
         <div class="login-container">
             <div class="login-header">
@@ -241,12 +206,12 @@
                 <div class="stat-card">
                     <div class="stat-card-icon gold"><i class="fas fa-clock"></i></div>
                     <div class="stat-card-value" id="pendingOrders">0</div>
-                    <div class="stat-card-label">طلبات قيد التحضير</div>
+                    <div class="stat-card-label">قيد التحضير / التوصيل</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-card-icon blue"><i class="fas fa-check-circle"></i></div>
-                    <div class="stat-card-value" id="completedOrders">0</div>
-                    <div class="stat-card-label">طلبات مكتملة</div>
+                    <div class="stat-card-icon blue"><i class="fas fa-calendar-day"></i></div>
+                    <div class="stat-card-value" id="todayOrders">0</div>
+                    <div class="stat-card-label">طلبات اليوم</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-card-icon red"><i class="fas fa-money-bill-wave"></i></div>
@@ -262,7 +227,7 @@
                         <button class="filter-tab active" data-status="all">الكل</button>
                         <button class="filter-tab" data-status="received">تم الاستلام</button>
                         <button class="filter-tab" data-status="preparing">جاري التحضير</button>
-                        <button class="filter-tab" data-status="ready">خرج للتوصيل</button>
+                        <button class="filter-tab" data-status="out_for_delivery">خرج للتوصيل</button>
                         <button class="filter-tab" data-status="delivered">تم التوصيل</button>
                         <button class="filter-tab" data-status="cancelled">ملغي</button>
                     </div>
@@ -329,13 +294,13 @@
                     <div><strong>العميل:</strong> <span id="orderCustomer"></span></div>
                     <div><strong>الموبايل:</strong> <span id="orderPhone"></span></div>
                     <div class="full-width"><strong>العنوان:</strong> <span id="orderAddress"></span></div>
-                    <div><strong>وقت الطلب:</strong> <span id="orderTime"></span></div>
+                    <div><strong>موعد التسليم المطلوب:</strong> <span id="orderDeliveryTime" style="color: var(--primary); font-weight:700;"></span></div>
                     <div>
                         <strong>الحالة:</strong> 
                         <select id="orderStatusSelect" class="form-input" style="display: inline-block; width: auto; padding: 6px 12px;">
                             <option value="received">تم الاستلام</option>
                             <option value="preparing">جاري التحضير</option>
-                            <option value="ready">خرج للتوصيل</option>
+                            <option value="out_for_delivery">خرج للتوصيل</option>
                             <option value="delivered">تم التوصيل</option>
                             <option value="cancelled">ملغي</option>
                         </select>
@@ -345,6 +310,9 @@
                 <div id="orderItemsList"></div>
             </div>
             <div class="modal-footer">
+                <a id="waCustomerBtn" href="#" target="_blank" class="btn btn-success btn-sm" style="text-decoration:none; margin-left: auto;">
+                    <i class="fab fa-whatsapp"></i> تواصل مع العميل
+                </a>
                 <button class="btn btn-ghost" onclick="closeOrderDetails()">إغلاق</button>
                 <button class="btn btn-primary" onclick="saveOrderChanges()"><i class="fas fa-save"></i> حفظ التغييرات</button>
             </div>
@@ -392,7 +360,6 @@
                             <textarea class="form-input" id="itemDescEn" rows="2" placeholder="Item description in English..."></textarea>
                         </div>
                         
-                        <!-- Image URL Input -->
                         <div class="form-group full-width">
                             <label class="form-label">رابط صورة الصنف</label>
                             <div class="image-url-container">
@@ -403,8 +370,7 @@
                                 <div class="image-help">
                                     <strong>💡 منين تجيب رابط الصورة؟</strong><br>
                                     • <a href="https://imgur.com/upload" target="_blank">Imgur</a> - ارفع الصورة وانسخ الرابط المباشر<br>
-                                    • <a href="https://postimages.org/" target="_blank">PostImages</a> - موقع سهل وسريع<br>
-                                    • أي رابط صورة مباشر (ينتهي بـ .jpg, .png, .webp)
+                                    • <a href="https://postimages.org/" target="_blank">PostImages</a> - موقع سهل وسريع
                                 </div>
                             </div>
                         </div>
@@ -431,7 +397,12 @@
         </div>
     </div>
 
-        <script type="module">
+    <div class="sound-indicator" id="soundIndicator" style="display: none;">
+        <div class="sound-dot"></div>
+        <span>الإشعارات الصوتية مفعلة</span>
+    </div>
+
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getDatabase, ref, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -452,6 +423,7 @@
 
         let currentOrderKey = null;
         let currentEditItemId = null;
+        let lastOrderCount = 0;
 
         window.handleLogin = function(e) {
             e.preventDefault();
@@ -462,6 +434,7 @@
                 .then(() => {
                     document.getElementById('loginPage').style.display = 'none';
                     document.getElementById('dashboard').classList.add('active');
+                    document.getElementById('soundIndicator').style.display = 'flex';
                     loadOrders();
                     loadMenu();
                 })
@@ -472,29 +445,41 @@
             signOut(auth).then(() => {
                 document.getElementById('dashboard').classList.remove('active');
                 document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('soundIndicator').style.display = 'none';
             });
         }
 
-        // ===== دالة عرض الطلبات (محدثة لتتحمل بيانات Firebase القديمة بأمان) =====
+        function playNotificationSound() {
+            const audio = document.getElementById('newOrderSound');
+            audio.play().catch(e => console.log("Audio play blocked until user interacts with page"));
+        }
+
+        // ===== دالة عرض الطلبات (محدثة لتتحمل البيانات القديمة بأمان) =====
         function loadOrders() {
             onValue(ref(db, 'orders'), (snapshot) => {
                 const tbody = document.getElementById('ordersTableBody');
                 tbody.innerHTML = '';
                 
-                let total = 0, pending = 0, completed = 0, revenue = 0;
+                let total = 0, pending = 0, completed = 0, revenue = 0, todayOrdersCount = 0;
                 const today = new Date().toDateString();
 
                 if (!snapshot.exists()) {
                     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem;">لا توجد طلبات حالياً</td></tr>';
-                    updateStats(0, 0, 0, 0);
+                    updateStats(0, 0, 0, 0, 0);
                     return;
                 }
+
+                const currentCount = snapshot.numChildren();
+                if (currentCount > lastOrderCount && lastOrderCount !== 0) {
+                    playNotificationSound();
+                }
+                lastOrderCount = currentCount;
 
                 const statusLabels = { 
                     received: 'تم الاستلام', 
                     preparing: 'جاري التحضير', 
-                    ready: 'خرج للتوصيل', 
-                    out_for_delivery: 'خرج للتوصيل',
+                    out_for_delivery: 'خرج للتوصيل', 
+                    ready: 'خرج للتوصيل', // دعم الحالات القديمة
                     delivered: 'تم التوصيل', 
                     cancelled: 'ملغي' 
                 };
@@ -519,9 +504,13 @@
                         
                         total++;
                         const status = order.status || 'received';
-                        if (status === 'preparing' || status === 'ready' || status === 'out_for_delivery') pending++;
+                        if (['preparing', 'out_for_delivery', 'ready', 'received'].includes(status)) pending++;
                         if (status === 'delivered') completed++;
-                        if (orderDate === today && status !== 'cancelled') revenue += (Number(order.total) || 0);
+                        
+                        if (orderDate === today && status !== 'cancelled') {
+                            revenue += (Number(order.total) || 0);
+                            todayOrdersCount++;
+                        }
 
                         if (activeFilter !== 'all' && status !== activeFilter) return;
 
@@ -549,14 +538,14 @@
                         console.error("خطأ في معالجة طلب:", child.key, err);
                     }
                 });
-                updateStats(total, pending, completed, revenue);
+                updateStats(total, pending, completed, revenue, todayOrdersCount);
             });
         }
 
-        function updateStats(total, pending, completed, revenue) {
+        function updateStats(total, pending, completed, revenue, todayOrders) {
             document.getElementById('totalOrders').textContent = total;
             document.getElementById('pendingOrders').textContent = pending;
-            document.getElementById('completedOrders').textContent = completed;
+            document.getElementById('todayOrders').textContent = todayOrders;
             document.getElementById('todayRevenue').textContent = revenue.toFixed(2) + ' ج.م';
         }
 
@@ -572,21 +561,29 @@
                 document.getElementById('orderPhone').textContent = order.customerPhone || 'غير محدد';
                 document.getElementById('orderAddress').textContent = order.customerAddress || 'غير محدد';
                 
-                let dateObj = new Date();
-                if (order.createdAt) {
-                    if (typeof order.createdAt === 'object' && order.createdAt.seconds) {
-                        dateObj = new Date(order.createdAt.seconds * 1000);
-                    } else {
-                        dateObj = new Date(order.createdAt);
+                // معالجة آمنة لموعد التسليم
+                let delTimeText = 'في أقرب وقت ممكن';
+                if (order.deliveryTimeTarget) {
+                    const d = new Date(order.deliveryTimeTarget);
+                    if (!isNaN(d.getTime())) {
+                        delTimeText = d.toLocaleString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' });
                     }
                 }
-                document.getElementById('orderTime').textContent = isNaN(dateObj.getTime()) ? 'غير محدد' : dateObj.toLocaleString('ar-EG');
+                document.getElementById('orderDeliveryTime').textContent = delTimeText;
                 
+                // معالجة آمنة للحالة (تحويل ready القديم إلى out_for_delivery الجديد)
                 let currentStatus = order.status || 'received';
+                if (currentStatus === 'ready') currentStatus = 'out_for_delivery';
                 document.getElementById('orderStatusSelect').value = currentStatus;
                 
+                // زر الواتساب
+                const cleanPhone = (order.customerPhone || '').replace(/\D/g, '');
+                const waLink = cleanPhone.startsWith('20') ? `https://wa.me/${cleanPhone}` : `https://wa.me/20${cleanPhone}`;
+                document.getElementById('waCustomerBtn').href = waLink;
+                
+                // معالجة آمنة للأصناف
                 const itemsList = document.getElementById('orderItemsList');
-                if (order.items && Array.isArray(order.items)) {
+                if (order.items && Array.isArray(order.items) && order.items.length > 0) {
                     itemsList.innerHTML = order.items.map((item, index) => {
                         const price = Number(item.price) || 0;
                         const qty = Number(item.qty) || 1;
@@ -594,7 +591,7 @@
                         <div class="order-item ${item.pricingStatus === 'pending' ? 'pending-price' : ''}">
                             <div class="order-item-header">
                                 <div class="order-item-name">
-                                    ${item.ar || 'صنف'} ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning); font-size:0.8rem;">(طلب خاص)</span>' : ''}
+                                    ${item.ar || 'صنف غير مسمى'} ${item.pricingStatus === 'pending' ? '<span style="color:var(--warning); font-size:0.8rem;">(طلب خاص)</span>' : ''}
                                     <span style="color:var(--gray-500); font-size:0.85rem;">x${qty}</span>
                                 </div>
                                 <div class="order-item-price">
@@ -612,7 +609,7 @@
                         </div>
                     `}).join('');
                 } else {
-                    itemsList.innerHTML = '<p style="color:var(--gray-500); text-align:center;">لا توجد أصناف مسجلة</p>';
+                    itemsList.innerHTML = '<p style="color:var(--gray-500); text-align:center;">لا توجد أصناف مسجلة في هذا الطلب</p>';
                 }
                 
                 document.getElementById('orderDetailsModal').classList.add('open');
