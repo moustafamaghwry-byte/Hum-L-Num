@@ -33,6 +33,7 @@
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.95rem; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; }
         .btn-primary { background: var(--primary); color: var(--white); width: 100%; }
         .btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
         
         .dashboard { display: none; min-height: 100vh; }
         .dashboard.active { display: flex; }
@@ -48,7 +49,7 @@
         .main-content { flex: 1; margin-right: 280px; padding: 2rem; }
         .top-bar { background: var(--white); padding: 1.25rem 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; }
         .top-bar h1 { font-size: 1.5rem; color: var(--primary-dark); }
-        .logout-btn { background: var(--danger); color: var(--white); padding: 8px 16px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: var(--transition); }
+        .logout-btn { background: var(--danger); color: var(--white); padding: 8px 16px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: var(--transition); font-family: inherit; }
         .logout-btn:hover { background: #e03131; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
@@ -61,20 +62,19 @@
         .stat-card-icon { width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--gray-100); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.5rem; }
         .stat-card-value { font-size: 2rem; font-weight: 900; color: var(--primary-dark); }
         .stat-card-subtitle { color: var(--gray-500); font-size: 0.85rem; margin-top: 0.25rem; }
-        
         .card { background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-bottom: 2rem; }
         .card-header { padding: 1.5rem; border-bottom: 2px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
         .card-title { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
         .card-body { padding: 1.5rem; }
         
         .date-filter { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
-        .date-filter-btn { padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer; font-weight: 600; transition: var(--transition); }
+        .date-filter-btn { padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer; font-weight: 600; transition: var(--transition); font-family: inherit; }
         .date-filter-btn:hover, .date-filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
         .date-range-inputs { display: flex; gap: 0.5rem; align-items: center; }
         .date-range-inputs input { padding: 6px 12px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; }
         
         .table-container { overflow-x: auto; }
-        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         .data-table th { background: var(--gray-100); padding: 1rem; text-align: right; font-weight: 700; color: var(--gray-700); font-size: 0.9rem; border-bottom: 2px solid var(--gray-200); }
         .data-table td { padding: 1rem; border-bottom: 1px solid var(--gray-100); }
         .data-table tr:hover { background: var(--gray-50); }
@@ -97,7 +97,7 @@
         .menu-item-name { font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 0.5rem; }
         .menu-item-price { font-size: 1.25rem; font-weight: 900; color: var(--primary); margin-bottom: 0.75rem; }
         .menu-item-actions { display: flex; gap: 0.5rem; }
-        .btn-sm { padding: 6px 12px; font-size: 0.85rem; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: var(--transition); flex: 1; }
+        .btn-sm { padding: 6px 12px; font-size: 0.85rem; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: var(--transition); flex: 1; font-family: inherit; }
         .btn-edit { background: var(--warning); color: var(--white); }
         .btn-toggle { background: var(--success); color: var(--white); }
         .btn-delete { background: var(--danger); color: var(--white); }
@@ -112,24 +112,27 @@
         .modal-body { padding: 1.5rem; }
         .modal-footer { padding: 1.5rem; border-top: 2px solid var(--gray-200); display: flex; gap: 1rem; }
         .modal-footer .btn { flex: 1; }
-        
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .form-select { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; background: var(--white); cursor: pointer; }
         .form-select:focus { outline: none; border-color: var(--primary); }
         .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 0.5rem; }
         .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
-        
         .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
         .filter-select { padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; background: var(--white); cursor: pointer; }
         .search-input { flex: 1; min-width: 200px; padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; }
-        
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--gray-500); }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: var(--gray-400); }
+
         @media (max-width: 768px) {
             .sidebar { transform: translateX(100%); }
             .sidebar.active { transform: translateX(0); }
-            .main-content { margin-right: 0; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .form-row { grid-template-columns: 1fr; }
-            .menu-grid { grid-template-columns: 1fr; }
+            .main-content { margin-right: 0; padding: 1rem; }
+            .stats-grid, .form-row, .menu-grid { grid-template-columns: 1fr; }
+            .top-bar { padding: 1rem; }
+            .top-bar h1 { font-size: 1.2rem; }
+            .login-box { margin: 1rem; padding: 2rem; }
+            .date-range-inputs { width: 100%; flex-wrap: wrap; }
+            .date-range-inputs input { flex: 1; min-width: 130px; }
         }
     </style>
 </head>
@@ -140,16 +143,16 @@
                 <h1>هَمَّ النَّمَّ</h1>
                 <p>لوحة تحكم الإدارة</p>
             </div>
-            <form onsubmit="handleLogin(event)">
+            <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label class="form-label">البريد الإلكتروني</label>
-                    <input type="email" class="form-input" id="adminEmail" required placeholder="admin@humlnum.com">
+                    <input type="email" class="form-input" id="adminEmail" required autocomplete="username" placeholder="admin@humlnum.com">
                 </div>
                 <div class="form-group">
                     <label class="form-label">كلمة المرور</label>
-                    <input type="password" class="form-input" id="adminPassword" required placeholder="••••••••">
+                    <input type="password" class="form-input" id="adminPassword" required autocomplete="current-password" placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="loginButton">
                     <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
                 </button>
             </form>
@@ -163,26 +166,20 @@
                 <p>Admin Dashboard</p>
             </div>
             <nav class="sidebar-menu">
-                <div class="sidebar-menu-item active" onclick="showSection('overview')">
-                    <i class="fas fa-home"></i>
-                    <span>الرئيسية</span>
+                <div class="sidebar-menu-item active" data-section="overview" onclick="showSection('overview')">
+                    <i class="fas fa-home"></i><span>الرئيسية</span>
                 </div>
-                <div class="sidebar-menu-item" onclick="showSection('orders')">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>الطلبات</span>
-                    <span class="badge" id="orderCount">0</span>
+                <div class="sidebar-menu-item" data-section="orders" onclick="showSection('orders')">
+                    <i class="fas fa-shopping-bag"></i><span>الطلبات</span><span class="badge" id="orderCount">0</span>
                 </div>
-                <div class="sidebar-menu-item" onclick="showSection('reports')">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>التقارير</span>
+                <div class="sidebar-menu-item" data-section="reports" onclick="showSection('reports')">
+                    <i class="fas fa-chart-bar"></i><span>التقارير</span>
                 </div>
-                <div class="sidebar-menu-item" onclick="showSection('menu')">
-                    <i class="fas fa-utensils"></i>
-                    <span>المنيو</span>
+                <div class="sidebar-menu-item" data-section="menu" onclick="showSection('menu')">
+                    <i class="fas fa-utensils"></i><span>المنيو</span>
                 </div>
                 <div class="sidebar-menu-item" onclick="handleLogout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>تسجيل الخروج</span>
+                    <i class="fas fa-sign-out-alt"></i><span>تسجيل الخروج</span>
                 </div>
             </nav>
         </aside>
@@ -190,77 +187,48 @@
         <main class="main-content">
             <div class="top-bar">
                 <h1 id="pageTitle">لوحة التحكم</h1>
-                <button class="logout-btn" onclick="handleLogout()">
-                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-                </button>
+                <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
             </div>
 
             <div id="overviewSection" class="section">
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-card-header">
-                            <div>
-                                <div class="stat-card-title">إجمالي الطلبات</div>
-                                <div class="stat-card-subtitle">اليوم</div>
-                            </div>
+                            <div><div class="stat-card-title">إجمالي الطلبات</div><div class="stat-card-subtitle">اليوم</div></div>
                             <div class="stat-card-icon"><i class="fas fa-shopping-bag"></i></div>
                         </div>
                         <div class="stat-card-value" id="totalOrders">0</div>
                     </div>
                     <div class="stat-card warning">
                         <div class="stat-card-header">
-                            <div>
-                                <div class="stat-card-title">إجمالي المبيعات</div>
-                                <div class="stat-card-subtitle">اليوم</div>
-                            </div>
+                            <div><div class="stat-card-title">إجمالي المبيعات</div><div class="stat-card-subtitle">اليوم</div></div>
                             <div class="stat-card-icon"><i class="fas fa-dollar-sign"></i></div>
                         </div>
                         <div class="stat-card-value" id="totalSales">0 ج.م</div>
                     </div>
                     <div class="stat-card success">
                         <div class="stat-card-header">
-                            <div>
-                                <div class="stat-card-title">مكتملة</div>
-                                <div class="stat-card-subtitle">الطلبات</div>
-                            </div>
+                            <div><div class="stat-card-title">مكتملة</div><div class="stat-card-subtitle">الطلبات</div></div>
                             <div class="stat-card-icon"><i class="fas fa-check-circle"></i></div>
                         </div>
                         <div class="stat-card-value" id="completedOrders">0</div>
                     </div>
                     <div class="stat-card danger">
                         <div class="stat-card-header">
-                            <div>
-                                <div class="stat-card-title">ملغاة</div>
-                                <div class="stat-card-subtitle">الطلبات</div>
-                            </div>
+                            <div><div class="stat-card-title">ملغاة</div><div class="stat-card-subtitle">الطلبات</div></div>
                             <div class="stat-card-icon"><i class="fas fa-times-circle"></i></div>
                         </div>
                         <div class="stat-card-value" id="cancelledOrders">0</div>
                     </div>
                 </div>
-
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">حالة الطلبات الآن</h3>
-                    </div>
+                    <div class="card-header"><h3 class="card-title">حالة الطلبات الآن</h3></div>
                     <div class="card-body">
                         <div class="stats-grid" style="margin-bottom: 0;">
-                            <div class="stat-card">
-                                <div class="stat-card-value" id="statusReceived">0</div>
-                                <div class="stat-card-subtitle">تم الاستلام</div>
-                            </div>
-                            <div class="stat-card warning">
-                                <div class="stat-card-value" id="statusPreparing">0</div>
-                                <div class="stat-card-subtitle">جاري التحضير</div>
-                            </div>
-                            <div class="stat-card success">
-                                <div class="stat-card-value" id="statusDelivering">0</div>
-                                <div class="stat-card-subtitle">خرج للتوصيل</div>
-                            </div>
-                            <div class="stat-card" style="border-right-color: var(--gray-400);">
-                                <div class="stat-card-value" id="statusDelivered">0</div>
-                                <div class="stat-card-subtitle">تم التوصيل</div>
-                            </div>
+                            <div class="stat-card"><div class="stat-card-value" id="statusReceived">0</div><div class="stat-card-subtitle">تم الاستلام</div></div>
+                            <div class="stat-card warning"><div class="stat-card-value" id="statusPreparing">0</div><div class="stat-card-subtitle">جاري التحضير</div></div>
+                            <div class="stat-card success"><div class="stat-card-value" id="statusDelivering">0</div><div class="stat-card-subtitle">خرج للتوصيل</div></div>
+                            <div class="stat-card" style="border-right-color: var(--gray-400);"><div class="stat-card-value" id="statusDelivered">0</div><div class="stat-card-subtitle">تم التوصيل</div></div>
                         </div>
                     </div>
                 </div>
@@ -268,9 +236,7 @@
 
             <div id="ordersSection" class="section" style="display: none;">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">إدارة الطلبات</h3>
-                    </div>
+                    <div class="card-header"><h3 class="card-title">إدارة الطلبات</h3></div>
                     <div class="card-body">
                         <div class="filter-bar">
                             <select class="filter-select" id="statusFilter" onchange="filterOrders()">
@@ -281,21 +247,12 @@
                                 <option value="delivered">تم التوصيل</option>
                                 <option value="cancelled">ملغي</option>
                             </select>
-                            <input type="text" class="search-input" id="orderSearch" placeholder="البحث برقم الطلب أو اسم العميل..." oninput="filterOrders()">
+                            <input type="text" class="search-input" id="orderSearch" placeholder="البحث برقم الطلب أو اسم العميل أو الهاتف..." oninput="filterOrders()">
                         </div>
                         <div class="table-container">
                             <table class="data-table">
                                 <thead>
-                                    <tr>
-                                        <th>رقم الطلب</th>
-                                        <th>العميل</th>
-                                        <th>الهاتف</th>
-                                        <th>الإجمالي</th>
-                                        <th>وقت الطلب</th>
-                                        <th>موعد التوصيل</th>
-                                        <th>الحالة</th>
-                                        <th>إجراء</th>
-                                    </tr>
+                                    <tr><th>رقم الطلب</th><th>العميل</th><th>الهاتف</th><th>الإجمالي</th><th>وقت الطلب</th><th>موعد التوصيل</th><th>الحالة</th><th>إجراء</th></tr>
                                 </thead>
                                 <tbody id="ordersTableBody"></tbody>
                             </table>
@@ -308,21 +265,15 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">إدارة المنيو</h3>
-                        <button class="btn btn-primary" onclick="openAddItemModal()">
-                            <i class="fas fa-plus"></i> إضافة صنف
-                        </button>
+                        <button class="btn btn-primary" onclick="openAddItemModal()"><i class="fas fa-plus"></i> إضافة صنف</button>
                     </div>
-                    <div class="card-body">
-                        <div class="menu-grid" id="menuGrid"></div>
-                    </div>
+                    <div class="card-body"><div class="menu-grid" id="menuGrid"></div></div>
                 </div>
             </div>
 
             <div id="reportsSection" class="section" style="display: none;">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">التقارير</h3>
-                    </div>
+                    <div class="card-header"><h3 class="card-title">التقارير</h3></div>
                     <div class="card-body">
                         <div class="date-filter">
                             <button class="date-filter-btn active" onclick="setDateRange('today', this)">اليوم</button>
@@ -332,37 +283,17 @@
                             <button class="date-filter-btn" onclick="setDateRange('month', this)">هذا الشهر</button>
                             <button class="date-filter-btn" onclick="setDateRange('custom', this)">مخصص</button>
                             <div class="date-range-inputs" id="customDateRange" style="display: none;">
-                                <input type="date" id="startDate" placeholder="من">
-                                <input type="date" id="endDate" placeholder="إلى">
+                                <input type="date" id="startDate"><input type="date" id="endDate">
                                 <button class="btn btn-primary" onclick="applyCustomDateRange()">تطبيق</button>
                             </div>
                         </div>
-                        
                         <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-card-value" id="reportTotalSales">0 ج.م</div>
-                                <div class="stat-card-subtitle">إجمالي المبيعات</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-value" id="reportTotalOrders">0</div>
-                                <div class="stat-card-subtitle">عدد الطلبات</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-card-value" id="reportAvgOrder">0 ج.م</div>
-                                <div class="stat-card-subtitle">متوسط قيمة الطلب</div>
-                            </div>
-                            <div class="stat-card danger">
-                                <div class="stat-card-value" id="reportCancelled">0</div>
-                                <div class="stat-card-subtitle">طلبات ملغاة</div>
-                            </div>
-                            <div class="stat-card success">
-                                <div class="stat-card-value" id="reportDelivered">0</div>
-                                <div class="stat-card-subtitle">طلبات مكتملة</div>
-                            </div>
-                            <div class="stat-card warning">
-                                <div class="stat-card-value" id="reportDelivering">0</div>
-                                <div class="stat-card-subtitle">خرجت للتوصيل</div>
-                            </div>
+                            <div class="stat-card"><div class="stat-card-value" id="reportTotalSales">0 ج.م</div><div class="stat-card-subtitle">إجمالي المبيعات</div></div>
+                            <div class="stat-card"><div class="stat-card-value" id="reportTotalOrders">0</div><div class="stat-card-subtitle">عدد الطلبات</div></div>
+                            <div class="stat-card"><div class="stat-card-value" id="reportAvgOrder">0 ج.م</div><div class="stat-card-subtitle">متوسط قيمة الطلب</div></div>
+                            <div class="stat-card danger"><div class="stat-card-value" id="reportCancelled">0</div><div class="stat-card-subtitle">طلبات ملغاة</div></div>
+                            <div class="stat-card success"><div class="stat-card-value" id="reportDelivered">0</div><div class="stat-card-subtitle">طلبات مكتملة</div></div>
+                            <div class="stat-card warning"><div class="stat-card-value" id="reportDelivering">0</div><div class="stat-card-subtitle">خرجت للتوصيل</div></div>
                         </div>
                     </div>
                 </div>
@@ -376,9 +307,7 @@
                 <h3 class="modal-title">تفاصيل الطلب #<span id="modalOrderNumber"></span></h3>
                 <button class="modal-close" onclick="closeOrderModal()"><i class="fas fa-times"></i></button>
             </div>
-            <div class="modal-body">
-                <div id="orderDetails"></div>
-            </div>
+            <div class="modal-body"><div id="orderDetails"></div></div>
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeOrderModal()">إغلاق</button>
                 <button class="btn btn-primary" onclick="saveOrderChanges()">حفظ التعديلات</button>
@@ -395,42 +324,22 @@
             <div class="modal-body">
                 <form id="itemForm">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">اسم عربي *</label>
-                            <input type="text" class="form-input" id="itemNameAr" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">اسم إنجليزي</label>
-                            <input type="text" class="form-input" id="itemNameEn">
-                        </div>
+                        <div class="form-group"><label class="form-label">اسم عربي *</label><input type="text" class="form-input" id="itemNameAr" required></div>
+                        <div class="form-group"><label class="form-label">اسم إنجليزي</label><input type="text" class="form-input" id="itemNameEn"></div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">التصنيف</label>
                             <select class="form-select" id="itemCategory">
-                                <option value="appetizers">مقبلات</option>
-                                <option value="mains">أطباق رئيسية</option>
-                                <option value="desserts">حلويات</option>
-                                <option value="drinks">مشروبات</option>
+                                <option value="appetizers">مقبلات</option><option value="mains">أطباق رئيسية</option>
+                                <option value="desserts">حلويات</option><option value="drinks">مشروبات</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">السعر *</label>
-                            <input type="number" class="form-input" id="itemPrice" required min="0">
-                        </div>
+                        <div class="form-group"><label class="form-label">السعر *</label><input type="number" class="form-input" id="itemPrice" required min="0" step="0.01"></div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">الوصف بالعربي</label>
-                        <textarea class="form-input" id="itemDescAr" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">رابط الصورة</label>
-                        <input type="url" class="form-input" id="itemImage" placeholder="https://example.com/image.jpg">
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="itemAvailable" checked>
-                        <label for="itemAvailable">متاح</label>
-                    </div>
+                    <div class="form-group"><label class="form-label">الوصف بالعربي</label><textarea class="form-input" id="itemDescAr" rows="3"></textarea></div>
+                    <div class="form-group"><label class="form-label">رابط الصورة</label><input type="url" class="form-input" id="itemImage" placeholder="https://example.com/image.jpg"></div>
+                    <div class="checkbox-group"><input type="checkbox" id="itemAvailable" checked><label for="itemAvailable">متاح</label></div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -443,6 +352,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, onValue, push, update, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA8h_w_JvoPV1PA5QFHJg_nAInFLCSEw9Y",
@@ -456,173 +366,196 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const auth = getAuth(app);
 
-        let currentUser = null;
-        let allOrders = [];
-        let menuItems = [];
-        let currentOrderId = null;
-        let editingItemId = null;
-        let currentDateRange = 'today';
+        let currentUser = null, allOrders = [], menuItems = [], currentOrderId = null, editingItemId = null, currentDateRange = 'today';
+        let ordersUnsubscribe = null, menuUnsubscribe = null;
 
-        window.handleLogin = function(e) {
+        function escapeHtml(value) { return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+        function toNumber(value) { const number = Number(value); return Number.isFinite(number) ? number : 0; }
+        function safeImageUrl(url) { if (!url) return ''; try { const parsed = new URL(url); return (parsed.protocol === 'https:' || parsed.protocol === 'http:') ? parsed.href : ''; } catch { return ''; } }
+        function formatMoney(value) { return toNumber(value).toFixed(2) + ' ج.م'; }
+        function formatOrderNumber(value) { if (!value) return 'N/A'; const text = String(value); return text.startsWith('#') ? text : '#' + text; }
+        function formatDateTime(value) {
+            if (value === null || value === undefined || value === '') return '-';
+            let date = null;
+            if (typeof value === 'number') date = value > 100000000000 ? new Date(value) : new Date(value * 1000);
+            else if (typeof value === 'string') { date = new Date(value); if (isNaN(date.getTime())) { const n = Number(value); if (Number.isFinite(n)) date = n > 100000000000 ? new Date(n) : new Date(n * 1000); } }
+            else if (typeof value === 'object') { if (value.seconds !== undefined) date = new Date(Number(value.seconds) * 1000); else if (value._seconds !== undefined) date = new Date(Number(value._seconds) * 1000); }
+            return (!date || isNaN(date.getTime())) ? '-' : date.toLocaleString('ar-EG');
+        }
+        function getOrderDate(order) {
+            const value = order.createdAt ?? order.created_at ?? order.timestamp ?? order.created;
+            if (value === null || value === undefined || value === '') return null;
+            if (typeof value === 'object') {
+                if (typeof value.toDate === 'function') { const d = value.toDate(); if (d && !isNaN(d.getTime())) return d; }
+                if (value.seconds !== undefined) { const d = new Date(Number(value.seconds) * 1000); if (!isNaN(d.getTime())) return d; }
+                if (value._seconds !== undefined) { const d = new Date(Number(value._seconds) * 1000); if (!isNaN(d.getTime())) return d; }
+            }
+            if (typeof value === 'number') { const d = value > 100000000000 ? new Date(value) : new Date(value * 1000); if (!isNaN(d.getTime())) return d; }
+            if (typeof value === 'string') { let d = new Date(value); if (!isNaN(d.getTime())) return d; const n = Number(value); if (Number.isFinite(n)) { d = n > 100000000000 ? new Date(n) : new Date(n * 1000); if (!isNaN(d.getTime())) return d; } }
+            return null;
+        }
+
+        window.handleLogin = async function(e) {
             e.preventDefault();
-            const email = document.getElementById('adminEmail').value;
+            const email = document.getElementById('adminEmail').value.trim();
             const password = document.getElementById('adminPassword').value;
+            const button = document.getElementById('loginButton');
             
-            if (email && password) {
-                currentUser = { email };
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('dashboard').classList.add('active');
-                loadDashboard();
+            if (!email || !password) { alert('من فضلك أدخل البريد الإلكتروني وكلمة المرور.'); return; }
+            
+            try {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
+                await signInWithEmailAndPassword(auth, email, password);
+                // سيتم التعامل مع النجاح داخل onAuthStateChanged
+            } catch (error) {
+                console.error('Login Error:', error);
+                let message = 'حدث خطأ أثناء تسجيل الدخول.';
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') message = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+                else if (error.code === 'auth/user-not-found') message = 'هذا الحساب غير موجود. تأكد من إضافته في Firebase Authentication.';
+                else if (error.code === 'auth/invalid-email') message = 'البريد الإلكتروني غير صحيح.';
+                else if (error.code === 'auth/too-many-requests') message = 'محاولات كثيرة. حاول لاحقًا.';
+                else if (error.code === 'auth/network-request-failed') message = 'تعذر الاتصال. تأكد من الإنترنت.';
+                else message = error.message;
+                alert(message);
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
             }
         };
 
-        window.handleLogout = function() {
-            currentUser = null;
-            document.getElementById('dashboard').classList.remove('active');
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('adminEmail').value = '';
-            document.getElementById('adminPassword').value = '';
+        // تبسيط التحقق: إذا نجح تسجيل الدخول في Firebase، نسمح بالدخول مباشرة
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                currentUser = null;
+                cleanupFirebaseListeners();
+                document.getElementById('dashboard').classList.remove('active');
+                document.getElementById('loginScreen').style.display = 'flex';
+                return;
+            }
+            currentUser = user;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            loadDashboard();
+        });
+
+        window.handleLogout = async function() {
+            try { await signOut(auth); } catch (error) { console.error('Logout Error:', error); }
         };
 
+        function cleanupFirebaseListeners() {
+            if (ordersUnsubscribe) { ordersUnsubscribe(); ordersUnsubscribe = null; }
+            if (menuUnsubscribe) { menuUnsubscribe(); menuUnsubscribe = null; }
+        }
+
         function loadDashboard() {
-            onValue(ref(db, 'orders'), (snapshot) => {
+            cleanupFirebaseListeners();
+            ordersUnsubscribe = onValue(ref(db, 'orders'), (snapshot) => {
                 const data = snapshot.val();
                 allOrders = data ? Object.entries(data).map(([id, order]) => ({ id, ...order })) : [];
-                console.log('Orders loaded:', allOrders.length);
-                updateStats();
-                renderOrders();
-                updateReports();
-            });
+                updateStats(); renderOrders(); updateReports();
+            }, (error) => { console.error('Orders listener error:', error); alert('تعذر تحميل الطلبات. تأكد من قواعد بيانات Firebase.'); });
 
-            onValue(ref(db, 'menu'), (snapshot) => {
+            menuUnsubscribe = onValue(ref(db, 'menu'), (snapshot) => {
                 const data = snapshot.val();
                 menuItems = data ? Object.entries(data).map(([id, item]) => ({ id, ...item })) : [];
                 renderMenu();
-            });
+            }, (error) => { console.error('Menu listener error:', error); });
         }
 
         function updateStats() {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const todayEnd = new Date();
-            todayEnd.setHours(23, 59, 59, 999);
-            
-            const todayOrders = allOrders.filter(o => {
-                const orderDate = getOrderDate(o);
-                return orderDate >= today && orderDate <= todayEnd;
-            });
+            const now = new Date();
+            const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
+            const todayEnd = new Date(now); todayEnd.setHours(23, 59, 59, 999);
+            const todayOrders = allOrders.filter(order => { const d = getOrderDate(order); return d && d >= todayStart && d <= todayEnd; });
+            const todaySales = todayOrders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + toNumber(o.total), 0);
             
             document.getElementById('totalOrders').textContent = todayOrders.length;
-            document.getElementById('totalSales').textContent = todayOrders.reduce((sum, o) => sum + (o.total || 0), 0).toFixed(2) + ' ج.م';
+            document.getElementById('totalSales').textContent = formatMoney(todaySales);
             document.getElementById('completedOrders').textContent = allOrders.filter(o => o.status === 'delivered').length;
             document.getElementById('cancelledOrders').textContent = allOrders.filter(o => o.status === 'cancelled').length;
             document.getElementById('orderCount').textContent = allOrders.length;
-            
             document.getElementById('statusReceived').textContent = allOrders.filter(o => o.status === 'received').length;
             document.getElementById('statusPreparing').textContent = allOrders.filter(o => o.status === 'preparing').length;
             document.getElementById('statusDelivering').textContent = allOrders.filter(o => o.status === 'delivering').length;
             document.getElementById('statusDelivered').textContent = allOrders.filter(o => o.status === 'delivered').length;
         }
 
-        function getOrderDate(order) {
-            if (order.createdAt) {
-                if (order.createdAt.seconds) {
-                    return new Date(order.createdAt.seconds * 1000);
-                } else if (typeof order.createdAt === 'string') {
-                    return new Date(order.createdAt);
-                } else if (order.createdAt._seconds) {
-                    return new Date(order.createdAt._seconds * 1000);
-                }
-            }
-            return new Date(0);
-        }
-
         function renderOrders() {
             const tbody = document.getElementById('ordersTableBody');
             const filtered = filterOrdersData();
-            
+            if (!filtered.length) {
+                tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-inbox"></i><div>لا توجد طلبات مطابقة</div></div></td></tr>`;
+                return;
+            }
             tbody.innerHTML = filtered.map(order => {
-                const orderTime = getOrderDate(order).toLocaleString('ar-EG');
-                const deliveryTime = order.deliveryTimeTarget 
-                    ? new Date(order.deliveryTimeTarget).toLocaleString('ar-EG') 
-                    : '-';
-                
-                return `
-                <tr>
-                    <td>#${order.orderNumber || 'N/A'}</td>
-                    <td>${order.customerName || 'N/A'}</td>
-                    <td>${order.customerPhone || 'N/A'}</td>
-                    <td>${(order.total || 0).toFixed(2)} ج.م</td>
+                const orderDate = getOrderDate(order);
+                const orderTime = orderDate ? orderDate.toLocaleString('ar-EG') : '-';
+                const deliveryTime = formatDateTime(order.deliveryTimeTarget);
+                return `<tr>
+                    <td>${escapeHtml(formatOrderNumber(order.orderNumber))}</td>
+                    <td>${escapeHtml(order.customerName || 'N/A')}</td>
+                    <td>${escapeHtml(order.customerPhone || 'N/A')}</td>
+                    <td>${formatMoney(order.total)}</td>
                     <td>${orderTime}</td>
                     <td>${deliveryTime}</td>
-                    <td><span class="status-badge status-${order.status || 'received'}">${getStatusText(order.status)}</span></td>
-                    <td>
-                        <button class="action-btn action-btn-view" onclick="viewOrder('${order.id}')">
-                            <i class="fas fa-eye"></i> عرض
-                        </button>
-                    </td>
-                </tr>
-            `}).join('');
+                    <td><span class="status-badge status-${escapeHtml(order.status || 'received')}">${escapeHtml(getStatusText(order.status))}</span></td>
+                    <td><button class="action-btn action-btn-view" onclick="viewOrder('${escapeHtml(order.id)}')"><i class="fas fa-eye"></i> عرض</button></td>
+                </tr>`;
+            }).join('');
         }
 
         function filterOrdersData() {
             const statusFilter = document.getElementById('statusFilter').value;
-            const searchQuery = document.getElementById('orderSearch').value.toLowerCase();
-            
+            const searchQuery = document.getElementById('orderSearch').value.trim().toLowerCase();
             return allOrders.filter(order => {
                 const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-                const matchesSearch = !searchQuery || 
-                    (order.orderNumber && order.orderNumber.toString().includes(searchQuery)) ||
-                    (order.customerName && order.customerName.toLowerCase().includes(searchQuery));
+                const orderNumber = String(order.orderNumber ?? '').toLowerCase();
+                const customerName = String(order.customerName ?? '').toLowerCase();
+                const phone = String(order.customerPhone ?? '').toLowerCase();
+                const matchesSearch = !searchQuery || orderNumber.includes(searchQuery) || customerName.includes(searchQuery) || phone.includes(searchQuery);
                 return matchesStatus && matchesSearch;
-            }).sort((a, b) => getOrderDate(b) - getOrderDate(a));
+            }).sort((a, b) => {
+                const timeA = getOrderDate(a) ? getOrderDate(a).getTime() : 0;
+                const timeB = getOrderDate(b) ? getOrderDate(b).getTime() : 0;
+                return timeB - timeA;
+            });
         }
-
-        window.filterOrders = function() {
-            renderOrders();
-        };
-
+        window.filterOrders = function() { renderOrders(); };
         function getStatusText(status) {
-            const statuses = {
-                received: 'تم الاستلام',
-                preparing: 'جاري التحضير',
-                delivering: 'خرج للتوصيل',
-                delivered: 'تم التوصيل',
-                cancelled: 'ملغي'
-            };
-            return statuses[status] || status;
+            const statuses = { received: 'تم الاستلام', preparing: 'جاري التحضير', delivering: 'خرج للتوصيل', delivered: 'تم التوصيل', cancelled: 'ملغي' };
+            return statuses[status] || status || 'غير محدد';
         }
 
         window.viewOrder = function(orderId) {
             const order = allOrders.find(o => o.id === orderId);
             if (!order) return;
-            
             currentOrderId = orderId;
-            document.getElementById('modalOrderNumber').textContent = order.orderNumber || 'N/A';
-            
-            const itemsList = order.items?.map(item => `
-                <div style="padding: 0.75rem; background: var(--gray-50); border-radius: 8px; margin-bottom: 0.5rem;">
-                    <div style="font-weight: 700; color: var(--primary-dark);">${item.ar || item.name}</div>
-                    <div style="font-size: 0.9rem; color: var(--gray-600);">الكمية: ${item.qty} × ${(item.price || 0).toFixed(2)} ج.م</div>
-                    ${item.notes ? `<div style="font-size: 0.85rem; color: var(--gray-500); margin-top: 0.25rem;">ملاحظات: ${item.notes}</div>` : ''}
-                </div>
-            `).join('') || '<p>لا توجد أصناف</p>';
-            
+            document.getElementById('modalOrderNumber').textContent = String(order.orderNumber || 'N/A');
+            const rawItems = order.items;
+            const orderItems = Array.isArray(rawItems) ? rawItems : (rawItems ? Object.values(rawItems) : []);
+            const itemsList = orderItems.length ? orderItems.map(item => {
+                const itemName = item.ar || item.name || item.nameAr || 'صنف';
+                return `<div style="padding:0.75rem; background:var(--gray-50); border-radius:8px; margin-bottom:0.5rem;">
+                    <div style="font-weight:700; color:var(--primary-dark);">${escapeHtml(itemName)}</div>
+                    <div style="font-size:0.9rem; color:var(--gray-600);">الكمية: ${toNumber(item.qty)} × ${formatMoney(item.price)}</div>
+                    ${item.notes ? `<div style="font-size:0.85rem; color:var(--gray-500); margin-top:0.25rem;">ملاحظات: ${escapeHtml(item.notes)}</div>` : ''}
+                </div>`;
+            }).join('') : '<p>لا توجد أصناف</p>';
+
             document.getElementById('orderDetails').innerHTML = `
-                <div style="margin-bottom: 1.5rem;">
-                    <h4 style="color: var(--primary-dark); margin-bottom: 0.75rem;">معلومات العميل</h4>
-                    <p><strong>الاسم:</strong> ${order.customerName || 'N/A'}</p>
-                    <p><strong>الهاتف:</strong> ${order.customerPhone || 'N/A'}</p>
-                    <p><strong>العنوان:</strong> ${order.customerAddress || 'N/A'}</p>
+                <div style="margin-bottom:1.5rem;">
+                    <h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">معلومات العميل</h4>
+                    <p><strong>الاسم:</strong> ${escapeHtml(order.customerName || 'N/A')}</p>
+                    <p><strong>الهاتف:</strong> ${escapeHtml(order.customerPhone || 'N/A')}</p>
+                    <p><strong>العنوان:</strong> ${escapeHtml(order.customerAddress || 'N/A')}</p>
                 </div>
-                <div style="margin-bottom: 1.5rem;">
-                    <h4 style="color: var(--primary-dark); margin-bottom: 0.75rem;">الأصناف</h4>
-                    ${itemsList}
-                </div>
-                <div style="margin-bottom: 1.5rem;">
-                    <h4 style="color: var(--primary-dark); margin-bottom: 0.75rem;">حالة الطلب</h4>
-                    <select class="form-select" id="orderStatusSelect" onchange="updateOrderStatus('${orderId}', this.value)">
+                <div style="margin-bottom:1.5rem;"><h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">الأصناف</h4>${itemsList}</div>
+                <div style="margin-bottom:1.5rem;">
+                    <h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">حالة الطلب</h4>
+                    <select class="form-select" id="orderStatusSelect">
                         <option value="received" ${order.status === 'received' ? 'selected' : ''}>تم الاستلام</option>
                         <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>جاري التحضير</option>
                         <option value="delivering" ${order.status === 'delivering' ? 'selected' : ''}>خرج للتوصيل</option>
@@ -630,252 +563,208 @@
                         <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>ملغي</option>
                     </select>
                 </div>
-                <div style="background: var(--gray-100); padding: 1rem; border-radius: 8px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <span>المجموع الفرعي:</span>
-                        <strong>${(order.subtotal || 0).toFixed(2)} ج.م</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <span>التوصيل:</span>
-                        <strong>${(order.deliveryFee || 0).toFixed(2)} ج.م</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 900; color: var(--primary); border-top: 2px solid var(--gray-300); padding-top: 0.5rem; margin-top: 0.5rem;">
-                        <span>الإجمالي:</span>
-                        <span>${(order.total || 0).toFixed(2)} ج.م</span>
-                    </div>
-                </div>
-            `;
-            
+                <div style="background:var(--gray-100); padding:1rem; border-radius:8px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;"><span>المجموع الفرعي:</span><strong>${formatMoney(order.subtotal)}</strong></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;"><span>التوصيل:</span><strong>${formatMoney(order.deliveryFee)}</strong></div>
+                    <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; color:var(--primary); border-top:2px solid var(--gray-300); padding-top:0.5rem; margin-top:0.5rem;"><span>الإجمالي:</span><span>${formatMoney(order.total)}</span></div>
+                </div>`;
             document.getElementById('orderModal').classList.add('active');
         };
 
         window.updateOrderStatus = async function(orderId, newStatus) {
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
             try {
-                await update(ref(db, `orders/${orderId}`), {
-                    status: newStatus,
-                    updatedAt: new Date().toISOString()
-                });
+                await update(ref(db, `orders/${orderId}`), { status: newStatus, updatedAt: new Date().toISOString() });
                 alert('تم تحديث الحالة بنجاح!');
-            } catch (error) {
-                console.error('Error updating order:', error);
-                alert('حدث خطأ أثناء تحديث الحالة');
-            }
+            } catch (error) { console.error('Error updating order:', error); alert('حدث خطأ أثناء تحديث الحالة.'); }
         };
 
-        window.closeOrderModal = function() {
-            document.getElementById('orderModal').classList.remove('active');
-            currentOrderId = null;
+        window.closeOrderModal = function() { document.getElementById('orderModal').classList.remove('active'); currentOrderId = null; };
+
+        window.saveOrderChanges = async function() {
+            if (!currentOrderId) { closeOrderModal(); return; }
+            const select = document.getElementById('orderStatusSelect');
+            if (!select) { closeOrderModal(); return; }
+            try {
+                await update(ref(db, `orders/${currentOrderId}`), { status: select.value, updatedAt: new Date().toISOString() });
+                alert('تم حفظ تعديلات الطلب بنجاح.');
+                closeOrderModal();
+            } catch (error) { console.error('Save order error:', error); alert('حدث خطأ أثناء حفظ التعديلات.'); }
         };
 
         function renderMenu() {
             const grid = document.getElementById('menuGrid');
-            grid.innerHTML = menuItems.map(item => `
-                <div class="menu-item-card">
-                    <div class="menu-item-image">
-                        ${item.image ? `<img src="${item.image}" alt="${item.nameAr}">` : '<i class="fas fa-utensils"></i>'}
-                    </div>
+            if (!menuItems.length) { grid.innerHTML = `<div class="empty-state"><i class="fas fa-utensils"></i><div>لا توجد أصناف في المنيو حتى الآن</div></div>`; return; }
+            grid.innerHTML = menuItems.map(item => {
+                const imageUrl = safeImageUrl(item.image);
+                const available = item.available !== false;
+                return `<div class="menu-item-card">
+                    <div class="menu-item-image">${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.nameAr || '')}" loading="lazy">` : '<i class="fas fa-utensils"></i>'}</div>
                     <div class="menu-item-info">
-                        <div class="menu-item-name">${item.nameAr}</div>
-                        <div class="menu-item-price">${(item.price || 0).toFixed(2)} ج.م</div>
+                        <div class="menu-item-name">${escapeHtml(item.nameAr || 'بدون اسم')}</div>
+                        <div class="menu-item-price">${formatMoney(item.price)}</div>
                         <div class="menu-item-actions">
-                            <button class="btn-sm btn-edit" onclick="editMenuItem('${item.id}')">
-                                <i class="fas fa-edit"></i> تعديل
-                            </button>
-                            <button class="btn-sm btn-toggle" onclick="toggleItemAvailability('${item.id}', ${!item.available})">
-                                <i class="fas fa-${item.available ? 'check' : 'times'}"></i> ${item.available ? 'متاح' : 'غير متاح'}
-                            </button>
-                            <button class="btn-sm btn-delete" onclick="deleteMenuItem('${item.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <button class="btn-sm btn-edit" onclick="editMenuItem('${escapeHtml(item.id)}')"><i class="fas fa-edit"></i> تعديل</button>
+                            <button class="btn-sm btn-toggle" onclick="toggleItemAvailability('${escapeHtml(item.id)}', ${!available})"><i class="fas fa-${available ? 'check' : 'times'}"></i> ${available ? 'متاح' : 'غير متاح'}</button>
+                            <button class="btn-sm btn-delete" onclick="deleteMenuItem('${escapeHtml(item.id)}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
         window.openAddItemModal = function() {
             editingItemId = null;
             document.getElementById('itemModalTitle').textContent = 'إضافة صنف';
             document.getElementById('itemForm').reset();
+            document.getElementById('itemAvailable').checked = true;
             document.getElementById('itemModal').classList.add('active');
         };
 
         window.editMenuItem = function(itemId) {
             const item = menuItems.find(i => i.id === itemId);
             if (!item) return;
-            
             editingItemId = itemId;
             document.getElementById('itemModalTitle').textContent = 'تعديل صنف';
             document.getElementById('itemNameAr').value = item.nameAr || '';
             document.getElementById('itemNameEn').value = item.nameEn || '';
             document.getElementById('itemCategory').value = item.cat || item.category || 'appetizers';
-            document.getElementById('itemPrice').value = item.price || '';
+            document.getElementById('itemPrice').value = item.price ?? '';
             document.getElementById('itemDescAr').value = item.descriptionAr || item.description || '';
             document.getElementById('itemImage').value = item.image || '';
             document.getElementById('itemAvailable').checked = item.available !== false;
-            
             document.getElementById('itemModal').classList.add('active');
         };
 
-        window.closeItemModal = function() {
-            document.getElementById('itemModal').classList.remove('active');
-            editingItemId = null;
-        };
+        window.closeItemModal = function() { document.getElementById('itemModal').classList.remove('active'); editingItemId = null; };
 
         window.saveMenuItem = async function() {
-            const itemData = {
-                nameAr: document.getElementById('itemNameAr').value,
-                nameEn: document.getElementById('itemNameEn').value,
-                cat: document.getElementById('itemCategory').value,
-                price: parseFloat(document.getElementById('itemPrice').value) || 0,
-                descriptionAr: document.getElementById('itemDescAr').value,
-                image: document.getElementById('itemImage').value,
-                available: document.getElementById('itemAvailable').checked,
-                updatedAt: new Date().toISOString()
-            };
-
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            const nameAr = document.getElementById('itemNameAr').value.trim();
+            const nameEn = document.getElementById('itemNameEn').value.trim();
+            const category = document.getElementById('itemCategory').value;
+            const price = toNumber(document.getElementById('itemPrice').value);
+            const descriptionAr = document.getElementById('itemDescAr').value.trim();
+            const image = document.getElementById('itemImage').value.trim();
+            const available = document.getElementById('itemAvailable').checked;
+            if (!nameAr) { alert('من فضلك أدخل اسم الصنف.'); return; }
+            if (price < 0) { alert('السعر غير صحيح.'); return; }
+            const itemData = { nameAr, nameEn, cat: category, price, descriptionAr, image, available, updatedAt: new Date().toISOString() };
             try {
-                if (editingItemId) {
-                    await update(ref(db, `menu/${editingItemId}`), itemData);
-                } else {
-                    await push(ref(db, 'menu'), itemData);
-                }
+                if (editingItemId) await update(ref(db, `menu/${editingItemId}`), itemData);
+                else await push(ref(db, 'menu'), { ...itemData, createdAt: new Date().toISOString() });
                 closeItemModal();
                 alert('تم حفظ الصنف بنجاح!');
-            } catch (error) {
-                console.error('Error saving item:', error);
-                alert('حدث خطأ أثناء حفظ الصنف');
-            }
+            } catch (error) { console.error('Error saving item:', error); alert('حدث خطأ أثناء حفظ الصنف.'); }
         };
 
         window.toggleItemAvailability = async function(itemId, available) {
-            try {
-                await update(ref(db, `menu/${itemId}`), { available });
-            } catch (error) {
-                console.error('Error toggling availability:', error);
-            }
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            try { await update(ref(db, `menu/${itemId}`), { available: Boolean(available), updatedAt: new Date().toISOString() }); }
+            catch (error) { console.error('Error toggling availability:', error); }
         };
 
         window.deleteMenuItem = async function(itemId) {
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
             if (!confirm('هل أنت متأكد من حذف هذا الصنف؟')) return;
-            
-            try {
-                await set(ref(db, `menu/${itemId}`), null);
-            } catch (error) {
-                console.error('Error deleting item:', error);
-                alert('حدث خطأ أثناء حذف الصنف');
-            }
+            try { await set(ref(db, `menu/${itemId}`), null); alert('تم حذف الصنف بنجاح.'); }
+            catch (error) { console.error('Error deleting item:', error); alert('حدث خطأ أثناء حذف الصنف.'); }
         };
 
         window.showSection = function(section) {
-            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.sidebar-menu-item').forEach(i => i.classList.remove('active'));
-            
-            if (section === 'overview') {
-                document.getElementById('overviewSection').style.display = 'block';
-                document.getElementById('pageTitle').textContent = 'لوحة التحكم';
-            } else if (section === 'orders') {
-                document.getElementById('ordersSection').style.display = 'block';
-                document.getElementById('pageTitle').textContent = 'إدارة الطلبات';
-            } else if (section === 'menu') {
-                document.getElementById('menuSection').style.display = 'block';
-                document.getElementById('pageTitle').textContent = 'إدارة المنيو';
-            } else if (section === 'reports') {
-                document.getElementById('reportsSection').style.display = 'block';
-                document.getElementById('pageTitle').textContent = 'التقارير';
-                updateReports();
-            }
-            
-            event.target.closest('.sidebar-menu-item').classList.add('active');
+            document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.sidebar-menu-item').forEach(el => el.classList.remove('active'));
+            const sectionMap = {
+                overview: { id: 'overviewSection', title: 'لوحة التحكم' },
+                orders: { id: 'ordersSection', title: 'إدارة الطلبات' },
+                reports: { id: 'reportsSection', title: 'التقارير' },
+                menu: { id: 'menuSection', title: 'إدارة المنيو' }
+            };
+            const config = sectionMap[section];
+            if (!config) return;
+            const sectionElement = document.getElementById(config.id);
+            if (sectionElement) sectionElement.style.display = 'block';
+            document.getElementById('pageTitle').textContent = config.title;
+            const activeMenuItem = document.querySelector(`.sidebar-menu-item[data-section="${section}"]`);
+            if (activeMenuItem) activeMenuItem.classList.add('active');
+            if (section === 'reports') updateReports();
         };
 
         window.setDateRange = function(range, btn) {
             currentDateRange = range;
             document.querySelectorAll('.date-filter-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
-            
             const customInputs = document.getElementById('customDateRange');
-            if (range === 'custom') {
-                customInputs.style.display = 'flex';
-            } else {
-                customInputs.style.display = 'none';
-                updateReports();
-            }
+            if (range === 'custom') { customInputs.style.display = 'flex'; return; }
+            customInputs.style.display = 'none';
+            updateReports();
         };
 
         window.applyCustomDateRange = function() {
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            if (!start || !end) { alert('من فضلك اختر تاريخ البداية والنهاية.'); return; }
+            if (start > end) { alert('تاريخ البداية يجب أن يكون قبل تاريخ النهاية.'); return; }
             updateReports();
         };
 
         function updateReports() {
-            console.log('Updating reports with range:', currentDateRange);
             const now = new Date();
-            let startDate = new Date();
-            let endDate = new Date();
-            
-            switch(currentDateRange) {
-                case 'today':
-                    startDate.setHours(0, 0, 0, 0);
-                    endDate.setHours(23, 59, 59, 999);
-                    break;
-                case 'yesterday':
-                    startDate.setDate(startDate.getDate() - 1);
-                    startDate.setHours(0, 0, 0, 0);
-                    endDate.setDate(endDate.getDate() - 1);
-                    endDate.setHours(23, 59, 59, 999);
-                    break;
-                case '7days':
-                    startDate.setDate(startDate.getDate() - 7);
-                    startDate.setHours(0, 0, 0, 0);
-                    break;
-                case '30days':
-                    startDate.setDate(startDate.getDate() - 30);
-                    startDate.setHours(0, 0, 0, 0);
-                    break;
-                case 'month':
-                    startDate.setDate(1);
-                    startDate.setHours(0, 0, 0, 0);
-                    break;
-                case 'custom':
-                    const startInput = document.getElementById('startDate').value;
-                    const endInput = document.getElementById('endDate').value;
-                    if (startInput) {
-                        startDate = new Date(startInput);
-                        startDate.setHours(0, 0, 0, 0);
-                    }
-                    if (endInput) {
-                        endDate = new Date(endInput);
-                        endDate.setHours(23, 59, 59, 999);
-                    }
-                    break;
+            let startDate, endDate;
+            if (currentDateRange === 'today') {
+                startDate = new Date(now); startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(now); endDate.setHours(23, 59, 59, 999);
+            } else if (currentDateRange === 'yesterday') {
+                startDate = new Date(now); startDate.setDate(startDate.getDate() - 1); startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(startDate); endDate.setHours(23, 59, 59, 999);
+            } else if (currentDateRange === '7days') {
+                startDate = new Date(now); startDate.setDate(startDate.getDate() - 6); startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(now); endDate.setHours(23, 59, 59, 999);
+            } else if (currentDateRange === '30days') {
+                startDate = new Date(now); startDate.setDate(startDate.getDate() - 29); startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(now); endDate.setHours(23, 59, 59, 999);
+            } else if (currentDateRange === 'month') {
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+                endDate = new Date(now); endDate.setHours(23, 59, 59, 999);
+            } else if (currentDateRange === 'custom') {
+                const startInput = document.getElementById('startDate').value;
+                const endInput = document.getElementById('endDate').value;
+                if (!startInput) { resetReportValues(); return; }
+                startDate = new Date(`${startInput}T00:00:00`);
+                endDate = new Date(endInput ? `${endInput}T23:59:59.999` : `${startInput}T23:59:59.999`);
             }
-            
-            console.log('Date range:', startDate, 'to', endDate);
+            if (!startDate || !endDate) { resetReportValues(); return; }
             
             const filteredOrders = allOrders.filter(order => {
                 const orderDate = getOrderDate(order);
-                return orderDate >= startDate && orderDate <= endDate;
+                return orderDate && orderDate >= startDate && orderDate <= endDate;
             });
-            
-            console.log('Filtered orders:', filteredOrders.length);
-            
-            const totalSales = filteredOrders.reduce((sum, order) => sum + (order.total || 0), 0);
-            const avgOrder = filteredOrders.length > 0 ? totalSales / filteredOrders.length : 0;
+            const salesOrders = filteredOrders.filter(order => order.status !== 'cancelled');
+            const totalSales = salesOrders.reduce((sum, order) => sum + toNumber(order.total), 0);
+            const avgOrder = salesOrders.length ? totalSales / salesOrders.length : 0;
             const cancelled = filteredOrders.filter(o => o.status === 'cancelled').length;
             const delivered = filteredOrders.filter(o => o.status === 'delivered').length;
             const delivering = filteredOrders.filter(o => o.status === 'delivering').length;
-            
-            document.getElementById('reportTotalSales').textContent = totalSales.toFixed(2) + ' ج.م';
+
+            document.getElementById('reportTotalSales').textContent = formatMoney(totalSales);
             document.getElementById('reportTotalOrders').textContent = filteredOrders.length;
-            document.getElementById('reportAvgOrder').textContent = avgOrder.toFixed(2) + ' ج.م';
+            document.getElementById('reportAvgOrder').textContent = formatMoney(avgOrder);
             document.getElementById('reportCancelled').textContent = cancelled;
             document.getElementById('reportDelivered').textContent = delivered;
             document.getElementById('reportDelivering').textContent = delivering;
         }
 
-        window.saveOrderChanges = function() {
-            closeOrderModal();
-        };
+        function resetReportValues() {
+            document.getElementById('reportTotalSales').textContent = '0.00 ج.م';
+            document.getElementById('reportTotalOrders').textContent = '0';
+            document.getElementById('reportAvgOrder').textContent = '0.00 ج.م';
+            document.getElementById('reportCancelled').textContent = '0';
+            document.getElementById('reportDelivered').textContent = '0';
+            document.getElementById('reportDelivering').textContent = '0';
+        }
+
+        document.getElementById('orderModal').addEventListener('click', function(e) { if (e.target === this) closeOrderModal(); });
+        document.getElementById('itemModal').addEventListener('click', function(e) { if (e.target === this) closeItemModal(); });
     </script>
 </body>
 </html>
