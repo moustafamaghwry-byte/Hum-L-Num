@@ -62,6 +62,11 @@
         .stat-card-icon { width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--gray-100); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.5rem; }
         .stat-card-value { font-size: 2rem; font-weight: 900; color: var(--primary-dark); }
         .stat-card-subtitle { color: var(--gray-500); font-size: 0.85rem; margin-top: 0.25rem; }
+        
+        /* كروت قابلة للنقر */
+        .stat-card.clickable { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-right-width 0.2s; }
+        .stat-card.clickable:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-right-width: 8px; }
+
         .card { background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-bottom: 2rem; }
         .card-header { padding: 1.5rem; border-bottom: 2px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
         .card-title { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
@@ -70,8 +75,13 @@
         .date-filter { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
         .date-filter-btn { padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer; font-weight: 600; transition: var(--transition); font-family: inherit; }
         .date-filter-btn:hover, .date-filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
-        .date-range-inputs { display: flex; gap: 0.5rem; align-items: center; }
-        .date-range-inputs input { padding: 6px 12px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; }
+        .date-range-inputs { display: flex; gap: 0.75rem; align-items: flex-end; background: var(--gray-50); padding: 10px 14px; border-radius: var(--radius-sm); border: 2px solid var(--gray-200); }
+        .date-range-inputs .date-field { display: flex; flex-direction: column; gap: 4px; }
+        .date-range-inputs .date-field label { font-size: 0.75rem; font-weight: 700; color: var(--primary-dark); }
+        .date-range-inputs input { padding: 6px 12px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; background: var(--white); }
+        .date-range-inputs input:focus { outline: none; border-color: var(--primary); }
+        .date-range-inputs .apply-btn { padding: 6px 14px; background: var(--primary); color: var(--white); border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-family: inherit; height: fit-content; }
+        .date-range-inputs .apply-btn:hover { background: var(--primary-light); }
         
         .table-container { overflow-x: auto; }
         .data-table { width: 100%; border-collapse: collapse; min-width: 1000px; }
@@ -132,7 +142,7 @@
             .top-bar h1 { font-size: 1.2rem; }
             .login-box { margin: 1rem; padding: 2rem; }
             .date-range-inputs { width: 100%; flex-wrap: wrap; }
-            .date-range-inputs input { flex: 1; min-width: 130px; }
+            .date-range-inputs .date-field { flex: 1; min-width: 120px; }
         }
     </style>
 </head>
@@ -192,28 +202,28 @@
 
             <div id="overviewSection" class="section">
                 <div class="stats-grid">
-                    <div class="stat-card">
+                    <div class="stat-card clickable" onclick="filterOrdersByStatus('all')">
                         <div class="stat-card-header">
                             <div><div class="stat-card-title">إجمالي الطلبات</div><div class="stat-card-subtitle">اليوم</div></div>
                             <div class="stat-card-icon"><i class="fas fa-shopping-bag"></i></div>
                         </div>
                         <div class="stat-card-value" id="totalOrders">0</div>
                     </div>
-                    <div class="stat-card warning">
+                    <div class="stat-card warning clickable" onclick="filterOrdersByStatus('all')">
                         <div class="stat-card-header">
                             <div><div class="stat-card-title">إجمالي المبيعات</div><div class="stat-card-subtitle">اليوم</div></div>
                             <div class="stat-card-icon"><i class="fas fa-dollar-sign"></i></div>
                         </div>
                         <div class="stat-card-value" id="totalSales">0 ج.م</div>
                     </div>
-                    <div class="stat-card success">
+                    <div class="stat-card success clickable" onclick="filterOrdersByStatus('delivered')">
                         <div class="stat-card-header">
                             <div><div class="stat-card-title">مكتملة</div><div class="stat-card-subtitle">الطلبات</div></div>
                             <div class="stat-card-icon"><i class="fas fa-check-circle"></i></div>
                         </div>
                         <div class="stat-card-value" id="completedOrders">0</div>
                     </div>
-                    <div class="stat-card danger">
+                    <div class="stat-card danger clickable" onclick="filterOrdersByStatus('cancelled')">
                         <div class="stat-card-header">
                             <div><div class="stat-card-title">ملغاة</div><div class="stat-card-subtitle">الطلبات</div></div>
                             <div class="stat-card-icon"><i class="fas fa-times-circle"></i></div>
@@ -222,13 +232,25 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header"><h3 class="card-title">حالة الطلبات الآن</h3></div>
+                    <div class="card-header"><h3 class="card-title">حالة الطلبات الآن (اضغط للعرض)</h3></div>
                     <div class="card-body">
                         <div class="stats-grid" style="margin-bottom: 0;">
-                            <div class="stat-card"><div class="stat-card-value" id="statusReceived">0</div><div class="stat-card-subtitle">تم الاستلام</div></div>
-                            <div class="stat-card warning"><div class="stat-card-value" id="statusPreparing">0</div><div class="stat-card-subtitle">جاري التحضير</div></div>
-                            <div class="stat-card success"><div class="stat-card-value" id="statusDelivering">0</div><div class="stat-card-subtitle">خرج للتوصيل</div></div>
-                            <div class="stat-card" style="border-right-color: var(--gray-400);"><div class="stat-card-value" id="statusDelivered">0</div><div class="stat-card-subtitle">تم التوصيل</div></div>
+                            <div class="stat-card clickable" onclick="filterOrdersByStatus('received')">
+                                <div class="stat-card-value" id="statusReceived">0</div>
+                                <div class="stat-card-subtitle">تم الاستلام</div>
+                            </div>
+                            <div class="stat-card warning clickable" onclick="filterOrdersByStatus('preparing')">
+                                <div class="stat-card-value" id="statusPreparing">0</div>
+                                <div class="stat-card-subtitle">جاري التحضير</div>
+                            </div>
+                            <div class="stat-card success clickable" onclick="filterOrdersByStatus('delivering')">
+                                <div class="stat-card-value" id="statusDelivering">0</div>
+                                <div class="stat-card-subtitle">خرج للتوصيل</div>
+                            </div>
+                            <div class="stat-card clickable" style="border-right-color: var(--gray-400);" onclick="filterOrdersByStatus('delivered')">
+                                <div class="stat-card-value" id="statusDelivered">0</div>
+                                <div class="stat-card-subtitle">تم التوصيل</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -283,17 +305,33 @@
                             <button class="date-filter-btn" onclick="setDateRange('month', this)">هذا الشهر</button>
                             <button class="date-filter-btn" onclick="setDateRange('custom', this)">مخصص</button>
                             <div class="date-range-inputs" id="customDateRange" style="display: none;">
-                                <input type="date" id="startDate"><input type="date" id="endDate">
-                                <button class="btn btn-primary" onclick="applyCustomDateRange()">تطبيق</button>
+                                <div class="date-field">
+                                    <label>من تاريخ</label>
+                                    <input type="date" id="startDate">
+                                </div>
+                                <div class="date-field">
+                                    <label>إلى تاريخ</label>
+                                    <input type="date" id="endDate">
+                                </div>
+                                <button class="apply-btn" onclick="applyCustomDateRange()">تطبيق</button>
                             </div>
                         </div>
                         <div class="stats-grid">
                             <div class="stat-card"><div class="stat-card-value" id="reportTotalSales">0 ج.م</div><div class="stat-card-subtitle">إجمالي المبيعات</div></div>
                             <div class="stat-card"><div class="stat-card-value" id="reportTotalOrders">0</div><div class="stat-card-subtitle">عدد الطلبات</div></div>
                             <div class="stat-card"><div class="stat-card-value" id="reportAvgOrder">0 ج.م</div><div class="stat-card-subtitle">متوسط قيمة الطلب</div></div>
-                            <div class="stat-card danger"><div class="stat-card-value" id="reportCancelled">0</div><div class="stat-card-subtitle">طلبات ملغاة</div></div>
-                            <div class="stat-card success"><div class="stat-card-value" id="reportDelivered">0</div><div class="stat-card-subtitle">طلبات مكتملة</div></div>
-                            <div class="stat-card warning"><div class="stat-card-value" id="reportDelivering">0</div><div class="stat-card-subtitle">خرجت للتوصيل</div></div>
+                            <div class="stat-card danger clickable" onclick="filterOrdersByStatus('cancelled')">
+                                <div class="stat-card-value" id="reportCancelled">0</div>
+                                <div class="stat-card-subtitle">طلبات ملغاة (اضغط للعرض)</div>
+                            </div>
+                            <div class="stat-card success clickable" onclick="filterOrdersByStatus('delivered')">
+                                <div class="stat-card-value" id="reportDelivered">0</div>
+                                <div class="stat-card-subtitle">طلبات مكتملة (اضغط للعرض)</div>
+                            </div>
+                            <div class="stat-card warning clickable" onclick="filterOrdersByStatus('delivering')">
+                                <div class="stat-card-value" id="reportDelivering">0</div>
+                                <div class="stat-card-subtitle">خرجت للتوصيل (اضغط للعرض)</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -402,14 +440,11 @@
             const email = document.getElementById('adminEmail').value.trim();
             const password = document.getElementById('adminPassword').value;
             const button = document.getElementById('loginButton');
-            
             if (!email || !password) { alert('من فضلك أدخل البريد الإلكتروني وكلمة المرور.'); return; }
-            
             try {
                 button.disabled = true;
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
                 await signInWithEmailAndPassword(auth, email, password);
-                // سيتم التعامل مع النجاح داخل onAuthStateChanged
             } catch (error) {
                 console.error('Login Error:', error);
                 let message = 'حدث خطأ أثناء تسجيل الدخول.';
@@ -426,7 +461,6 @@
             }
         };
 
-        // تبسيط التحقق: إذا نجح تسجيل الدخول في Firebase، نسمح بالدخول مباشرة
         onAuthStateChanged(auth, (user) => {
             if (!user) {
                 currentUser = null;
@@ -528,6 +562,14 @@
             const statuses = { received: 'تم الاستلام', preparing: 'جاري التحضير', delivering: 'خرج للتوصيل', delivered: 'تم التوصيل', cancelled: 'ملغي' };
             return statuses[status] || status || 'غير محدد';
         }
+
+        // الانتقال للطلبات وتطبيق الفلتر عند النقر على أي كارت
+        window.filterOrdersByStatus = function(status) {
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) statusFilter.value = status;
+            showSection('orders');
+            filterOrders();
+        };
 
         window.viewOrder = function(orderId) {
             const order = allOrders.find(o => o.id === orderId);
