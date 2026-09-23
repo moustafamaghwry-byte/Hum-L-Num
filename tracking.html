@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlTag">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تتبع الطلب | هَمَّ النَّمَّ</title>
+    <title id="pageTitle">تتبع الطلب | هَمَّ النَّمَّ</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -45,7 +45,7 @@
         .search-btn { padding: 14px 32px; background: var(--primary); color: var(--white); border: none; border-radius: var(--radius-md); font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); }
         .search-btn:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .search-hint { text-align: center; margin-top: 1rem; color: var(--gray-500); font-size: 0.9rem; }
-        .search-hint i { color: var(--accent); margin-left: 4px; }
+        .search-hint i { color: var(--accent); margin-inline-end: 4px; }
         
         .order-card { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 2rem; margin-bottom: 2rem; display: none; }
         .order-card.active { display: block; animation: slideIn 0.5s ease; }
@@ -90,18 +90,49 @@
         .total-box { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: var(--white); padding: 1.5rem; border-radius: var(--radius-md); text-align: center; }
         .total-label { font-size: 1rem; margin-bottom: 0.5rem; opacity: 0.9; }
         .total-amount { font-size: 2rem; font-weight: 900; }
+
+        /* Order Summary / Delivery Fee Breakdown */
+        .order-summary { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 0.5rem 1.25rem 1rem; }
+        .summary-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.7rem 0; font-size: 1rem; }
+        .summary-row + .summary-row { border-top: 1px dashed var(--gray-200); }
+        .summary-label { color: var(--gray-700); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .summary-label i { color: var(--accent); }
+        .summary-value { font-weight: 800; color: var(--primary-dark); }
+        .summary-value.free { color: var(--success); }
+        .order-summary .total-box { margin-top: 0.9rem; }
+
+        .edit-summary-box { background: var(--gray-100); padding: 0.5rem 1.25rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; border: 1px solid var(--gray-200); }
+        .edit-summary-box .summary-total { border-top: 2px solid var(--gray-300); margin-top: 0.25rem; }
+        .edit-summary-box .summary-total .summary-label { font-size: 1.1rem; color: var(--primary-dark); font-weight: 800; }
+        .edit-summary-box .summary-total .summary-value { font-size: 1.2rem; color: var(--primary); }
         
+        /* Edit Order Section Styles */
         .edit-section { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 2rem; display: none; }
         .edit-section.active { display: block; }
         
+        .edit-items-box { background: var(--gray-50); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border: 1px solid var(--gray-200); }
+        .editable-item-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px dashed var(--gray-300); gap: 10px; }
+        .editable-item-row:last-child { border-bottom: none; }
+        .editable-item-info { flex: 1; }
+        .qty-controls { display: flex; align-items: center; gap: 8px; }
+        .qty-btn { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gray-300); background: var(--white); font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--primary-dark); transition: var(--transition); }
+        .qty-btn:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+        .delete-btn { color: var(--danger); background: transparent; border: none; cursor: pointer; padding: 6px; font-size: 1.1rem; transition: var(--transition); }
+        .delete-btn:hover { transform: scale(1.15); }
+        
+        .add-item-bar { display: grid; grid-template-columns: 2fr 1.5fr auto; gap: 8px; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--gray-200); align-items: center; }
+        .select-input { padding: 10px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; background: var(--white); }
+        
+        .min-order-alert { background: #ffe3e3; color: var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; border: 1px solid #ffa8a8; }
+
         .form-group { margin-bottom: 1.25rem; }
         .form-label { display: block; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; font-size: 0.9rem; }
         .form-input, .form-textarea { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; transition: var(--transition); }
         .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--primary); }
         .form-textarea { resize: vertical; min-height: 80px; }
         
-        .btn-group { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .btn { flex: 1; padding: 14px; border-radius: var(--radius-md); border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); font-family: inherit; }
+        .btn-group { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+        .btn { flex: 1; padding: 14px; border-radius: var(--radius-md); border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); font-family: inherit; min-width: 150px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary { background: var(--primary); color: var(--white); }
         .btn-primary:hover { background: var(--primary-light); }
         .btn-outline { background: var(--gray-100); color: var(--gray-700); }
@@ -109,9 +140,17 @@
         .btn-danger { background: var(--danger); color: var(--white); }
         .btn-danger:hover { background: #e03131; }
         
+        .btn-primary:disabled {
+            background: var(--gray-400) !important;
+            color: var(--gray-700) !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+            opacity: 0.7;
+        }
+
         .rating-section { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 2rem; margin-top: 2rem; display: none; }
         .rating-section.active { display: block; }
-        
         
         .stars { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; }
         .star { font-size: 2rem; color: var(--gray-300); cursor: pointer; transition: var(--transition); }
@@ -131,13 +170,15 @@
         .no-order i { font-size: 4rem; color: var(--gray-300); margin-bottom: 1rem; }
         
         @media (max-width: 768px) {
-            .navbar-links { display: none; }
+            .navbar-links { display: flex; gap: 1rem; }
             .page-header h1 { font-size: 1.8rem; }
             .info-grid { grid-template-columns: 1fr; }
             .progress-steps { font-size: 0.75rem; }
             .progress-icon { width: 36px; height: 36px; font-size: 0.9rem; }
             .search-form { flex-direction: column; }
             .btn-group { flex-direction: column; }
+            .btn { flex: 1 !important; }
+            .add-item-bar { grid-template-columns: 1fr; gap: 8px; }
         }
     </style>
 </head>
@@ -149,26 +190,26 @@
                 <div class="navbar-title">هَمَّ النَّمَّ <span style="color: var(--accent);">Hum L Num</span></div>
             </a>
             <div class="navbar-links">
-                <a href="index.html">الرئيسية</a>
-                <button class="lang-btn" onclick="toggleLanguage()">EN</button>
+                <a href="index.html" id="navHomeText">الرئيسية</a>
+                <button class="lang-btn" id="langBtn" onclick="toggleLanguage()">EN</button>
             </div>
         </div>
     </nav>
 
     <div class="container">
         <div class="page-header">
-            <h1>تابع طلبك</h1>
-            <p>شكرًا لطلبك من هَمَّ النَّمَّ 🏡<br>يمكنك متابعة حالة طلبك أولاً بأول</p>
+            <h1 id="headerTitle">تابع طلبك</h1>
+            <p id="headerSub">شكرًا لطلبك من هَمَّ النَّمَّ 🏡<br>يمكنك متابعة حالة طلبك أولاً بأول</p>
         </div>
 
         <div class="search-box">
             <form class="search-form" onsubmit="searchOrder(event)">
                 <input type="text" class="search-input" id="orderNumberInput" placeholder="أدخل رقم الطلب أو رقم الموبايل..." required>
-                <button type="submit" class="search-btn">
-                    <i class="fas fa-search"></i> بحث
+                <button type="submit" class="search-btn" id="searchBtnText">
+                    <i class="fas fa-search"></i> <span>بحث</span>
                 </button>
             </form>
-            <div class="search-hint">
+            <div class="search-hint" id="searchHintText">
                 <i class="fas fa-info-circle"></i>
                 يمكنك البحث برقم الطلب (مثال: #1234) أو رقم الموبايل المسجل للطلب
             </div>
@@ -176,13 +217,13 @@
 
         <div class="loading" id="loadingState" style="display: none;">
             <i class="fas fa-spinner"></i>
-            <p>جاري تحميل بيانات الطلب...</p>
+            <p id="loadingText">جاري تحميل بيانات الطلب...</p>
         </div>
 
         <div class="no-order" id="noOrderState">
             <i class="fas fa-search"></i>
-            <h3>لم يتم العثور على الطلب</h3>
-            <p>من فضلك تأكد من رقم الطلب أو رقم الموبايل وحاول مرة أخرى</p>
+            <h3 id="noOrderTitle">لم يتم العثور على الطلب</h3>
+            <p id="noOrderSub">من فضلك تأكد من رقم الطلب أو رقم الموبايل وحاول مرة أخرى</p>
         </div>
 
         <div class="order-card" id="orderCard">
@@ -195,109 +236,160 @@
                 <div class="progress-steps">
                     <div class="progress-step" id="step-received">
                         <div class="progress-icon"><i class="fas fa-check"></i></div>
-                        <div class="progress-label">تم الاستلام</div>
+                        <div class="progress-label" id="stepReceivedText">تم الاستلام</div>
                     </div>
                     <div class="progress-step" id="step-preparing">
                         <div class="progress-icon"><i class="fas fa-utensils"></i></div>
-                        <div class="progress-label">جاري التحضير</div>
+                        <div class="progress-label" id="stepPreparingText">جاري التحضير</div>
                     </div>
                     <div class="progress-step" id="step-delivering">
                         <div class="progress-icon"><i class="fas fa-shipping-fast"></i></div>
-                        <div class="progress-label">خرج للتوصيل</div>
+                        <div class="progress-label" id="stepDeliveringText">خرج للتوصيل</div>
                     </div>
                     <div class="progress-step" id="step-delivered">
                         <div class="progress-icon"><i class="fas fa-home"></i></div>
-                        <div class="progress-label">تم التوصيل</div>
+                        <div class="progress-label" id="stepDeliveredText">تم التوصيل</div>
                     </div>
                 </div>
             </div>
 
             <div class="order-section">
-                <h3 class="section-title"><i class="fas fa-info-circle"></i> معلومات الطلب</h3>
+                <h3 class="section-title"><i class="fas fa-info-circle"></i> <span id="sectionOrderInfo">معلومات الطلب</span></h3>
                 <div class="info-grid">
                     <div class="info-item">
-                        <div class="info-label"><i class="fas fa-user"></i> الاسم</div>
+                        <div class="info-label"><i class="fas fa-user"></i> <span id="lblCustName">الاسم</span></div>
                         <div class="info-value" id="customerName">-</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label"><i class="fas fa-phone"></i> رقم الموبايل</div>
+                        <div class="info-label"><i class="fas fa-phone"></i> <span id="lblCustPhone">رقم الموبايل</span></div>
                         <div class="info-value" id="customerPhone">-</div>
                     </div>
                     <div class="info-item" style="grid-column: 1 / -1;">
-                        <div class="info-label"><i class="fas fa-map-marker-alt"></i> العنوان</div>
+                        <div class="info-label"><i class="fas fa-map-marker-alt"></i> <span id="lblCustAddress">العنوان</span></div>
                         <div class="info-value" id="customerAddress">-</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label"><i class="fas fa-clock"></i> وقت الطلب</div>
+                        <div class="info-label"><i class="fas fa-clock"></i> <span id="lblOrderDate">وقت الطلب</span></div>
                         <div class="info-value" id="orderDate">-</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label"><i class="fas fa-calendar-check"></i> موعد التسليم المطلوب</div>
+                        <div class="info-label"><i class="fas fa-calendar-check"></i> <span id="lblDeliveryTime">موعد التسليم المطلوب</span></div>
                         <div class="info-value" id="deliveryTime">-</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label"><i class="fas fa-credit-card"></i> طريقة الدفع</div>
+                        <div class="info-label"><i class="fas fa-credit-card"></i> <span id="lblPayMethod">طريقة الدفع</span></div>
                         <div class="info-value" id="paymentMethod">-</div>
                     </div>
                 </div>
             </div>
 
             <div class="order-section">
-                <h3 class="section-title"><i class="fas fa-shopping-bag"></i> الأصناف</h3>
+                <h3 class="section-title"><i class="fas fa-shopping-bag"></i> <span id="sectionItems">الأصناف</span></h3>
                 <div class="items-list" id="itemsList"></div>
             </div>
 
-            <div class="total-box">
-                <div class="total-label">الإجمالي الكلي</div>
-                <div class="total-amount" id="orderTotal">0.00 ج.م</div>
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span class="summary-label"><i class="fas fa-shopping-basket"></i> <span id="lblSubtotal">المجموع الفرعي</span></span>
+                    <span class="summary-value" id="orderSubtotal">0.00 ج.م</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label"><i class="fas fa-truck"></i> <span id="lblDeliveryFee">سعر التوصيل</span></span>
+                    <span class="summary-value" id="orderDeliveryFee">0.00 ج.م</span>
+                </div>
+                <div class="total-box">
+                    <div class="total-label" id="lblTotalAmount">الإجمالي الكلي</div>
+                    <div class="total-amount" id="orderTotal">0.00 ج.م</div>
+                </div>
             </div>
 
             <div class="btn-group" style="margin-top: 2rem;">
-    <button class="btn btn-outline" onclick="showEditSection()">
-        <i class="fas fa-edit"></i> تعديل الطلب
-    </button>
-    <button class="btn btn-primary" id="ratingBtn" onclick="showRatingSection()" style="display: none;">
-        <i class="fas fa-star"></i> قيّم طلبك
-    </button>
-</div>
+                <button class="btn btn-outline" onclick="showEditSection()" id="btnEditOrder" style="display: none;">
+                    <i class="fas fa-edit"></i> <span id="btnEditOrderText">تعديل الطلب</span>
+                </button>
+                <button class="btn btn-danger" onclick="confirmCancelOrder()" id="btnCancelOrder" style="display: none;">
+                    <i class="fas fa-times-circle"></i> <span id="btnCancelOrderText">إلغاء الطلب</span>
+                </button>
+                <button class="btn btn-primary" id="ratingBtn" onclick="showRatingSection()" style="display: none;">
+                    <i class="fas fa-star"></i> <span id="btnRateOrder">قيّم طلبك</span>
+                </button>
+            </div>
 
             <div id="ratingNotice" class="rating-notice" style="display: none;">
                 <i class="fas fa-lock"></i>
-                التقييم متاح فقط بعد اكتمال التوصيل
+                <span id="txtRatingNotice">التقييم متاح فقط بعد اكتمال التوصيل</span>
             </div>
         </div>
 
         <div class="edit-section" id="editSection">
-            <h3 class="section-title"><i class="fas fa-edit"></i> تعديل الطلب</h3>
+            <h3 class="section-title"><i class="fas fa-edit"></i> <span id="sectionEditTitle">تعديل الطلب</span></h3>
+            
+            <div id="minOrderWarning" class="min-order-alert" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="minOrderWarningText">تنبيه: الحد الأدنى للطلب هو 150 جنيه.</span>
+            </div>
+
             <form onsubmit="saveOrderEdit(event)">
                 <div class="form-group">
-                    <label class="form-label">رقم الموبايل</label>
+                    <label class="form-label" id="lblEditItems">أصناف الطلب</label>
+                    <div class="edit-items-box">
+                        <div id="editableItemsList"></div>
+                        
+                        <div class="add-item-bar">
+                            <select class="select-input" id="menuItemSelect" onchange="onMenuItemSelect()">
+                                <option value="">-- اختر صنفاً لإضافته --</option>
+                            </select>
+                            <select class="select-input" id="menuSizeSelect" style="display: none;"></select>
+                            <button type="button" class="btn btn-outline" onclick="addNewItemFromMenu()" style="padding: 9px 16px; min-height: auto;">
+                                <i class="fas fa-plus"></i> <span id="btnAddItemText">إضافة</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edit-summary-box">
+                    <div class="summary-row">
+                        <span class="summary-label"><i class="fas fa-shopping-basket"></i> <span id="lblEditItemsSubtotal">قيمة الأصناف:</span></span>
+                        <span class="summary-value" id="editableSubtotalVal">0.00 ج.م</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label"><i class="fas fa-truck"></i> <span id="lblEditableDeliveryFee">سعر التوصيل</span></span>
+                        <span class="summary-value" id="editableDeliveryFeeVal">0.00 ج.م</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span class="summary-label" id="lblEditableSubtotal">الإجمالي الكلي:</span>
+                        <span class="summary-value" id="editableGrandTotalVal">0.00 ج.م</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" id="lblEditPhone">رقم الموبايل</label>
                     <input type="tel" class="form-input" id="editPhone" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">العنوان</label>
+                    <label class="form-label" id="lblEditAddress">العنوان</label>
                     <textarea class="form-textarea" id="editAddress" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">تاريخ ووقت الاستلام المطلوب</label>
+                    <label class="form-label" id="lblEditDeliveryTime">تاريخ ووقت الاستلام المطلوب</label>
                     <input type="datetime-local" class="form-input" id="editDeliveryTime">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">ملاحظة على الطلب</label>
+                    <label class="form-label" id="lblEditNote">ملاحظة على الطلب</label>
                     <textarea class="form-textarea" id="editNote"></textarea>
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-outline" onclick="hideEditSection()">رجوع</button>
-                    <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+                    <button type="button" class="btn btn-outline" onclick="hideEditSection()" id="btnEditBack">رجوع</button>
+                    <button type="submit" class="btn btn-primary" id="btnEditSave">حفظ التعديلات</button>
                 </div>
             </form>
         </div>
 
         <div class="rating-section" id="ratingSection">
-            <h3 class="section-title"><i class="fas fa-star"></i> قيّم طلبك</h3>
+            <h3 class="section-title"><i class="fas fa-star"></i> <span id="sectionRateTitle">قيّم طلبك</span></h3>
             <form onsubmit="submitRating(event)">
                 <div class="form-group">
-                    <label class="form-label">التقييم</label>
+                    <label class="form-label" id="lblRatingStars">التقييم</label>
                     <div class="stars" id="starRating">
                         <span class="star" onclick="setRating(1)"><i class="fas fa-star"></i></span>
                         <span class="star" onclick="setRating(2)"><i class="fas fa-star"></i></span>
@@ -307,20 +399,20 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">ملاحظاتك</label>
+                    <label class="form-label" id="lblRatingComment">ملاحظاتك</label>
                     <textarea class="form-textarea" id="ratingComment" placeholder="شاركنا تجربتك..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">إضافة صورة (اختياري)</label>
+                    <label class="form-label" id="lblRatingPhoto">إضافة صورة (اختياري)</label>
                     <div class="upload-box" onclick="document.getElementById('ratingImage').click()">
                         <i class="fas fa-camera"></i>
-                        <p>اضغط لرفع صورة</p>
+                        <p id="txtUploadPhoto">اضغط لرفع صورة</p>
                         <input type="file" id="ratingImage" accept="image/*" style="display: none;">
                     </div>
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-outline" onclick="hideRatingSection()">رجوع</button>
-                    <button type="submit" class="btn btn-primary">إرسال التقييم</button>
+                    <button type="button" class="btn btn-outline" onclick="hideRatingSection()" id="btnRateBack">رجوع</button>
+                    <button type="submit" class="btn btn-primary" id="btnRateSubmit">إرسال التقييم</button>
                 </div>
             </form>
         </div>
@@ -343,17 +435,297 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        const MIN_ORDER_LIMIT = 150;
+
         let currentOrder = null;
         let currentOrderId = null;
         let currentRating = 0;
+        let currentLang = 'ar';
+        let availableMenuItems = [];
+        let editableItems = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderNumFromUrl = urlParams.get('id');
+            if (orderNumFromUrl) {
+                document.getElementById('orderNumberInput').value = orderNumFromUrl;
+                searchOrder();
+            }
+        });
+
+        const i18n = {
+            ar: {
+                pageTitle: "تتبع الطلب | هَمَّ النَّمَّ",
+                navHome: "الرئيسية",
+                langBtn: "EN",
+                headerTitle: "تابع طلبك",
+                headerSub: "شكرًا لطلبك من هَمَّ النَّمَّ 🏡<br>يمكنك متابعة حالة طلبك أولاً بأول",
+                searchPlaceholder: "أدخل رقم الطلب أو رقم الموبايل...",
+                searchBtn: "بحث",
+                searchHint: "يمكنك البحث برقم الطلب (مثال: #1234) أو رقم الموبايل المسجل للطلب",
+                loadingText: "جاري تحميل بيانات الطلب...",
+                noOrderTitle: "لم يتم العثور على الطلب",
+                noOrderSub: "من فضلك تأكد من رقم الطلب أو رقم الموبايل وحاول مرة أخرى",
+                stepReceived: "تم الاستلام",
+                stepPreparing: "جاري التحضير",
+                stepDelivering: "خرج للتوصيل",
+                stepDelivered: "تم التوصيل",
+                sectionOrderInfo: "معلومات الطلب",
+                lblCustName: "الاسم",
+                lblCustPhone: "رقم الموبايل",
+                lblCustAddress: "العنوان",
+                lblOrderDate: "وقت الطلب",
+                lblDeliveryTime: "موعد التسليم المطلوب",
+                lblPayMethod: "طريقة الدفع",
+                sectionItems: "الأصناف",
+                lblSubtotal: "المجموع الفرعي",
+                lblDeliveryFee: "سعر التوصيل",
+                deliveryFree: "مجانًا",
+                lblTotalAmount: "الإجمالي الكلي",
+                btnEditOrder: "تعديل الطلب",
+                btnCancelOrder: "إلغاء الطلب",
+                btnRateOrder: "قيّم طلبك",
+                txtRatingNotice: "التقييم متاح فقط بعد اكتمال التوصيل",
+                sectionEditTitle: "تعديل الطلب",
+                lblEditItems: "أصناف الطلب",
+                btnAddItemText: "إضافة",
+                selectItemDefault: "-- اختر صنفاً لإضافته --",
+                lblEditableSubtotal: "الإجمالي الكلي:",
+                lblEditItemsSubtotal: "قيمة الأصناف:",
+                lblEditableDeliveryFee: "سعر التوصيل",
+                lblEditPhone: "رقم الموبايل",
+                lblEditAddress: "العنوان",
+                lblEditDeliveryTime: "تاريخ ووقت الاستلام المطلوب",
+                lblEditNote: "ملاحظة على الطلب",
+                btnEditBack: "رجوع",
+                btnEditSave: "حفظ التعديلات",
+                sectionRateTitle: "قيّم طلبك",
+                lblRatingStars: "التقييم",
+                lblRatingComment: "ملاحظاتك",
+                commentPlaceholder: "شاركنا تجربتك...",
+                lblRatingPhoto: "إضافة صورة (اختياري)",
+                txtUploadPhoto: "اضغط لرفع صورة",
+                btnRateBack: "رجوع",
+                btnRateSubmit: "إرسال التقييم",
+                statusReceived: "تم الاستلام",
+                statusPreparing: "جاري التحضير",
+                statusDelivering: "خرج للتوصيل",
+                statusDelivered: "تم التوصيل",
+                statusCancelled: "ملغي",
+                cash: "كاش",
+                card: "فيزا",
+                noItems: "لا توجد أصناف",
+                notes: "ملاحظات",
+                qty: "الكمية",
+                currency: "ج.م",
+                alertEnterInput: "من فضلك أدخل رقم الطلب أو رقم الموبايل",
+                alertSaved: "تم حفظ التعديلات بنجاح!",
+                alertSaveError: "حدث خطأ أثناء حفظ التعديلات",
+                alertSelectStars: "من فضلك اختر عدد النجوم",
+                alertThankYou: "شكرًا لتقييمك! 🌟",
+                alertRatingError: "حدث خطأ أثناء إرسال التقييم",
+                alertRatingDeliveredOnly: "التقييم متاح فقط بعد اكتمال التوصيل",
+                alertEditReceivedOnly: "تعديل الطلب متاح فقط في مرحلة تم الاستلام",
+                alertMinOrderLimit: "عذراً، الحد الأدنى للطلب هو 150 جنيه. الإجمالي الحالي: ",
+                alertEmptyOrder: "لا يمكنك حفظ طلب بدون أصناف!",
+                confirmCancelTitle: "إلغاء الطلب؟",
+                confirmCancelMsg: "هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟ لا يمكن التراجع عن هذه العملية.",
+                cancelledSuccess: "تم إلغاء الطلب بنجاح",
+                cancelledError: "حدث خطأ أثناء إلغاء الطلب",
+                alertCancelReceivedOnly: "يمكن إلغاء الطلب فقط عندما تكون الحالة 'تم الاستلام'"
+            },
+            en: {
+                pageTitle: "Track Order | Hum L Num",
+                navHome: "Home",
+                langBtn: "عربي",
+                headerTitle: "Track Your Order",
+                headerSub: "Thank you for ordering from Hum L Num 🏡<br>You can track your order status in real-time",
+                searchPlaceholder: "Enter order number or phone number...",
+                searchBtn: "Search",
+                searchHint: "You can search by order number (e.g. #1234) or registered phone number",
+                loadingText: "Loading order details...",
+                noOrderTitle: "Order Not Found",
+                noOrderSub: "Please check your order number or phone number and try again",
+                stepReceived: "Received",
+                stepPreparing: "Preparing",
+                stepDelivering: "Out for Delivery",
+                stepDelivered: "Delivered",
+                sectionOrderInfo: "Order Information",
+                lblCustName: "Name",
+                lblCustPhone: "Phone",
+                lblCustAddress: "Address",
+                lblOrderDate: "Order Time",
+                lblDeliveryTime: "Requested Delivery Time",
+                lblPayMethod: "Payment Method",
+                sectionItems: "Items",
+                lblSubtotal: "Subtotal",
+                lblDeliveryFee: "Delivery Fee",
+                deliveryFree: "Free",
+                lblTotalAmount: "Grand Total",
+                btnEditOrder: "Edit Order",
+                btnCancelOrder: "Cancel Order",
+                btnRateOrder: "Rate Order",
+                txtRatingNotice: "Rating is available only after delivery completion",
+                sectionEditTitle: "Edit Order",
+                lblEditItems: "Order Items",
+                btnAddItemText: "Add",
+                selectItemDefault: "-- Select item to add --",
+                lblEditableSubtotal: "Grand Total:",
+                lblEditItemsSubtotal: "Items Total:",
+                lblEditableDeliveryFee: "Delivery Fee",
+                lblEditPhone: "Phone Number",
+                lblEditAddress: "Address",
+                lblEditDeliveryTime: "Requested Delivery Date & Time",
+                lblEditNote: "Order Note",
+                btnEditBack: "Back",
+                btnEditSave: "Save Changes",
+                sectionRateTitle: "Rate Your Order",
+                lblRatingStars: "Rating",
+                lblRatingComment: "Your Feedback",
+                commentPlaceholder: "Share your experience with us...",
+                lblRatingPhoto: "Add Photo (Optional)",
+                txtUploadPhoto: "Click to upload photo",
+                btnRateBack: "Back",
+                btnRateSubmit: "Submit Review",
+                statusReceived: "Received",
+                statusPreparing: "Preparing",
+                statusDelivering: "Out for Delivery",
+                statusDelivered: "Delivered",
+                statusCancelled: "Cancelled",
+                cash: "Cash",
+                card: "Credit Card",
+                noItems: "No items found",
+                notes: "Notes",
+                qty: "Qty",
+                currency: "EGP",
+                alertEnterInput: "Please enter an order number or phone number",
+                alertSaved: "Changes saved successfully!",
+                alertSaveError: "An error occurred while saving changes",
+                alertSelectStars: "Please select a star rating",
+                alertThankYou: "Thank you for your review! 🌟",
+                alertRatingError: "An error occurred while submitting your review",
+                alertRatingDeliveredOnly: "Rating is available only after delivery completion",
+                alertEditReceivedOnly: "Editing order is only available when order status is Received",
+                alertMinOrderLimit: "Sorry, minimum order amount is 150 EGP. Current total: ",
+                alertEmptyOrder: "You cannot save an empty order!",
+                confirmCancelTitle: "Cancel Order?",
+                confirmCancelMsg: "Are you sure you want to cancel this order? This action cannot be undone.",
+                cancelledSuccess: "Order cancelled successfully",
+                cancelledError: "An error occurred while cancelling the order",
+                alertCancelReceivedOnly: "Order can only be cancelled when status is 'Received'"
+            }
+        };
+
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            applyLanguage();
+        };
+
+        function applyLanguage() {
+            const t = i18n[currentLang];
+            const htmlTag = document.getElementById('htmlTag');
+            htmlTag.dir = currentLang === 'en' ? 'ltr' : 'rtl';
+            htmlTag.lang = currentLang;
+
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+            document.getElementById('navHomeText').textContent = t.navHome;
+            document.getElementById('langBtn').textContent = t.langBtn;
+            document.getElementById('headerTitle').textContent = t.headerTitle;
+            document.getElementById('headerSub').innerHTML = t.headerSub;
+            document.getElementById('orderNumberInput').placeholder = t.searchPlaceholder;
+            document.querySelector('#searchBtnText span').textContent = t.searchBtn;
+            document.getElementById('searchHintText').innerHTML = `<i class="fas fa-info-circle"></i> ${t.searchHint}`;
+            document.getElementById('loadingText').textContent = t.loadingText;
+            document.getElementById('noOrderTitle').textContent = t.noOrderTitle;
+            document.getElementById('noOrderSub').textContent = t.noOrderSub;
+
+            document.getElementById('stepReceivedText').textContent = t.stepReceived;
+            document.getElementById('stepPreparingText').textContent = t.stepPreparing;
+            document.getElementById('stepDeliveringText').textContent = t.stepDelivering;
+            document.getElementById('stepDeliveredText').textContent = t.stepDelivered;
+
+            document.getElementById('sectionOrderInfo').textContent = t.sectionOrderInfo;
+            document.getElementById('lblCustName').textContent = t.lblCustName;
+            document.getElementById('lblCustPhone').textContent = t.lblCustPhone;
+            document.getElementById('lblCustAddress').textContent = t.lblCustAddress;
+            document.getElementById('lblOrderDate').textContent = t.lblOrderDate;
+            document.getElementById('lblDeliveryTime').textContent = t.lblDeliveryTime;
+            document.getElementById('lblPayMethod').textContent = t.lblPayMethod;
+            document.getElementById('sectionItems').textContent = t.sectionItems;
+            document.getElementById('lblSubtotal').textContent = t.lblSubtotal;
+            document.getElementById('lblDeliveryFee').textContent = t.lblDeliveryFee;
+            document.getElementById('lblTotalAmount').textContent = t.lblTotalAmount;
+
+            document.getElementById('btnEditOrderText').textContent = t.btnEditOrder;
+            document.getElementById('btnCancelOrderText').textContent = t.btnCancelOrder;
+            document.getElementById('btnRateOrder').textContent = t.btnRateOrder;
+            document.getElementById('txtRatingNotice').textContent = t.txtRatingNotice;
+
+            document.getElementById('sectionEditTitle').textContent = t.sectionEditTitle;
+            document.getElementById('lblEditItems').textContent = t.lblEditItems;
+            document.getElementById('btnAddItemText').textContent = t.btnAddItemText;
+            document.getElementById('lblEditableSubtotal').textContent = t.lblEditableSubtotal;
+            document.getElementById('lblEditItemsSubtotal').textContent = t.lblEditItemsSubtotal;
+            document.getElementById('lblEditableDeliveryFee').textContent = t.lblEditableDeliveryFee;
+
+            document.getElementById('lblEditPhone').textContent = t.lblEditPhone;
+            document.getElementById('lblEditAddress').textContent = t.lblEditAddress;
+            document.getElementById('lblEditDeliveryTime').textContent = t.lblEditDeliveryTime;
+            document.getElementById('lblEditNote').textContent = t.lblEditNote;
+            document.getElementById('btnEditBack').textContent = t.btnEditBack;
+            document.getElementById('btnEditSave').textContent = t.btnEditSave;
+
+            document.getElementById('sectionRateTitle').textContent = t.sectionRateTitle;
+            document.getElementById('lblRatingStars').textContent = t.lblRatingStars;
+            document.getElementById('lblRatingComment').textContent = t.lblRatingComment;
+            document.getElementById('ratingComment').placeholder = t.commentPlaceholder;
+            document.getElementById('lblRatingPhoto').textContent = t.lblRatingPhoto;
+            document.getElementById('txtUploadPhoto').textContent = t.txtUploadPhoto;
+            document.getElementById('btnRateBack').textContent = t.btnRateBack;
+            document.getElementById('btnRateSubmit').textContent = t.btnRateSubmit;
+
+            if (currentOrder) {
+                displayOrder(currentOrder);
+            }
+        }
 
         function getOrderDate(order) {
-            if (order.createdAt) {
-                if (order.createdAt.seconds) return new Date(order.createdAt.seconds * 1000);
-                if (typeof order.createdAt === 'string') return new Date(order.createdAt);
-                if (order.createdAt._seconds) return new Date(order.createdAt._seconds * 1000);
+            const val = order.createdAt ?? order.created_at ?? order.timestamp ?? order.created;
+            if (!val) return new Date(0);
+            if (typeof val === 'object') {
+                if (typeof val.toDate === 'function') return val.toDate();
+                if (val.seconds !== undefined) return new Date(val.seconds * 1000);
+                if (val._seconds !== undefined) return new Date(val._seconds * 1000);
+            }
+            if (typeof val === 'number') return val > 100000000000 ? new Date(val) : new Date(val * 1000);
+            if (typeof val === 'string') {
+                const d = new Date(val);
+                if (!isNaN(d.getTime())) return d;
+                const n = Number(val);
+                if (Number.isFinite(n)) return n > 100000000000 ? new Date(n) : new Date(n * 1000);
             }
             return new Date(0);
+        }
+
+        function getCustomerDetails(order) {
+            return {
+                name: order.customerName || (order.customer ? order.customer.name : '-'),
+                phone: order.customerPhone || (order.customer ? order.customer.phone : '-'),
+                address: order.customerAddress || (order.customer ? order.customer.address : '-')
+            };
+        }
+
+        function getOrderTotals(order) {
+            const deliveryFee = Number(order.deliveryFee ?? (order.totals ? order.totals.deliveryFee : 0)) || 0;
+            let grandTotal = Number(order.total ?? (order.totals ? order.totals.grandTotal : 0)) || 0;
+            let subtotal = Number(order.subtotal ?? (order.totals ? order.totals.subtotal : 0)) || 0;
+
+            // اشتقاق القيم الناقصة من بعضها (مثال: المجموع الفرعي = الإجمالي - سعر التوصيل)
+            if (!subtotal && grandTotal) subtotal = grandTotal - deliveryFee;
+            if (!grandTotal) grandTotal = subtotal + deliveryFee;
+            if (subtotal < 0) subtotal = 0;
+
+            return { grandTotal, subtotal, deliveryFee };
         }
 
         function normalizePhone(phone) {
@@ -365,11 +737,12 @@
         }
 
         window.searchOrder = async function(e) {
-            e.preventDefault();
+            if (e && e.preventDefault) e.preventDefault();
+            const t = i18n[currentLang];
             const input = document.getElementById('orderNumberInput').value.trim();
             
             if (!input) {
-                alert('من فضلك أدخل رقم الطلب أو رقم الموبايل');
+                alert(t.alertEnterInput);
                 return;
             }
             
@@ -386,30 +759,29 @@
                     return;
                 }
                 
-                const isNumber = /^\d+$/.test(input.replace('#', '').trim());
                 const searchValue = input.replace('#', '').trim();
+                const isNumber = /^\d+$/.test(searchValue);
                 
                 let orderEntry = null;
                 
                 if (isNumber && searchValue.length >= 4) {
-                    // Try to match by order number first
                     orderEntry = Object.entries(orders).find(([id, order]) => 
                         order.orderNumber && order.orderNumber.toString() === searchValue
                     );
                     
-                    // If not found, try to match by phone
                     if (!orderEntry) {
                         const normalizedSearch = normalizePhone(searchValue);
                         orderEntry = Object.entries(orders).find(([id, order]) => {
-                            const orderPhone = normalizePhone(order.customerPhone);
+                            const cust = getCustomerDetails(order);
+                            const orderPhone = normalizePhone(cust.phone);
                             return orderPhone === normalizedSearch || orderPhone.endsWith(normalizedSearch.slice(-9));
                         });
                     }
                 } else {
-                    // Search by phone number (may contain + or spaces)
                     const normalizedSearch = normalizePhone(input);
                     orderEntry = Object.entries(orders).find(([id, order]) => {
-                        const orderPhone = normalizePhone(order.customerPhone);
+                        const cust = getCustomerDetails(order);
+                        const orderPhone = normalizePhone(cust.phone);
                         return orderPhone === normalizedSearch || orderPhone.endsWith(normalizedSearch.slice(-9));
                     });
                 }
@@ -438,6 +810,9 @@
         }
 
         function displayOrder(order) {
+            const t = i18n[currentLang];
+            const locale = currentLang === 'en' ? 'en-US' : 'ar-EG';
+
             document.getElementById('displayOrderNumber').textContent = `#${order.orderNumber || 'N/A'}`;
             
             const statusEl = document.getElementById('displayStatus');
@@ -446,14 +821,16 @@
             
             updateProgressBar(order.status);
             
-            document.getElementById('customerName').textContent = order.customerName || '-';
-            document.getElementById('customerPhone').textContent = order.customerPhone || '-';
-            document.getElementById('customerAddress').textContent = order.customerAddress || '-';
+            const cust = getCustomerDetails(order);
+            const totals = getOrderTotals(order);
+
+            document.getElementById('customerName').textContent = cust.name;
+            document.getElementById('customerPhone').textContent = cust.phone;
+            document.getElementById('customerAddress').textContent = cust.address;
             
-            // عرض وقت الطلب
             const orderDate = getOrderDate(order);
             if (orderDate.getTime() > 0) {
-                document.getElementById('orderDate').textContent = orderDate.toLocaleString('ar-EG', {
+                document.getElementById('orderDate').textContent = orderDate.toLocaleString(locale, {
                     year: 'numeric', month: 'long', day: 'numeric',
                     hour: '2-digit', minute: '2-digit'
                 });
@@ -461,53 +838,81 @@
                 document.getElementById('orderDate').textContent = '-';
             }
             
-            // عرض موعد التسليم
-            if (order.deliveryTimeTarget) {
-                const deliveryDate = new Date(order.deliveryTimeTarget);
-                document.getElementById('deliveryTime').textContent = deliveryDate.toLocaleString('ar-EG', {
-                    year: 'numeric', month: 'long', day: 'numeric',
-                    hour: '2-digit', minute: '2-digit'
-                });
+            const deliveryVal = order.deliveryTimeTarget || order.deliveryTime;
+            if (deliveryVal) {
+                const deliveryDate = new Date(deliveryVal);
+                document.getElementById('deliveryTime').textContent = !isNaN(deliveryDate.getTime()) 
+                    ? deliveryDate.toLocaleString(locale, { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                    : deliveryVal;
             } else {
                 document.getElementById('deliveryTime').textContent = '-';
             }
             
-            document.getElementById('paymentMethod').textContent = order.payMethod === 'cash' ? 'كاش' : 'فيزا';
+            const pay = order.payMethod || order.paymentMethod;
+            document.getElementById('paymentMethod').textContent = (pay === 'cash' || pay === 'كاش') ? t.cash : t.card;
             
-            // عرض الأصناف
             const itemsList = document.getElementById('itemsList');
-            if (order.items && order.items.length > 0) {
-                itemsList.innerHTML = order.items.map(item => `
-                    <div class="item-row">
-                        <div>
-                            <div class="item-name">${item.ar || item.name}</div>
-                            ${item.notes ? `<div class="item-qty">ملاحظات: ${item.notes}</div>` : ''}
+            const rawItems = order.items;
+            const itemsArray = Array.isArray(rawItems) ? rawItems : (rawItems ? Object.values(rawItems) : []);
+
+            if (itemsArray.length > 0) {
+                itemsList.innerHTML = itemsArray.map(item => {
+                    const itemName = currentLang === 'en' ? (item.en || item.nameEn || item.ar || item.name || item.nameAr) : (item.ar || item.name || item.nameAr || 'صنف');
+                    const sizeInfo = item.sizeWeight ? ` (${item.sizeWeight})` : '';
+                    const qty = Number(item.qty || item.quantity || 1);
+                    const price = Number(item.price || 0);
+
+                    return `
+                        <div class="item-row">
+                            <div>
+                                <div class="item-name">${itemName}${sizeInfo}</div>
+                                ${item.notes ? `<div class="item-qty">${t.notes}: ${item.notes}</div>` : ''}
+                            </div>
+                            <div style="text-align: ${currentLang === 'en' ? 'right' : 'left'};">
+                                <div class="item-price">${price.toFixed(2)} ${t.currency}</div>
+                                <div class="item-qty">${t.qty}: ${qty}</div>
+                            </div>
                         </div>
-                        <div style="text-align: left;">
-                            <div class="item-price">${(item.price || 0).toFixed(2)} ج.م</div>
-                            <div class="item-qty">الكمية: ${item.qty}</div>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             } else {
-                itemsList.innerHTML = '<p style="text-align: center; color: var(--gray-500);">لا توجد أصناف</p>';
+                itemsList.innerHTML = `<p style="text-align: center; color: var(--gray-500);">${t.noItems}</p>`;
             }
             
-            document.getElementById('orderTotal').textContent = `${(order.total || 0).toFixed(2)} ج.م`;
+            document.getElementById('orderSubtotal').textContent = `${totals.subtotal.toFixed(2)} ${t.currency}`;
+
+            const deliveryFeeEl = document.getElementById('orderDeliveryFee');
+            if (totals.deliveryFee > 0) {
+                deliveryFeeEl.textContent = `${totals.deliveryFee.toFixed(2)} ${t.currency}`;
+                deliveryFeeEl.classList.remove('free');
+            } else {
+                deliveryFeeEl.textContent = t.deliveryFree;
+                deliveryFeeEl.classList.add('free');
+            }
+
+            document.getElementById('orderTotal').textContent = `${totals.grandTotal.toFixed(2)} ${t.currency}`;
             
-            // ملء نموذج التعديل
-            document.getElementById('editPhone').value = order.customerPhone || '';
-            document.getElementById('editAddress').value = order.customerAddress || '';
-            document.getElementById('editDeliveryTime').value = order.deliveryTimeTarget || '';
-            document.getElementById('editNote').value = order.note || '';
+            document.getElementById('editPhone').value = cust.phone !== '-' ? cust.phone : '';
+            document.getElementById('editAddress').value = cust.address !== '-' ? cust.address : '';
+            document.getElementById('editDeliveryTime').value = order.deliveryTimeTarget || order.deliveryTime || '';
+            document.getElementById('editNote').value = order.note || order.orderNote || '';
             
-           // إظهار زر التقييم فقط عند "تم التوصيل"
-const ratingBtn = document.getElementById('ratingBtn');
-if (order.status === 'delivered') {
-    ratingBtn.style.display = 'inline-flex';
-} else {
-    ratingBtn.style.display = 'none';
-}
+            const btnEditOrder = document.getElementById('btnEditOrder');
+            const btnCancelOrder = document.getElementById('btnCancelOrder');
+            if (!order.status || order.status === 'received') {
+                btnEditOrder.style.display = 'inline-flex';
+                btnCancelOrder.style.display = 'inline-flex';
+            } else {
+                btnEditOrder.style.display = 'none';
+                btnCancelOrder.style.display = 'none';
+            }
+
+            const ratingBtn = document.getElementById('ratingBtn');
+            if (order.status === 'delivered') {
+                ratingBtn.style.display = 'inline-flex';
+            } else {
+                ratingBtn.style.display = 'none';
+            }
         }
 
         function updateProgressBar(status) {
@@ -516,6 +921,7 @@ if (order.status === 'delivered') {
             
             steps.forEach((step, index) => {
                 const stepEl = document.getElementById(`step-${step}`);
+                if (!stepEl) return;
                 stepEl.classList.remove('active', 'completed');
                 
                 if (index < currentIndex) {
@@ -527,21 +933,206 @@ if (order.status === 'delivered') {
         }
 
         function getStatusText(status) {
+            const t = i18n[currentLang];
             const statuses = {
-                received: 'تم الاستلام',
-                preparing: 'جاري التحضير',
-                delivering: 'خرج للتوصيل',
-                delivered: 'تم التوصيل',
-                cancelled: 'ملغي'
+                received: t.statusReceived,
+                preparing: t.statusPreparing,
+                delivering: t.statusDelivering,
+                delivered: t.statusDelivered,
+                cancelled: t.statusCancelled
             };
-            return statuses[status] || status;
+            return statuses[status] || status || '-';
         }
 
-        window.showEditSection = function() {
+        window.showEditSection = async function() {
+            const t = i18n[currentLang];
+            if (currentOrder && currentOrder.status && currentOrder.status !== 'received') {
+                alert(t.alertEditReceivedOnly);
+                return;
+            }
+
+            const rawItems = currentOrder.items;
+            const itemsArray = Array.isArray(rawItems) ? rawItems : (rawItems ? Object.values(rawItems) : []);
+            editableItems = JSON.parse(JSON.stringify(itemsArray));
+
+            try {
+                const menuSnapshot = await get(ref(db, 'menu'));
+                const menuData = menuSnapshot.val();
+                availableMenuItems = menuData ? Object.entries(menuData).map(([id, item]) => ({ id, ...item })).filter(i => i.available !== false) : [];
+                populateMenuDropdown();
+            } catch (err) {
+                console.error("Error loading menu:", err);
+            }
+
+            renderEditableItems();
+            
             document.getElementById('orderCard').classList.remove('active');
             document.getElementById('editSection').classList.add('active');
         };
 
+        function populateMenuDropdown() {
+            const t = i18n[currentLang];
+            const select = document.getElementById('menuItemSelect');
+            select.innerHTML = `<option value="">${t.selectItemDefault}</option>`;
+            
+            availableMenuItems.forEach(item => {
+                const name = currentLang === 'en' ? (item.nameEn || item.nameAr) : (item.nameAr || item.nameEn);
+                select.innerHTML += `<option value="${item.id}">${name}</option>`;
+            });
+        }
+
+        window.onMenuItemSelect = function() {
+            const itemId = document.getElementById('menuItemSelect').value;
+            const sizeSelect = document.getElementById('menuSizeSelect');
+            sizeSelect.style.display = 'none';
+            sizeSelect.innerHTML = '';
+
+            if (!itemId) return;
+            const item = availableMenuItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            if (item.sizes && item.sizes.length > 0) {
+                sizeSelect.style.display = 'block';
+                item.sizes.forEach((s, idx) => {
+                    sizeSelect.innerHTML += `<option value="${idx}">${s.weight} — ${s.price} ${i18n[currentLang].currency}</option>`;
+                });
+            }
+        };
+
+        window.addNewItemFromMenu = function() {
+            const itemId = document.getElementById('menuItemSelect').value;
+            if (!itemId) return;
+            const item = availableMenuItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            let sizeWeight = '';
+            let price = 0;
+
+            if (item.sizes && item.sizes.length > 0) {
+                const sizeIdx = parseInt(document.getElementById('menuSizeSelect').value) || 0;
+                const selectedSize = item.sizes[sizeIdx];
+                sizeWeight = selectedSize.weight;
+                price = Number(selectedSize.price || 0);
+            } else {
+                price = Number(item.price || 0);
+                sizeWeight = item.weight || '';
+            }
+
+            const nameAr = item.nameAr || item.name || '';
+            const nameEn = item.nameEn || item.en || nameAr;
+
+            const existingIndex = editableItems.findIndex(i => (i.ar === nameAr || i.name === nameAr) && i.sizeWeight === sizeWeight);
+
+            if (existingIndex > -1) {
+                editableItems[existingIndex].qty = Number(editableItems[existingIndex].qty || 1) + 1;
+            } else {
+                editableItems.push({
+                    ar: nameAr,
+                    en: nameEn,
+                    name: nameAr,
+                    price: price,
+                    sizeWeight: sizeWeight,
+                    qty: 1
+                });
+            }
+
+            document.getElementById('menuItemSelect').value = '';
+            document.getElementById('menuSizeSelect').style.display = 'none';
+
+            renderEditableItems();
+        };
+
+        function renderEditableItems() {
+            const t = i18n[currentLang];
+            const container = document.getElementById('editableItemsList');
+
+            if (!editableItems.length) {
+                container.innerHTML = `<p style="text-align: center; color: var(--gray-500); padding: 10px;">${t.noItems}</p>`;
+            } else {
+                container.innerHTML = editableItems.map((item, index) => {
+                    const itemName = currentLang === 'en' ? (item.en || item.nameEn || item.ar || item.name) : (item.ar || item.name || item.nameEn);
+                    const sizeInfo = item.sizeWeight ? ` (${item.sizeWeight})` : '';
+                    const qty = Number(item.qty || 1);
+                    const price = Number(item.price || 0);
+
+                    return `
+                        <div class="editable-item-row">
+                            <div class="editable-item-info">
+                                <div style="font-weight: 700; color: var(--primary-dark);">${itemName}${sizeInfo}</div>
+                                <div style="font-size: 0.85rem; color: var(--primary); font-weight: 700;">${price.toFixed(2)} ${t.currency}</div>
+                            </div>
+                            <div class="qty-controls">
+                                <button type="button" class="qty-btn" onclick="updateItemQty(${index}, -1)">-</button>
+                                <span style="font-weight: 800; min-width: 20px; text-align: center;">${qty}</span>
+                                <button type="button" class="qty-btn" onclick="updateItemQty(${index}, 1)">+</button>
+                            </div>
+                            <button type="button" class="delete-btn" onclick="removeEditableItem(${index})"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            calculateEditableTotals();
+        }
+
+        window.updateItemQty = function(index, change) {
+            if (editableItems[index]) {
+                editableItems[index].qty = Number(editableItems[index].qty || 1) + change;
+                if (editableItems[index].qty <= 0) {
+                    editableItems.splice(index, 1);
+                }
+                renderEditableItems();
+            }
+        };
+
+        window.removeEditableItem = function(index) {
+            if (editableItems[index]) {
+                editableItems.splice(index, 1);
+                renderEditableItems();
+            }
+        };
+
+        function calculateEditableTotals() {
+            const t = i18n[currentLang];
+            const currentDeliveryFee = currentOrder ? (currentOrder.deliveryFee || (currentOrder.totals ? currentOrder.totals.deliveryFee : 0)) : 0;
+            
+            const subtotal = editableItems.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.qty || 1)), 0);
+            const deliveryFee = Number(currentDeliveryFee) || 0;
+            const grandTotal = subtotal + deliveryFee;
+
+            document.getElementById('editableSubtotalVal').textContent = `${subtotal.toFixed(2)} ${t.currency}`;
+
+            const editableDeliveryEl = document.getElementById('editableDeliveryFeeVal');
+            if (deliveryFee > 0) {
+                editableDeliveryEl.textContent = `${deliveryFee.toFixed(2)} ${t.currency}`;
+                editableDeliveryEl.classList.remove('free');
+            } else {
+                editableDeliveryEl.textContent = t.deliveryFree;
+                editableDeliveryEl.classList.add('free');
+            }
+
+            document.getElementById('editableGrandTotalVal').textContent = `${grandTotal.toFixed(2)} ${t.currency}`;
+
+            const warningBox = document.getElementById('minOrderWarning');
+            const warningText = document.getElementById('minOrderWarningText');
+            const saveBtn = document.getElementById('btnEditSave');
+
+            if (subtotal < MIN_ORDER_LIMIT) {
+                const remaining = MIN_ORDER_LIMIT - subtotal;
+                warningBox.style.display = 'flex';
+                warningText.textContent = currentLang === 'en' 
+                    ? `Minimum order value is 150 EGP. Current items: ${subtotal.toFixed(2)} EGP. You need ${remaining.toFixed(2)} EGP more.`
+                    : `الحد الأدنى للطلب هو 150 ج.م. قيمة المنتجات الحالية: ${subtotal.toFixed(2)} ج.م (يتبقى لك ${remaining.toFixed(2)} ج.م).`;
+                
+                saveBtn.disabled = true;
+            } else {
+                warningBox.style.display = 'none';
+                saveBtn.disabled = false;
+            }
+
+            return { subtotal, grandTotal, deliveryFee };
+        }
+		
         window.hideEditSection = function() {
             document.getElementById('editSection').classList.remove('active');
             document.getElementById('orderCard').classList.add('active');
@@ -549,32 +1140,94 @@ if (order.status === 'delivered') {
 
         window.saveOrderEdit = async function(e) {
             e.preventDefault();
-            
+            const t = i18n[currentLang];
             if (!currentOrderId) return;
-            
+
+            if (editableItems.length === 0) {
+                alert(t.alertEmptyOrder);
+                return;
+            }
+
+            const { subtotal, grandTotal, deliveryFee } = calculateEditableTotals();
+
+            if (subtotal < MIN_ORDER_LIMIT) {
+                alert(`${t.alertMinOrderLimit} ${subtotal.toFixed(2)} ${t.currency}`);
+                return;
+            }
+
             const updates = {
+                items: editableItems,
+                subtotal: subtotal,
+                total: grandTotal,
+                deliveryFee: deliveryFee,
                 customerPhone: document.getElementById('editPhone').value,
                 customerAddress: document.getElementById('editAddress').value,
                 deliveryTimeTarget: document.getElementById('editDeliveryTime').value,
                 note: document.getElementById('editNote').value,
                 updatedAt: new Date().toISOString()
             };
-            
+
             try {
                 await update(ref(db, `orders/${currentOrderId}`), updates);
-                alert('تم حفظ التعديلات بنجاح!');
+                
+                localStorage.setItem('orders_updated', Date.now());
+
+                alert(t.alertSaved);
                 hideEditSection();
-                displayOrder({ ...currentOrder, ...updates });
+                currentOrder = { ...currentOrder, ...updates };
+                displayOrder(currentOrder);
             } catch (error) {
                 console.error('Error saving edits:', error);
-                alert('حدث خطأ أثناء حفظ التعديلات');
+                alert(t.alertSaveError);
+            }
+        };
+
+        // ✅ دالة تأكيد إلغاء الطلب
+        window.confirmCancelOrder = function() {
+            const t = i18n[currentLang];
+            if (currentOrder && currentOrder.status && currentOrder.status !== 'received') {
+                alert(t.alertCancelReceivedOnly);
+                return;
+            }
+            const confirmed = confirm(`${t.confirmCancelTitle}\n\n${t.confirmCancelMsg}`);
+            if (confirmed) {
+                cancelOrder();
+            }
+        };
+
+        // ✅ دالة إلغاء الطلب
+        window.cancelOrder = async function() {
+            const t = i18n[currentLang];
+            if (!currentOrderId) return;
+
+            try {
+                await update(ref(db, `orders/${currentOrderId}`), {
+                    status: 'cancelled',
+                    cancelledAt: new Date().toISOString(),
+                    cancelledBy: 'customer'
+                });
+
+                localStorage.setItem('orders_updated', Date.now());
+
+                alert(t.cancelledSuccess);
+                
+                currentOrder.status = 'cancelled';
+                displayOrder(currentOrder);
+                
+                document.getElementById('btnEditOrder').style.display = 'none';
+                document.getElementById('btnCancelOrder').style.display = 'none';
+                document.getElementById('ratingBtn').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error cancelling order:', error);
+                alert(t.cancelledError);
             }
         };
 
         window.showRatingSection = function() {
-            // تحقق إضافي من الحالة
+            const t = i18n[currentLang];
             if (currentOrder && currentOrder.status !== 'delivered') {
-                alert('التقييم متاح فقط بعد اكتمال التوصيل');
+                alert(t.alertRatingDeliveredOnly);
                 return;
             }
             document.getElementById('orderCard').classList.remove('active');
@@ -599,10 +1252,11 @@ if (order.status === 'delivered') {
 
         window.submitRating = async function(e) {
             e.preventDefault();
+            const t = i18n[currentLang];
             
             if (!currentOrderId) return;
             if (currentRating === 0) {
-                alert('من فضلك اختر عدد النجوم');
+                alert(t.alertSelectStars);
                 return;
             }
             
@@ -614,16 +1268,12 @@ if (order.status === 'delivered') {
             
             try {
                 await update(ref(db, `orders/${currentOrderId}/rating`), rating);
-                alert('شكرًا لتقييمك! 🌟');
+                alert(t.alertThankYou);
                 hideRatingSection();
             } catch (error) {
                 console.error('Error submitting rating:', error);
-                alert('حدث خطأ أثناء إرسال التقييم');
+                alert(t.alertRatingError);
             }
-        };
-
-        window.toggleLanguage = function() {
-            alert('سيتم إضافة اللغة الإنجليزية قريبًا');
         };
     </script>
 </body>

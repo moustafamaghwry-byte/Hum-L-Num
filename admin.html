@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>هَمَّ النَّمَّ — لوحة تحكم الإدارة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,26 +18,34 @@
             --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Cairo', 'Poppins', sans-serif; background: var(--gray-50); color: var(--gray-900); line-height: 1.6; }
         
-        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
-        .login-box { background: var(--white); padding: 3rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); width: 100%; max-width: 450px; }
+        /* Login Screen */
+        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 1rem; }
+        .login-box { background: var(--white); padding: 2.5rem 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); width: 100%; max-width: 450px; }
         .login-logo { text-align: center; margin-bottom: 2rem; }
         .login-logo h1 { color: var(--primary); font-size: 2rem; font-weight: 900; }
         .login-logo p { color: var(--gray-600); margin-top: 0.5rem; }
-        .form-group { margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.25rem; }
         .form-label { display: block; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .form-input { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; transition: var(--transition); }
+        .form-label .lang-badge { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-right: 6px; font-weight: 600; }
+        .lang-badge-ar { background: rgba(31, 77, 52, 0.1); color: var(--primary); }
+        .lang-badge-en { background: rgba(201, 162, 39, 0.15); color: var(--accent-dark); }
+        .form-input { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 1rem; transition: var(--transition); }
         .form-input:focus { outline: none; border-color: var(--primary); }
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.95rem; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; }
+        textarea.form-input { resize: vertical; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.95rem; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; min-height: 44px; }
         .btn-primary { background: var(--primary); color: var(--white); width: 100%; }
         .btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .btn-outline { background: var(--white); color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: var(--white); }
         
+        /* Dashboard Layout */
         .dashboard { display: none; min-height: 100vh; }
         .dashboard.active { display: flex; }
-        .sidebar { width: 280px; background: var(--primary-dark); color: var(--white); position: fixed; right: 0; top: 0; height: 100vh; overflow-y: auto; z-index: 1000; }
+        .sidebar { width: 280px; background: var(--primary-dark); color: var(--white); position: fixed; right: 0; top: 0; height: 100vh; overflow-y: auto; z-index: 1001; transition: transform 0.3s ease; }
         .sidebar-header { padding: 2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-header h2 { font-size: 1.5rem; font-weight: 800; }
         .sidebar-header p { color: var(--gray-400); font-size: 0.85rem; margin-top: 0.25rem; }
@@ -46,49 +54,52 @@
         .sidebar-menu-item:hover, .sidebar-menu-item.active { background: rgba(255,255,255,0.1); color: var(--white); }
         .sidebar-menu-item i { width: 20px; text-align: center; }
         .sidebar-menu-item .badge { margin-right: auto; background: var(--accent); color: var(--white); padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
-        .main-content { flex: 1; margin-right: 280px; padding: 2rem; }
-        .top-bar { background: var(--white); padding: 1.25rem 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; }
+        
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: 1000; backdrop-filter: blur(3px); }
+        .sidebar-overlay.active { display: block; }
+
+        .main-content { flex: 1; margin-right: 280px; padding: 2rem; transition: margin-right 0.3s ease; }
+        .top-bar { background: var(--white); padding: 1.25rem 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
         .top-bar h1 { font-size: 1.5rem; color: var(--primary-dark); }
-        .logout-btn { background: var(--danger); color: var(--white); padding: 8px 16px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: var(--transition); font-family: inherit; }
+        .mobile-toggle-btn { display: none; background: transparent; border: none; font-size: 1.4rem; color: var(--primary-dark); cursor: pointer; padding: 4px 8px; }
+        .logout-btn { background: var(--danger); color: var(--white); padding: 8px 16px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: var(--transition); font-family: inherit; min-height: 38px; }
         .logout-btn:hover { background: #e03131; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { background: var(--white); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border-right: 4px solid var(--primary); }
+        /* Stats & Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--white); padding: 1.25rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border-right: 4px solid var(--primary); }
         .stat-card.warning { border-right-color: var(--warning); }
         .stat-card.success { border-right-color: var(--success); }
         .stat-card.danger { border-right-color: var(--danger); }
-        .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-        .stat-card-title { color: var(--gray-600); font-size: 0.9rem; font-weight: 600; }
-        .stat-card-icon { width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--gray-100); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.5rem; }
-        .stat-card-value { font-size: 2rem; font-weight: 900; color: var(--primary-dark); }
-        .stat-card-subtitle { color: var(--gray-500); font-size: 0.85rem; margin-top: 0.25rem; }
-        
-        /* كروت قابلة للنقر */
+        .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+        .stat-card-title { color: var(--gray-600); font-size: 0.85rem; font-weight: 600; }
+        .stat-card-icon { width: 42px; height: 42px; border-radius: var(--radius-sm); background: var(--gray-100); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.3rem; }
+        .stat-card-value { font-size: 1.8rem; font-weight: 900; color: var(--primary-dark); }
+        .stat-card-subtitle { color: var(--gray-500); font-size: 0.8rem; margin-top: 0.25rem; }
         .stat-card.clickable { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-right-width 0.2s; }
         .stat-card.clickable:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-right-width: 8px; }
 
         .card { background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-md); margin-bottom: 2rem; }
-        .card-header { padding: 1.5rem; border-bottom: 2px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
-        .card-title { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
+        .card-header { padding: 1.25rem 1.5rem; border-bottom: 2px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+        .card-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); }
         .card-body { padding: 1.5rem; }
         
         .date-filter { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
-        .date-filter-btn { padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer; font-weight: 600; transition: var(--transition); font-family: inherit; }
+        .date-filter-btn { padding: 8px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); background: var(--white); cursor: pointer; font-weight: 600; transition: var(--transition); font-family: inherit; font-size: 0.85rem; }
         .date-filter-btn:hover, .date-filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
-        .date-range-inputs { display: flex; gap: 0.75rem; align-items: flex-end; background: var(--gray-50); padding: 10px 14px; border-radius: var(--radius-sm); border: 2px solid var(--gray-200); }
-        .date-range-inputs .date-field { display: flex; flex-direction: column; gap: 4px; }
+        .date-range-inputs { display: flex; gap: 0.75rem; align-items: flex-end; background: var(--gray-50); padding: 10px 14px; border-radius: var(--radius-sm); border: 2px solid var(--gray-200); flex-wrap: wrap; }
+        .date-range-inputs .date-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 120px; }
         .date-range-inputs .date-field label { font-size: 0.75rem; font-weight: 700; color: var(--primary-dark); }
-        .date-range-inputs input { padding: 6px 12px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; background: var(--white); }
-        .date-range-inputs input:focus { outline: none; border-color: var(--primary); }
-        .date-range-inputs .apply-btn { padding: 6px 14px; background: var(--primary); color: var(--white); border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-family: inherit; height: fit-content; }
-        .date-range-inputs .apply-btn:hover { background: var(--primary-light); }
+        .date-range-inputs input { padding: 6px 12px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; background: var(--white); width: 100%; }
+        .date-range-inputs .apply-btn { padding: 8px 16px; background: var(--primary); color: var(--white); border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-family: inherit; width: 100%; }
         
-        .table-container { overflow-x: auto; }
-        .data-table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        .data-table th { background: var(--gray-100); padding: 1rem; text-align: right; font-weight: 700; color: var(--gray-700); font-size: 0.9rem; border-bottom: 2px solid var(--gray-200); }
-        .data-table td { padding: 1rem; border-bottom: 1px solid var(--gray-100); }
+        /* Table Controls & Responsiveness */
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -0.5rem; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 850px; }
+        .data-table th { background: var(--gray-100); padding: 0.85rem 1rem; text-align: right; font-weight: 700; color: var(--gray-700); font-size: 0.85rem; border-bottom: 2px solid var(--gray-200); white-space: nowrap; }
+        .data-table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--gray-100); font-size: 0.9rem; white-space: nowrap; }
         .data-table tr:hover { background: var(--gray-50); }
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-block; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; display: inline-block; }
         .status-received { background: #e7f5ff; color: #1971c2; }
         .status-preparing { background: #fff9db; color: #f08c00; }
         .status-delivering { background: #e7f5e7; color: #2f9e44; }
@@ -98,51 +109,93 @@
         .action-btn-view { background: var(--gray-100); color: var(--gray-700); }
         .action-btn-view:hover { background: var(--gray-200); }
         
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        /* Menu Grid */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
         .menu-item-card { background: var(--white); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--gray-200); transition: var(--transition); }
         .menu-item-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-        .menu-item-image { width: 100%; height: 180px; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--gray-400); position: relative; }
+        .menu-item-image { width: 100%; height: 160px; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--gray-400); position: relative; }
         .menu-item-image img { width: 100%; height: 100%; object-fit: cover; }
-        .menu-item-info { padding: 1.25rem; }
-        .menu-item-name { font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 0.5rem; }
-        .menu-item-price { font-size: 1.25rem; font-weight: 900; color: var(--primary); margin-bottom: 0.75rem; }
+        .menu-item-info { padding: 1rem; }
+        .menu-item-name { font-size: 1.05rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 0.35rem; }
+        .menu-item-price { font-size: 1.15rem; font-weight: 900; color: var(--primary); margin-bottom: 0.75rem; }
         .menu-item-actions { display: flex; gap: 0.5rem; }
-        .btn-sm { padding: 6px 12px; font-size: 0.85rem; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: var(--transition); flex: 1; font-family: inherit; }
+        .btn-sm { padding: 8px 10px; font-size: 0.8rem; border-radius: var(--radius-sm); border: none; cursor: pointer; font-weight: 600; transition: var(--transition); flex: 1; font-family: inherit; }
         .btn-edit { background: var(--warning); color: var(--white); }
         .btn-toggle { background: var(--success); color: var(--white); }
         .btn-delete { background: var(--danger); color: var(--white); }
         
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 2rem; backdrop-filter: blur(4px); }
+        /* Modals */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px); }
         .modal-overlay.active { display: flex; }
-        .modal { background: var(--white); border-radius: var(--radius-lg); max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; }
-        .modal-header { padding: 1.5rem; border-bottom: 2px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; background: var(--primary); color: var(--white); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
-        .modal-title { font-size: 1.25rem; font-weight: 800; }
-        .modal-close { background: rgba(255,255,255,0.2); border: none; color: var(--white); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .modal { background: var(--white); border-radius: var(--radius-lg); max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 2px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; background: var(--primary); color: var(--white); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+        .modal-title { font-size: 1.15rem; font-weight: 800; }
+        .modal-close { background: rgba(255,255,255,0.2); border: none; color: var(--white); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
         .modal-close:hover { background: rgba(255,255,255,0.3); }
-        .modal-body { padding: 1.5rem; }
-        .modal-footer { padding: 1.5rem; border-top: 2px solid var(--gray-200); display: flex; gap: 1rem; }
+        .modal-body { padding: 1.25rem 1.5rem; }
+        .modal-footer { padding: 1.25rem 1.5rem; border-top: 2px solid var(--gray-200); display: flex; gap: 0.75rem; }
         .modal-footer .btn { flex: 1; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .form-select { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; background: var(--white); cursor: pointer; }
+        .form-select { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 1rem; background: var(--white); cursor: pointer; }
         .form-select:focus { outline: none; border-color: var(--primary); }
         .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 0.5rem; }
         .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
-        .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
-        .filter-select { padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; background: var(--white); cursor: pointer; }
-        .search-input { flex: 1; min-width: 200px; padding: 8px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; }
+        .filter-bar { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+        .filter-select { padding: 10px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; background: var(--white); cursor: pointer; font-size: 0.9rem; }
+        .search-input { flex: 1; min-width: 200px; padding: 10px 14px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; }
         .empty-state { text-align: center; padding: 3rem 1rem; color: var(--gray-500); }
         .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: var(--gray-400); }
+        
+        .ingredients-hint { font-size: 0.8rem; color: var(--gray-500); margin-top: 6px; font-weight: 500; }
+        .ingredients-hint i { color: var(--accent); margin-left: 4px; }
 
+        .en-field { background: linear-gradient(135deg, #fffef5 0%, #fff9e6 100%); border-color: var(--accent-light) !important; }
+        .en-field:focus { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1); }
+
+        .size-field { background: var(--gray-50); padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--gray-200); }
+        .size-field-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+        .size-field-row label { font-size: 0.8rem; color: var(--gray-600); display: block; margin-bottom: 4px; }
+        .size-field-row .form-input { padding: 8px 10px; }
+
+        /* Mobile Responsive Adjustments */
         @media (max-width: 768px) {
+            .mobile-toggle-btn { display: inline-flex; align-items: center; justify-content: center; }
             .sidebar { transform: translateX(100%); }
             .sidebar.active { transform: translateX(0); }
-            .main-content { margin-right: 0; padding: 1rem; }
-            .stats-grid, .form-row, .menu-grid { grid-template-columns: 1fr; }
-            .top-bar { padding: 1rem; }
-            .top-bar h1 { font-size: 1.2rem; }
-            .login-box { margin: 1rem; padding: 2rem; }
-            .date-range-inputs { width: 100%; flex-wrap: wrap; }
-            .date-range-inputs .date-field { flex: 1; min-width: 120px; }
+            .main-content { margin-right: 0; padding: 1rem 0.75rem; }
+            
+            .top-bar { padding: 0.85rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; }
+            .top-bar h1 { font-size: 1.15rem; }
+            .logout-btn .btn-text { display: none; }
+            .logout-btn { padding: 8px 12px; }
+
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.25rem; }
+            .stat-card { padding: 1rem; }
+            .stat-card-value { font-size: 1.4rem; }
+            .stat-card-title { font-size: 0.78rem; }
+            .stat-card-icon { width: 36px; height: 36px; font-size: 1.1rem; }
+            
+            .card { margin-bottom: 1.25rem; }
+            .card-header { padding: 1rem; }
+            .card-body { padding: 1rem; }
+            
+            .filter-bar { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+            .filter-select, .search-input { width: 100%; min-width: 0; }
+            
+            .date-filter { gap: 0.35rem; }
+            .date-filter-btn { padding: 6px 10px; font-size: 0.8rem; flex: 1 1 calc(33.33% - 0.35rem); text-align: center; }
+            
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .menu-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .size-field-row { grid-template-columns: 1fr; gap: 8px; }
+            
+            .modal-overlay { padding: 0.5rem; }
+            .modal { max-height: 94vh; border-radius: var(--radius-md); }
+            .modal-header, .modal-body, .modal-footer { padding: 1rem; }
+        }
+
+        @media (max-width: 420px) {
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -170,6 +223,9 @@
     </div>
 
     <div class="dashboard" id="dashboard">
+        <!-- Sidebar Backdrop for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2>هَمَّ النَّمَّ</h2>
@@ -196,8 +252,11 @@
 
         <main class="main-content">
             <div class="top-bar">
-                <h1 id="pageTitle">لوحة التحكم</h1>
-                <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="mobile-toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h1 id="pageTitle">لوحة التحكم</h1>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> <span class="btn-text">تسجيل الخروج</span></button>
             </div>
 
             <div id="overviewSection" class="section">
@@ -287,7 +346,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">إدارة المنيو</h3>
-                        <button class="btn btn-primary" onclick="openAddItemModal()"><i class="fas fa-plus"></i> إضافة صنف</button>
+                        <button class="btn btn-primary" onclick="openAddItemModal()" style="width: auto; min-height: 38px;"><i class="fas fa-plus"></i> إضافة صنف</button>
                     </div>
                     <div class="card-body"><div class="menu-grid" id="menuGrid"></div></div>
                 </div>
@@ -304,7 +363,7 @@
                             <button class="date-filter-btn" onclick="setDateRange('30days', this)">آخر 30 يوم</button>
                             <button class="date-filter-btn" onclick="setDateRange('month', this)">هذا الشهر</button>
                             <button class="date-filter-btn" onclick="setDateRange('custom', this)">مخصص</button>
-                            <div class="date-range-inputs" id="customDateRange" style="display: none;">
+                            <div class="date-range-inputs" id="customDateRange" style="display: none; width: 100%; margin-top: 0.5rem;">
                                 <div class="date-field">
                                     <label>من تاريخ</label>
                                     <input type="date" id="startDate">
@@ -339,6 +398,7 @@
         </main>
     </div>
 
+    <!-- Order Modal -->
     <div class="modal-overlay" id="orderModal">
         <div class="modal">
             <div class="modal-header">
@@ -353,6 +413,7 @@
         </div>
     </div>
 
+    <!-- Menu Item Modal -->
     <div class="modal-overlay" id="itemModal">
         <div class="modal">
             <div class="modal-header">
@@ -362,22 +423,102 @@
             <div class="modal-body">
                 <form id="itemForm">
                     <div class="form-row">
-                        <div class="form-group"><label class="form-label">اسم عربي *</label><input type="text" class="form-input" id="itemNameAr" required></div>
-                        <div class="form-group"><label class="form-label">اسم إنجليزي</label><input type="text" class="form-input" id="itemNameEn"></div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">التصنيف</label>
-                            <select class="form-select" id="itemCategory">
-                                <option value="appetizers">مقبلات</option><option value="mains">أطباق رئيسية</option>
-                                <option value="desserts">حلويات</option><option value="drinks">مشروبات</option>
-                            </select>
+                            <label class="form-label">
+                                <span class="lang-badge lang-badge-ar">AR</span>
+                                اسم عربي *
+                            </label>
+                            <input type="text" class="form-input" id="itemNameAr" required>
                         </div>
-                        <div class="form-group"><label class="form-label">السعر *</label><input type="number" class="form-input" id="itemPrice" required min="0" step="0.01"></div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <span class="lang-badge lang-badge-en">EN</span>
+                                اسم إنجليزي
+                            </label>
+                            <input type="text" class="form-input en-field" id="itemNameEn" placeholder="Product name in English">
+                        </div>
                     </div>
-                    <div class="form-group"><label class="form-label">الوصف بالعربي</label><textarea class="form-input" id="itemDescAr" rows="3"></textarea></div>
-                    <div class="form-group"><label class="form-label">رابط الصورة</label><input type="url" class="form-input" id="itemImage" placeholder="https://example.com/image.jpg"></div>
-                    <div class="checkbox-group"><input type="checkbox" id="itemAvailable" checked><label for="itemAvailable">متاح</label></div>
+
+                    <div class="form-group">
+                        <label class="form-label">التصنيف</label>
+                        <select class="form-select" id="itemCategory">
+                            <option value="appetizers">مقبلات</option>
+                            <option value="mains">أطباق رئيسية</option>
+                            <option value="desserts">حلويات</option>
+                            <option value="drinks">مشروبات</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-weight-hanging" style="color: var(--accent); margin-left: 4px;"></i>
+                            الأحجام المتاحة والأسعار
+                        </label>
+                        <div id="sizesContainer" style="margin-top: 10px;"></div>
+                        <button type="button" class="btn btn-outline" onclick="addSizeField()" style="margin-top: 10px; width: 100%;">
+                            <i class="fas fa-plus"></i> إضافة حجم آخر
+                        </button>
+                        <div class="ingredients-hint">
+                            <i class="fas fa-info-circle"></i>
+                            أضف كل حجم مع سعره وعدد الأشخاص الذي يكفيهم.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="lang-badge lang-badge-ar">AR</span>
+                            الوصف بالعربي
+                        </label>
+                        <textarea class="form-input" id="itemDescAr" rows="3" placeholder="وصف المنتج بالعربي..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="lang-badge lang-badge-en">EN</span>
+                            الوصف بالإنجليزي
+                        </label>
+                        <textarea class="form-input en-field" id="itemDescEn" rows="3" placeholder="Product description in English..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-leaf" style="color: var(--accent); margin-left: 4px;"></i>
+                            <span class="lang-badge lang-badge-ar">AR</span>
+                            المكونات
+                        </label>
+                        <textarea class="form-input" id="itemIngredients" rows="4" placeholder="مثال:&#10;صدور دجاج طازجة&#10;جبنة موزاريلا&#10;بقسماط بانكو"></textarea>
+                        <div class="ingredients-hint">
+                            <i class="fas fa-info-circle"></i>
+                            اكتب كل مكون في سطر جديد أو افصل بينها بفاصلة.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-leaf" style="color: var(--accent); margin-left: 4px;"></i>
+                            <span class="lang-badge lang-badge-en">EN</span>
+                            Ingredients
+                        </label>
+                        <textarea class="form-input en-field" id="itemIngredientsEn" rows="4" placeholder="Example:&#10;Fresh chicken breasts&#10;Mozzarella cheese&#10;Panko breadcrumbs"></textarea>
+                        <div class="ingredients-hint">
+                            <i class="fas fa-info-circle"></i>
+                            Write each ingredient on a new line or separate with commas.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">رابط الصورة</label>
+                        <input type="url" class="form-input" id="itemImage" placeholder="https://example.com/image.jpg">
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="itemAvailable" checked>
+                        <label for="itemAvailable">متاح للطلب</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="itemBestseller">
+                        <label for="itemBestseller">الأكثر مبيعاً ⭐</label>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -389,7 +530,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, onValue, push, update, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, onValue, push, update, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -408,6 +549,7 @@
 
         let currentUser = null, allOrders = [], menuItems = [], currentOrderId = null, editingItemId = null, currentDateRange = 'today';
         let ordersUnsubscribe = null, menuUnsubscribe = null;
+        let sizeCounter = 0;
 
         function escapeHtml(value) { return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
         function toNumber(value) { const number = Number(value); return Number.isFinite(number) ? number : 0; }
@@ -422,6 +564,7 @@
             else if (typeof value === 'object') { if (value.seconds !== undefined) date = new Date(Number(value.seconds) * 1000); else if (value._seconds !== undefined) date = new Date(Number(value._seconds) * 1000); }
             return (!date || isNaN(date.getTime())) ? '-' : date.toLocaleString('ar-EG');
         }
+
         function getOrderDate(order) {
             const value = order.createdAt ?? order.created_at ?? order.timestamp ?? order.created;
             if (value === null || value === undefined || value === '') return null;
@@ -434,6 +577,27 @@
             if (typeof value === 'string') { let d = new Date(value); if (!isNaN(d.getTime())) return d; const n = Number(value); if (Number.isFinite(n)) { d = n > 100000000000 ? new Date(n) : new Date(n * 1000); if (!isNaN(d.getTime())) return d; } }
             return null;
         }
+
+        function getCustomerDetails(order) {
+            const name = order.customerName || (order.customer ? order.customer.name : 'N/A');
+            const phone = order.customerPhone || (order.customer ? order.customer.phone : 'N/A');
+            const address = order.customerAddress || (order.customer ? order.customer.address : 'N/A');
+            return { name, phone, address };
+        }
+
+        function getOrderTotals(order) {
+            const grandTotal = order.total ?? (order.totals ? order.totals.grandTotal : 0);
+            const subtotal = order.subtotal ?? (order.totals ? order.totals.subtotal : 0);
+            const deliveryFee = order.deliveryFee ?? (order.totals ? order.totals.deliveryFee : 0);
+            return { grandTotal, subtotal, deliveryFee };
+        }
+
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
+        };
 
         window.handleLogin = async function(e) {
             e.preventDefault();
@@ -449,7 +613,7 @@
                 console.error('Login Error:', error);
                 let message = 'حدث خطأ أثناء تسجيل الدخول.';
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') message = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
-                else if (error.code === 'auth/user-not-found') message = 'هذا الحساب غير موجود. تأكد من إضافته في Firebase Authentication.';
+                else if (error.code === 'auth/user-not-found') message = 'هذا الحساب غير موجود.';
                 else if (error.code === 'auth/invalid-email') message = 'البريد الإلكتروني غير صحيح.';
                 else if (error.code === 'auth/too-many-requests') message = 'محاولات كثيرة. حاول لاحقًا.';
                 else if (error.code === 'auth/network-request-failed') message = 'تعذر الاتصال. تأكد من الإنترنت.';
@@ -484,14 +648,43 @@
             if (menuUnsubscribe) { menuUnsubscribe(); menuUnsubscribe = null; }
         }
 
+        // ==========================================
+        // دوال الاستماع اللحظي للطلبات المدمجة (Realtime Orders)
+        // ==========================================
+        function setupRealtimeOrders(databaseInstance) {
+            const ordersRef = ref(databaseInstance, 'orders');
+
+            ordersUnsubscribe = onValue(ordersRef, (snapshot) => {
+                const data = snapshot.val();
+                
+                if (data) {
+                    allOrders = Object.keys(data).map(key => ({
+                        id: key,
+                        ...data[key]
+                    }));
+
+                    // 1. تحديث الجدول واجهة المستخدم (UI) والتقارير والإحصائيات
+                    renderOrders();
+                    updateStats();
+                    updateReports();
+                } else {
+                    allOrders = [];
+                    renderOrders();
+                    updateStats();
+                    updateReports();
+                }
+            }, (error) => {
+                console.error("خطأ في جلب البيانات لحظياً: ", error);
+            });
+        }
+
         function loadDashboard() {
             cleanupFirebaseListeners();
-            ordersUnsubscribe = onValue(ref(db, 'orders'), (snapshot) => {
-                const data = snapshot.val();
-                allOrders = data ? Object.entries(data).map(([id, order]) => ({ id, ...order })) : [];
-                updateStats(); renderOrders(); updateReports();
-            }, (error) => { console.error('Orders listener error:', error); alert('تعذر تحميل الطلبات. تأكد من قواعد بيانات Firebase.'); });
+            
+            // تفعيل الاستماع اللحظي للطلبات باستخدام دالة setupRealtimeOrders
+            setupRealtimeOrders(db);
 
+            // تفعيل الاستماع اللحظي للمنيو
             menuUnsubscribe = onValue(ref(db, 'menu'), (snapshot) => {
                 const data = snapshot.val();
                 menuItems = data ? Object.entries(data).map(([id, item]) => ({ id, ...item })) : [];
@@ -504,7 +697,10 @@
             const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
             const todayEnd = new Date(now); todayEnd.setHours(23, 59, 59, 999);
             const todayOrders = allOrders.filter(order => { const d = getOrderDate(order); return d && d >= todayStart && d <= todayEnd; });
-            const todaySales = todayOrders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + toNumber(o.total), 0);
+            const todaySales = todayOrders.filter(o => o.status !== 'cancelled').reduce((sum, o) => {
+                const { grandTotal } = getOrderTotals(o);
+                return sum + toNumber(grandTotal);
+            }, 0);
             
             document.getElementById('totalOrders').textContent = todayOrders.length;
             document.getElementById('totalSales').textContent = formatMoney(todaySales);
@@ -527,12 +723,15 @@
             tbody.innerHTML = filtered.map(order => {
                 const orderDate = getOrderDate(order);
                 const orderTime = orderDate ? orderDate.toLocaleString('ar-EG') : '-';
-                const deliveryTime = formatDateTime(order.deliveryTimeTarget);
+                const deliveryTime = formatDateTime(order.deliveryTimeTarget || order.deliveryTime);
+                const cust = getCustomerDetails(order);
+                const totals = getOrderTotals(order);
+
                 return `<tr>
                     <td>${escapeHtml(formatOrderNumber(order.orderNumber))}</td>
-                    <td>${escapeHtml(order.customerName || 'N/A')}</td>
-                    <td>${escapeHtml(order.customerPhone || 'N/A')}</td>
-                    <td>${formatMoney(order.total)}</td>
+                    <td>${escapeHtml(cust.name)}</td>
+                    <td>${escapeHtml(cust.phone)}</td>
+                    <td>${formatMoney(totals.grandTotal)}</td>
                     <td>${orderTime}</td>
                     <td>${deliveryTime}</td>
                     <td><span class="status-badge status-${escapeHtml(order.status || 'received')}">${escapeHtml(getStatusText(order.status))}</span></td>
@@ -547,9 +746,10 @@
             return allOrders.filter(order => {
                 const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
                 const orderNumber = String(order.orderNumber ?? '').toLowerCase();
-                const customerName = String(order.customerName ?? '').toLowerCase();
-                const phone = String(order.customerPhone ?? '').toLowerCase();
-                const matchesSearch = !searchQuery || orderNumber.includes(searchQuery) || customerName.includes(searchQuery) || phone.includes(searchQuery);
+                const cust = getCustomerDetails(order);
+                const custName = cust.name.toLowerCase();
+                const phone = cust.phone.toLowerCase();
+                const matchesSearch = !searchQuery || orderNumber.includes(searchQuery) || custName.includes(searchQuery) || phone.includes(searchQuery);
                 return matchesStatus && matchesSearch;
             }).sort((a, b) => {
                 const timeA = getOrderDate(a) ? getOrderDate(a).getTime() : 0;
@@ -557,13 +757,14 @@
                 return timeB - timeA;
             });
         }
+
         window.filterOrders = function() { renderOrders(); };
+
         function getStatusText(status) {
             const statuses = { received: 'تم الاستلام', preparing: 'جاري التحضير', delivering: 'خرج للتوصيل', delivered: 'تم التوصيل', cancelled: 'ملغي' };
             return statuses[status] || status || 'غير محدد';
         }
 
-        // الانتقال للطلبات وتطبيق الفلتر عند النقر على أي كارت
         window.filterOrdersByStatus = function(status) {
             const statusFilter = document.getElementById('statusFilter');
             if (statusFilter) statusFilter.value = status;
@@ -576,23 +777,33 @@
             if (!order) return;
             currentOrderId = orderId;
             document.getElementById('modalOrderNumber').textContent = String(order.orderNumber || 'N/A');
+            
+            const cust = getCustomerDetails(order);
+            const totals = getOrderTotals(order);
+            const deliveryTimeVal = formatDateTime(order.deliveryTimeTarget || order.deliveryTime);
+            const payMethodVal = (order.paymentMethod || order.payMethod) === 'card' ? 'فيزا' : 'كاش';
+
             const rawItems = order.items;
             const orderItems = Array.isArray(rawItems) ? rawItems : (rawItems ? Object.values(rawItems) : []);
             const itemsList = orderItems.length ? orderItems.map(item => {
                 const itemName = item.ar || item.name || item.nameAr || 'صنف';
+                const sizeInfo = item.sizeWeight ? ` (${item.sizeWeight})` : '';
                 return `<div style="padding:0.75rem; background:var(--gray-50); border-radius:8px; margin-bottom:0.5rem;">
-                    <div style="font-weight:700; color:var(--primary-dark);">${escapeHtml(itemName)}</div>
+                    <div style="font-weight:700; color:var(--primary-dark);">${escapeHtml(itemName)}${escapeHtml(sizeInfo)}</div>
                     <div style="font-size:0.9rem; color:var(--gray-600);">الكمية: ${toNumber(item.qty)} × ${formatMoney(item.price)}</div>
-                    ${item.notes ? `<div style="font-size:0.85rem; color:var(--gray-500); margin-top:0.25rem;">ملاحظات: ${escapeHtml(item.notes)}</div>` : ''}
+                    ${item.notes ? `<div style="font-size:0.85rem; color:var(--gray-500); margin-top:0.25rem;">ملاحظات الصنف: ${escapeHtml(item.notes)}</div>` : ''}
                 </div>`;
             }).join('') : '<p>لا توجد أصناف</p>';
 
             document.getElementById('orderDetails').innerHTML = `
                 <div style="margin-bottom:1.5rem;">
                     <h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">معلومات العميل</h4>
-                    <p><strong>الاسم:</strong> ${escapeHtml(order.customerName || 'N/A')}</p>
-                    <p><strong>الهاتف:</strong> ${escapeHtml(order.customerPhone || 'N/A')}</p>
-                    <p><strong>العنوان:</strong> ${escapeHtml(order.customerAddress || 'N/A')}</p>
+                    <p><strong>الاسم:</strong> ${escapeHtml(cust.name)}</p>
+                    <p><strong>الهاتف:</strong> ${escapeHtml(cust.phone)}</p>
+                    <p><strong>العنوان:</strong> ${escapeHtml(cust.address)}</p>
+                    <p><strong>موعد التوصيل المطلوب:</strong> ${escapeHtml(deliveryTimeVal)}</p>
+                    <p><strong>طريقة الدفع:</strong> ${escapeHtml(payMethodVal)}</p>
+                    ${order.orderNote || order.note ? `<p style="margin-top:0.25rem; color:var(--primary-light);"><strong>ملاحظات عامة:</strong> ${escapeHtml(order.orderNote || order.note)}</p>` : ''}
                 </div>
                 <div style="margin-bottom:1.5rem;"><h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">الأصناف</h4>${itemsList}</div>
                 <div style="margin-bottom:1.5rem;">
@@ -606,19 +817,11 @@
                     </select>
                 </div>
                 <div style="background:var(--gray-100); padding:1rem; border-radius:8px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;"><span>المجموع الفرعي:</span><strong>${formatMoney(order.subtotal)}</strong></div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;"><span>التوصيل:</span><strong>${formatMoney(order.deliveryFee)}</strong></div>
-                    <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; color:var(--primary); border-top:2px solid var(--gray-300); padding-top:0.5rem; margin-top:0.5rem;"><span>الإجمالي:</span><span>${formatMoney(order.total)}</span></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;"><span>المجموع الفرعي:</span><strong>${formatMoney(totals.subtotal)}</strong></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;"><span>التوصيل:</span><strong>${formatMoney(totals.deliveryFee)}</strong></div>
+                    <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; color:var(--primary); border-top:2px solid var(--gray-300); padding-top:0.5rem; margin-top:0.5rem;"><span>الإجمالي:</span><span>${formatMoney(totals.grandTotal)}</span></div>
                 </div>`;
             document.getElementById('orderModal').classList.add('active');
-        };
-
-        window.updateOrderStatus = async function(orderId, newStatus) {
-            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
-            try {
-                await update(ref(db, `orders/${orderId}`), { status: newStatus, updatedAt: new Date().toISOString() });
-                alert('تم تحديث الحالة بنجاح!');
-            } catch (error) { console.error('Error updating order:', error); alert('حدث خطأ أثناء تحديث الحالة.'); }
         };
 
         window.closeOrderModal = function() { document.getElementById('orderModal').classList.remove('active'); currentOrderId = null; };
@@ -634,17 +837,68 @@
             } catch (error) { console.error('Save order error:', error); alert('حدث خطأ أثناء حفظ التعديلات.'); }
         };
 
+        window.addSizeField = function(weight = '', price = '', servings = '') {
+            sizeCounter++;
+            const container = document.getElementById('sizesContainer');
+            const sizeDiv = document.createElement('div');
+            sizeDiv.className = 'size-field';
+            sizeDiv.innerHTML = `
+                <div class="size-field-row">
+                    <div>
+                        <label>الوزن</label>
+                        <input type="text" class="form-input size-weight" placeholder="مثال: 400 جم" value="${escapeHtml(weight)}">
+                    </div>
+                    <div>
+                        <label>السعر (ج.م)</label>
+                        <input type="number" class="form-input size-price" placeholder="0" value="${price}" min="0" step="0.01">
+                    </div>
+                    <div>
+                        <label>يكفي (أشخاص)</label>
+                        <input type="number" class="form-input size-servings" placeholder="2" value="${servings}" min="1">
+                    </div>
+                    <button type="button" class="btn btn-outline" onclick="removeSizeField(this)" style="padding: 8px 12px; margin-bottom: 2px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(sizeDiv);
+        };
+
+        window.removeSizeField = function(btn) {
+            btn.closest('.size-field').remove();
+        };
+
         function renderMenu() {
             const grid = document.getElementById('menuGrid');
             if (!menuItems.length) { grid.innerHTML = `<div class="empty-state"><i class="fas fa-utensils"></i><div>لا توجد أصناف في المنيو حتى الآن</div></div>`; return; }
             grid.innerHTML = menuItems.map(item => {
                 const imageUrl = safeImageUrl(item.image);
                 const available = item.available !== false;
+                
+                let sizesText = 'غير محدد';
+                let priceText = '0 ج.م';
+                if (item.sizes && item.sizes.length > 0) {
+                    sizesText = item.sizes.map(s => s.weight).join(' / ');
+                    if (item.sizes.length === 1) {
+                        priceText = formatMoney(item.sizes[0].price);
+                    } else {
+                        const prices = item.sizes.map(s => s.price);
+                        priceText = `${formatMoney(Math.min(...prices))} - ${formatMoney(Math.max(...prices))}`;
+                    }
+                } else if (item.price) {
+                    priceText = formatMoney(item.price);
+                }
+                
+                const hasIngredients = (item.ingredients || item.ingredientsEn) && (item.ingredients || item.ingredientsEn).trim() !== '';
                 return `<div class="menu-item-card">
                     <div class="menu-item-image">${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.nameAr || '')}" loading="lazy">` : '<i class="fas fa-utensils"></i>'}</div>
                     <div class="menu-item-info">
-                        <div class="menu-item-name">${escapeHtml(item.nameAr || 'بدون اسم')}</div>
-                        <div class="menu-item-price">${formatMoney(item.price)}</div>
+                        <div class="menu-item-name">${escapeHtml(item.nameAr || 'بدون اسم')} ${item.bestseller ? '⭐' : ''}</div>
+                        <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">
+                            <i class="fas fa-weight-hanging" style="color: var(--accent);"></i> ${escapeHtml(sizesText)}
+                            ${hasIngredients ? ' • <i class="fas fa-leaf" style="color: var(--success);"></i> مكونات' : ''}
+                        </div>
+                        <div class="menu-item-price">${priceText}</div>
                         <div class="menu-item-actions">
                             <button class="btn-sm btn-edit" onclick="editMenuItem('${escapeHtml(item.id)}')"><i class="fas fa-edit"></i> تعديل</button>
                             <button class="btn-sm btn-toggle" onclick="toggleItemAvailability('${escapeHtml(item.id)}', ${!available})"><i class="fas fa-${available ? 'check' : 'times'}"></i> ${available ? 'متاح' : 'غير متاح'}</button>
@@ -660,6 +914,9 @@
             document.getElementById('itemModalTitle').textContent = 'إضافة صنف';
             document.getElementById('itemForm').reset();
             document.getElementById('itemAvailable').checked = true;
+            document.getElementById('itemBestseller').checked = false;
+            document.getElementById('sizesContainer').innerHTML = '';
+            addSizeField('400 جم', 0, 2);
             document.getElementById('itemModal').classList.add('active');
         };
 
@@ -671,39 +928,96 @@
             document.getElementById('itemNameAr').value = item.nameAr || '';
             document.getElementById('itemNameEn').value = item.nameEn || '';
             document.getElementById('itemCategory').value = item.cat || item.category || 'appetizers';
-            document.getElementById('itemPrice').value = item.price ?? '';
             document.getElementById('itemDescAr').value = item.descriptionAr || item.description || '';
+            document.getElementById('itemDescEn').value = item.descriptionEn || '';
             document.getElementById('itemImage').value = item.image || '';
             document.getElementById('itemAvailable').checked = item.available !== false;
+            document.getElementById('itemBestseller').checked = item.bestseller || false;
+            document.getElementById('itemIngredients').value = item.ingredients || '';
+            document.getElementById('itemIngredientsEn').value = item.ingredientsEn || '';
+            
+            document.getElementById('sizesContainer').innerHTML = '';
+            if (item.sizes && item.sizes.length > 0) {
+                item.sizes.forEach(size => {
+                    addSizeField(size.weight, size.price, size.servings);
+                });
+            } else if (item.price) {
+                addSizeField(item.weight || '400 جم', item.price, item.servings || 2);
+            } else {
+                addSizeField('400 جم', 0, 2);
+            }
+            
             document.getElementById('itemModal').classList.add('active');
         };
 
         window.closeItemModal = function() { document.getElementById('itemModal').classList.remove('active'); editingItemId = null; };
 
-        window.saveMenuItem = async function() {
-            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
-            const nameAr = document.getElementById('itemNameAr').value.trim();
-            const nameEn = document.getElementById('itemNameEn').value.trim();
-            const category = document.getElementById('itemCategory').value;
-            const price = toNumber(document.getElementById('itemPrice').value);
-            const descriptionAr = document.getElementById('itemDescAr').value.trim();
-            const image = document.getElementById('itemImage').value.trim();
-            const available = document.getElementById('itemAvailable').checked;
-            if (!nameAr) { alert('من فضلك أدخل اسم الصنف.'); return; }
-            if (price < 0) { alert('السعر غير صحيح.'); return; }
-            const itemData = { nameAr, nameEn, cat: category, price, descriptionAr, image, available, updatedAt: new Date().toISOString() };
-            try {
-                if (editingItemId) await update(ref(db, `menu/${editingItemId}`), itemData);
-                else await push(ref(db, 'menu'), { ...itemData, createdAt: new Date().toISOString() });
-                closeItemModal();
-                alert('تم حفظ الصنف بنجاح!');
-            } catch (error) { console.error('Error saving item:', error); alert('حدث خطأ أثناء حفظ الصنف.'); }
-        };
+        // في قسم حفظ المنتج
+window.saveMenuItem = async function() {
+    if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+    
+    const nameAr = document.getElementById('itemNameAr').value.trim();
+    const nameEn = document.getElementById('itemNameEn').value.trim();
+    const category = document.getElementById('itemCategory').value;
+    const descriptionAr = document.getElementById('itemDescAr').value.trim();
+    const descriptionEn = document.getElementById('itemDescEn').value.trim();
+    const image = document.getElementById('itemImage').value.trim();
+    const available = document.getElementById('itemAvailable').checked;
+    const bestseller = document.getElementById('itemBestseller').checked;
+    const ingredients = document.getElementById('itemIngredients').value.trim();
+    const ingredientsEn = document.getElementById('itemIngredientsEn').value.trim();
+
+    const sizes = [];
+    document.querySelectorAll('.size-field').forEach(field => {
+        const weight = field.querySelector('.size-weight').value.trim();
+        const price = parseFloat(field.querySelector('.size-price').value) || 0;
+        const servings = parseInt(field.querySelector('.size-servings').value) || 1;
+        if (weight && price > 0) {
+            sizes.push({ weight, price, servings });
+        }
+    });
+
+    if (!nameAr) { alert('من فضلك أدخل اسم الصنف.'); return; }
+    if (sizes.length === 0) { alert('من فضلك أضف حجم واحد على الأقل.'); return; }
+    if (!image) { alert('من فضلك أدخل رابط الصورة.'); return; }
+
+    // ✅ التحقق من أن رابط الصورة صحيح
+    const validImageUrl = image.startsWith('http') ? image : `https://${image}`;
+
+    const itemData = { 
+        nameAr, 
+        nameEn, 
+        cat: category, 
+        descriptionAr, 
+        descriptionEn,
+        image: validImageUrl,  // 👈 حفظ الصورة بصيغة موحدة
+        available, 
+        bestseller,
+        sizes,
+        ingredients,
+        ingredientsEn,
+        updatedAt: new Date().toISOString() 
+    };
+
+    try {
+        if (editingItemId) {
+            await update(ref(db, `menu/${editingItemId}`), itemData);
+        } else {
+            await push(ref(db, 'menu'), { ...itemData, createdAt: new Date().toISOString() });
+        }
+        closeItemModal();
+        alert('تم حفظ الصنف بنجاح!');
+    } catch (error) {
+        console.error('Error saving item:', error);
+        alert('حدث خطأ أثناء حفظ الصنف.');
+    }
+};
+
 
         window.toggleItemAvailability = async function(itemId, available) {
             if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
             try { await update(ref(db, `menu/${itemId}`), { available: Boolean(available), updatedAt: new Date().toISOString() }); }
-            catch (error) { console.error('Error toggling availability:', error); }
+            catch (error) { console.error('Error toggling availability:', error); alert('حدث خطأ أثناء تحديث حالة الصنف.'); }
         };
 
         window.deleteMenuItem = async function(itemId) {
@@ -730,6 +1044,14 @@
             const activeMenuItem = document.querySelector(`.sidebar-menu-item[data-section="${section}"]`);
             if (activeMenuItem) activeMenuItem.classList.add('active');
             if (section === 'reports') updateReports();
+
+            // Auto close sidebar on mobile screen when switching sections
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                if (sidebar) sidebar.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+            }
         };
 
         window.setDateRange = function(range, btn) {
@@ -782,7 +1104,10 @@
                 return orderDate && orderDate >= startDate && orderDate <= endDate;
             });
             const salesOrders = filteredOrders.filter(order => order.status !== 'cancelled');
-            const totalSales = salesOrders.reduce((sum, order) => sum + toNumber(order.total), 0);
+            const totalSales = salesOrders.reduce((sum, order) => {
+                const { grandTotal } = getOrderTotals(order);
+                return sum + toNumber(grandTotal);
+            }, 0);
             const avgOrder = salesOrders.length ? totalSales / salesOrders.length : 0;
             const cancelled = filteredOrders.filter(o => o.status === 'cancelled').length;
             const delivered = filteredOrders.filter(o => o.status === 'delivered').length;
