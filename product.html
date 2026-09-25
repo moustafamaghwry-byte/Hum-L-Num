@@ -819,7 +819,7 @@
 
         body.lang-en .cart-item-notes-display {
             border-right: none;
-            border-left: 2px solid var(--accent);
+            border-left: 4px solid var(--accent);
         }
 
         .cart-item-notes-display i {
@@ -1005,77 +1005,90 @@
             min-height: 80px;
         }
 
-        .datetime-wrapper {
-            position: relative;
-            background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
-            border: 2px solid var(--gray-200);
-            border-radius: 16px;
-            padding: 4px;
-            transition: all 0.3s ease;
+        .delivery-container, .payment-card {
+          background: #fdfdfd;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px;
+          margin-bottom: 20px;
         }
 
-        .datetime-wrapper:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(31, 77, 52, 0.1), 0 8px 20px rgba(31, 77, 52, 0.1);
-            transform: translateY(-2px);
+        .delivery-info-banner {
+          background-color: #f0fdf4;
+          color: #166534;
+          border: 1px solid #bbf7d0;
+          padding: 10px 14px;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 13px;
+          margin-bottom: 16px;
+          text-align: center;
+          line-height: 1.5;
         }
 
-        .datetime-wrapper input[type="datetime-local"] {
-            width: 100%;
-            padding: 14px 50px 14px 16px;
-            border: none;
-            border-radius: 12px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            background: transparent;
-            color: var(--primary-dark);
-            cursor: pointer;
-            transition: all 0.3s;
+        .form-row {
+          display: flex;
+          gap: 12px;
         }
 
-        .datetime-wrapper input[type="datetime-local"]:focus {
-            outline: none;
+        .input-group {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
         }
 
-        .datetime-icon {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 1rem;
-            pointer-events: none;
-            box-shadow: 0 4px 10px rgba(31, 77, 52, 0.2);
+        .input-group label {
+          font-size: 13px;
+          font-weight: bold;
+          color: #374151;
+          margin-bottom: 6px;
         }
 
-        body.lang-en .datetime-icon {
-            right: auto;
-            left: 16px;
+        .input-group input, .input-group select {
+          padding: 10px;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-size: 14px;
+          outline: none;
+          background-color: #fff;
         }
 
-        .datetime-hint {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 8px;
-            padding: 8px 12px;
-            background: rgba(201, 162, 39, 0.08);
-            border-radius: 8px;
-            font-size: 0.8rem;
-            color: var(--accent-dark);
-            font-weight: 600;
+        .instapay-card {
+          border-right: 4px solid #7c3aed;
+          animation: fadeIn 0.3s ease-in-out;
         }
 
-        .datetime-hint i {
-            color: var(--accent);
+        body.lang-en .instapay-card {
+          border-right: none;
+          border-left: 4px solid #7c3aed;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ipa-address {
+          font-size: 14px;
+          color: #1f2937;
+          margin-bottom: 12px;
+        }
+
+        .instapay-link-btn {
+          display: inline-block;
+          background-color: #7c3aed;
+          color: #ffffff;
+          padding: 10px 18px;
+          border-radius: 8px;
+          text-decoration: none;
+          font-weight: bold;
+          font-size: 14px;
+          text-align: center;
+          transition: background-color 0.2s;
+        }
+
+        .instapay-link-btn:hover {
+          background-color: #6d28d9;
         }
 
         .payment-options {
@@ -1099,6 +1112,11 @@
         }
 
         .payment-option.selected {
+            border-color: #7c3aed;
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .payment-option.selected[data-value="cash"] {
             border-color: var(--primary);
             background: rgba(31, 77, 52, 0.05);
         }
@@ -1108,6 +1126,10 @@
             color: var(--primary);
             margin-bottom: 0.5rem;
             display: block;
+        }
+
+        .payment-option[data-value="instapay"] i {
+            color: #7c3aed;
         }
 
         .payment-option-text {
@@ -1282,7 +1304,12 @@
             }
 
             .payment-options {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
             }
         }
 
@@ -1334,7 +1361,7 @@
                 <span id="backText">العودة للمنيو</span>
             </a>
             <a href="index.html" class="navbar-brand">
-                <img src="logo.png" alt="هَمَّ النَّمَّ" class="navbar-logo" onerror="this.src='https://placehold.co/100x100/1F4D34/ffffff?text=Hum+L+Num'">
+                <img src="logo.png" alt="هَمَّ النَّمَّ" class="navbar-logo" onerror="this.src='https://placehold.co/100x100/1F4D34/ffffff?text=The+Hum+Num'">
                 <div class="navbar-title">هَمَّ النَّمَّ</div>
             </a>
             <div class="nav-actions">
@@ -1354,7 +1381,7 @@
 
     <div class="product-container" id="productContainer" style="display: none;">
         <div class="product-image-wrapper">
-            <img id="p-image" src="" alt="صورة المنتج" onerror="this.src='https://placehold.co/600x600/1F4D34/ffffff?text=Hum+L+Num'">
+            <img id="p-image" src="" alt="صورة المنتج" onerror="this.src='https://placehold.co/600x600/1F4D34/ffffff?text=The+Hum+Num'">
             <div class="bestseller-ribbon" id="p-ribbon" style="display: none;">
                 <i class="fas fa-fire"></i>
                 <span id="badgeText">الأكثر مبيعاً</span>
@@ -1462,6 +1489,7 @@
         <div class="cart-footer">
             <div class="cart-total"><span data-ar="الإجمالي الفرعي" data-en="Subtotal">الإجمالي الفرعي</span><span id="subtotal">0.00 ج.م</span></div>
             <div class="cart-total"><span data-ar="رسوم التوصيل" data-en="Delivery Fee">رسوم التوصيل</span><span id="deliveryFee">0.00 ج.م</span></div>
+            <div class="cart-total" id="discountRow" style="display:none; color: var(--success);"><span data-ar="الخصم" data-en="Discount">الخصم</span><span id="discountAmount">0.00 ج.م</span></div>
             <div class="cart-total grand"><span data-ar="الإجمالي الكلي" data-en="Grand Total">الإجمالي الكلي</span><span id="grandTotal">0.00 ج.م</span></div>
             <div id="minOrderWarning" class="min-order-warning" style="display: none;">
                 <i class="fas fa-exclamation-circle"></i>
@@ -1474,6 +1502,7 @@
         </div>
     </div>
 
+    <!-- Checkout Modal -->
     <div class="modal-overlay" id="checkoutModal">
         <div class="modal">
             <div class="modal-header">
@@ -1481,21 +1510,53 @@
                 <button class="cart-close" onclick="closeCheckout()" style="background: rgba(255,255,255,0.2);"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label" data-ar="تاريخ ووقت الاستلام" data-en="Delivery Date & Time">
-                        <i class="far fa-calendar-alt" style="color: var(--accent); margin-left: 6px;"></i>
-                        <span data-ar="تاريخ ووقت الاستلام" data-en="Delivery Date & Time">تاريخ ووقت الاستلام</span>
-                        <span style="color:var(--danger); font-size:0.75rem;" data-ar="(بعد يومين على الأقل)" data-en="(at least 2 days ahead)">(بعد يومين على الأقل)</span>
-                    </label>
-                    <div class="datetime-wrapper">
-                        <input type="datetime-local" class="form-input" id="deliveryTime">
-                        <div class="datetime-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="checkout-summary" id="checkoutSummary" style="background: var(--gray-100); border-radius: 14px; padding: 14px 16px; margin-bottom: 1.25rem;">
+                    <div style="font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:6px; color:var(--primary-dark);">
+                        <i class="fas fa-receipt"></i> <span data-ar="ملخص الطلب" data-en="Order Summary">ملخص الطلب</span>
                     </div>
-                    <div class="datetime-hint">
-                        <i class="fas fa-info-circle"></i>
-                        <span data-ar="اضغط على الأيقونة أو الحقل لاختيار التاريخ والوقت المناسب لك" data-en="Click the icon or field to select your preferred date and time">اضغط على الأيقونة أو الحقل لاختيار التاريخ والوقت المناسب لك</span>
-                    </div>
+                    <div id="checkoutItemsList" style="margin-bottom:8px;"></div>
+                    <div class="cart-total"><span data-ar="الإجمالي الفرعي" data-en="Subtotal">الإجمالي الفرعي</span><span id="checkoutSubtotal">0.00 ج.م</span></div>
+                    <div class="cart-total"><span data-ar="رسوم التوصيل" data-en="Delivery Fee">رسوم التوصيل</span><span id="checkoutDeliveryFee">0.00 ج.م</span></div>
+                    <div class="cart-total" id="checkoutDiscountRow" style="display:none; color: var(--success);"><span data-ar="الخصم" data-en="Discount">الخصم</span><span id="checkoutDiscountAmount">0.00 ج.م</span></div>
+                    <div class="cart-total grand"><span data-ar="الإجمالي الكلي" data-en="Grand Total">الإجمالي الكلي</span><span id="checkoutGrandTotal">0.00 ج.م</span></div>
                 </div>
+
+                <!-- قسم تحديد ميعاد والتاريخ والتوصيل -->
+                <div class="delivery-container">
+                  <div class="delivery-info-banner">
+    📌 <span data-ar="التوصيل بعد 48 ساعة | متوفر من 1 إلى 9 مساءً" data-en="Delivery after 48 hours | Available from 1 PM to 9 PM">التوصيل بعد 48 ساعة | متوفر يومياً من 1 إلى 9 مساءً</span><br>
+    <small style="font-weight: normal; font-size: 0.85rem;" data-ar="(التجمع الخامس - وباقي المناطق قريباً)" data-en="(Fifth Settlement - other areas coming soon)">(التجمع الخامس - وباقي المناطق قريباً)</small>
+</div>
+
+                  <div class="form-row">
+                    <!-- اختيار التاريخ -->
+                    <div class="input-group">
+                      <label for="delivery-date">
+                          <span data-ar="تاريخ التوصيل" data-en="Delivery Date">تاريخ التوصيل</span> 
+                          <span style="color:var(--danger); font-size:0.75rem;" data-ar="(بعد 48 ساعة)" data-en="(after 48 hours)">(بعد 48 ساعة)</span>
+                      </label>
+                      <input type="date" id="delivery-date" name="deliveryDate" required>
+                    </div>
+
+                    <!-- اختيار الوقت -->
+                    <div class="input-group">
+                      <label for="delivery-time" data-ar="ساعة التوصيل" data-en="Delivery Time">ساعة التوصيل</label>
+                      <select id="delivery-time" name="deliveryTime" required>
+                        <option value="" disabled selected data-ar="اختر الوقت المناسب" data-en="Select convenient time">اختر الوقت المناسب</option>
+                        <option value="1 مساءً" data-ar="1 مساءً" data-en="1 PM">1 مساءً</option>
+                        <option value="2 مساءً" data-ar="2 مساءً" data-en="2 PM">2 مساءً</option>
+                        <option value="3 مساءً" data-ar="3 مساءً" data-en="3 PM">3 مساءً</option>
+                        <option value="4 مساءً" data-ar="4 مساءً" data-en="4 PM">4 مساءً</option>
+                        <option value="5 مساءً" data-ar="5 مساءً" data-en="5 PM">5 مساءً</option>
+                        <option value="6 مساءً" data-ar="6 مساءً" data-en="6 PM">6 مساءً</option>
+                        <option value="7 مساءً" data-ar="7 مساءً" data-en="7 PM">7 مساءً</option>
+                        <option value="8 مساءً" data-ar="8 مساءً" data-en="8 PM">8 مساءً</option>
+                        <option value="9 مساءً" data-ar="9 مساءً" data-en="9 PM">9 مساءً</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label" data-ar="ملاحظة على الطلب" data-en="Order Note">ملاحظة على الطلب</label>
                     <textarea class="form-input form-textarea" id="orderNote" data-ar-placeholder="أي ملاحظات عامة على الطلب..." data-en-placeholder="Any general notes..." placeholder="أي ملاحظات عامة على الطلب..."></textarea>
@@ -1516,18 +1577,43 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="form-label" data-ar="كود الخصم (اختياري)" data-en="Promo Code (optional)">كود الخصم (اختياري)</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" class="form-input" id="promoCodeInput" placeholder="DISCOUNT20" style="flex:1; text-transform:uppercase;">
+                        <button type="button" class="btn btn-outline" id="applyPromoBtn" onclick="applyPromoCode()" style="white-space:nowrap; padding:0 16px;" data-ar="تطبيق" data-en="Apply">تطبيق</button>
+                    </div>
+                    <div id="promoMessage" style="font-size:0.82rem; font-weight:700; min-height:1.3em; margin-top:6px;"></div>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label" data-ar="طريقة الدفع" data-en="Payment Method">طريقة الدفع</label>
                     <div class="payment-options">
                         <div class="payment-option selected" data-value="cash" onclick="selectPayment(this)">
                             <i class="fas fa-money-bill-wave"></i>
                             <div class="payment-option-text" data-ar="كاش" data-en="Cash">كاش</div>
                         </div>
-                        <div class="payment-option" data-value="card" onclick="selectPayment(this)">
-                            <i class="fas fa-credit-card"></i>
-                            <div class="payment-option-text" data-ar="فيزا" data-en="Card">فيزا</div>
+                        <div class="payment-option" data-value="instapay" onclick="selectPayment(this)">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div class="payment-option-text" data-ar="InstaPay" data-en="InstaPay">InstaPay</div>
                         </div>
                     </div>
                 </div>
+
+                <!-- قسم الدفع عبر InstaPay -->
+                <div id="instapayDetails" class="payment-card instapay-card" style="display: none; margin-top: 12px;">
+                  <div class="instapay-header">
+                    <span class="pay-title" style="font-weight: 800; color: #7c3aed; font-size: 0.95rem;" data-ar="الدفع عن طريق InstaPay" data-en="Payment via InstaPay">الدفع عن طريق InstaPay</span>
+                  </div>
+                  
+                  <div class="instapay-details" style="margin-top: 8px;">
+                    <p class="ipa-address"><span data-ar="عنوان الحساب (IPA):" data-en="Account Address (IPA):">عنوان الحساب (IPA):</span> <strong>memasaib@instapay</strong></p>
+                    
+                    <a href="https://ipn.eg/S/memasaib/instapay/2jSY1y" target="_blank" rel="noopener noreferrer" class="instapay-link-btn" style="display: block; width: 100%; text-align: center;" data-ar="اضغط هنا للدفع عبر تطبيق InstaPay" data-en="Click here to pay via InstaPay app">
+                      اضغط هنا للدفع عبر تطبيق InstaPay
+                    </a>
+                  </div>
+                </div>
+
                 <div id="checkoutError" style="color:var(--danger);font-size:0.9rem;min-height:1.5em; font-weight:700; text-align:center;"></div>
             </div>
             <div class="modal-footer">
@@ -1610,9 +1696,9 @@
 
         const CONFIG = {
             businessNameAr: "هَم النَّم",
-            businessNameEn: "Hum L Num",
+            businessNameEn: "The Hum Num",
             whatsappNumber: "201158899779",
-            deliveryFee: 30,
+            deliveryFee: 60,
             minOrderLimit: 150,
             currencyAr: "ج.م",
             currencyEn: "EGP"
@@ -1625,28 +1711,35 @@
         let cart = [];
         let orderSubmitting = false;
         let selectedPaymentMethod = 'cash';
+        let appliedPromo = null;
 
-        // ✅ دالة آمنة للتعامل مع الصور
-        function safeImageUrl(imageUrl) {
-            // إذا كانت الصورة فارغة أو null أو undefined
-            if (!imageUrl || typeof imageUrl !== 'string') {
-                return "https://placehold.co/600x600/1F4D34/ffffff?text=Hum+L+Num";
+        function getProductImage(prod) {
+            if (!prod) return "";
+            if (typeof prod === 'string') return prod.trim();
+            
+            const possibleUrl = prod.image || prod.img || prod.imageUrl || prod.image_url || prod.photo || prod.picture || prod.imgUrl || prod.Image || prod.IMG || "";
+            if (possibleUrl && typeof possibleUrl === 'string' && possibleUrl.trim() !== "") {
+                return possibleUrl.trim();
             }
 
-            // تنظيف المسافات الزائدة
-            imageUrl = imageUrl.trim();
-
-            // إذا كانت الصورة فارغة
-            if (imageUrl === '') {
-                return "https://placehold.co/600x600/1F4D34/ffffff?text=Hum+L+Num";
+            for (let key in prod) {
+                if (Object.prototype.hasOwnProperty.call(prod, key)) {
+                    const lowerKey = key.toLowerCase();
+                    if ((lowerKey.includes('image') || lowerKey.includes('img') || lowerKey.includes('photo') || lowerKey.includes('picture')) && typeof prod[key] === 'string' && prod[key].trim() !== '') {
+                        return prod[key].trim();
+                    }
+                }
             }
 
-            // تأكد من أن الرابط يبدأ بـ http أو https
-            if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
-                return "https://placehold.co/600x600/1F4D34/ffffff?text=Hum+L+Num";
-            }
+            return "";
+        }
 
-            return imageUrl;
+        function safeImageUrl(imgData) {
+            const url = getProductImage(imgData);
+            if (!url) {
+                return "https://placehold.co/600x600/1F4D34/ffffff?text=The+Hum+Num";
+            }
+            return url;
         }
 
         function getCurrency() {
@@ -1657,8 +1750,15 @@
             return String(value ?? '').trim().slice(0, maxLength);
         }
 
+        function normalizePhone(value) {
+            let phone = String(value || '').replace(/[^\d+]/g, '');
+            if (phone.startsWith('+20')) phone = '0' + phone.slice(3);
+            else if (phone.startsWith('20')) phone = '0' + phone.slice(2);
+            return phone;
+        }
+
         function isValidEgyptianPhone(value) {
-            return /^01[0125][0-9]{8}$/.test(String(value || '').trim());
+            return /^01[0125][0-9]{8}$/.test(normalizePhone(value));
         }
 
         function saveCartToStorage() {
@@ -1694,15 +1794,59 @@
         function computeTotals() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             const deliveryFee = subtotal > 0 ? CONFIG.deliveryFee : 0;
-            return { subtotal, deliveryFee, grandTotal: subtotal > 0 ? subtotal + deliveryFee : 0 };
+            let discount = 0;
+            if (appliedPromo && subtotal > 0) {
+                discount = appliedPromo.type === 'percentage' ? (subtotal * appliedPromo.value / 100) : appliedPromo.value;
+                discount = Math.max(0, Math.min(discount, subtotal));
+            }
+            const grandTotal = subtotal > 0 ? Math.max(subtotal + deliveryFee - discount, 0) : 0;
+            return { subtotal, deliveryFee, discount, grandTotal };
+        }
+
+        function renderCheckoutSummary() {
+            const itemsList = document.getElementById('checkoutItemsList');
+            if (!itemsList) return;
+            const currency = getCurrency();
+            if (cart.length === 0) {
+                itemsList.innerHTML = `<div style="text-align:center; color:var(--gray-500); font-size:0.85rem; padding:6px 0;">${currentLang === 'ar' ? 'السلة فارغة' : 'Cart is empty'}</div>`;
+            } else {
+                itemsList.innerHTML = cart.map(item => {
+                    const name = currentLang === 'ar' ? item.ar : (item.en || item.ar);
+                    return `<div style="display:flex; justify-content:space-between; gap:10px; font-size:0.88rem; padding:5px 0; border-bottom:1px dashed var(--gray-300);">
+                        <span>${name} <span style="color:var(--gray-500);">×${item.qty}</span></span>
+                        <span style="font-weight:700; white-space:nowrap;">${(item.price * item.qty).toFixed(2)} ${currency}</span>
+                    </div>`;
+                }).join('');
+            }
+            const { subtotal, deliveryFee, discount, grandTotal } = computeTotals();
+            document.getElementById('checkoutSubtotal').textContent = `${subtotal.toFixed(2)} ${currency}`;
+            document.getElementById('checkoutDeliveryFee').textContent = `${deliveryFee.toFixed(2)} ${currency}`;
+            const discountRow = document.getElementById('checkoutDiscountRow');
+            if (discount > 0) {
+                discountRow.style.display = 'flex';
+                document.getElementById('checkoutDiscountAmount').textContent = `-${discount.toFixed(2)} ${currency}`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+            document.getElementById('checkoutGrandTotal').textContent = `${grandTotal.toFixed(2)} ${currency}`;
         }
 
         function updateTotals() {
-            const { subtotal, deliveryFee, grandTotal } = computeTotals();
+            const { subtotal, deliveryFee, discount, grandTotal } = computeTotals();
             const currency = getCurrency();
             document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} ${currency}`;
             document.getElementById('deliveryFee').textContent = `${deliveryFee.toFixed(2)} ${currency}`;
+            const discountRow = document.getElementById('discountRow');
+            if (discountRow) {
+                if (discount > 0) {
+                    discountRow.style.display = 'flex';
+                    document.getElementById('discountAmount').textContent = `-${discount.toFixed(2)} ${currency}`;
+                } else {
+                    discountRow.style.display = 'none';
+                }
+            }
             document.getElementById('grandTotal').textContent = `${grandTotal.toFixed(2)} ${currency}`;
+            renderCheckoutSummary();
 
             const checkoutBtn = document.getElementById('checkoutBtn');
             const minWarning = document.getElementById('minOrderWarning');
@@ -1744,9 +1888,14 @@
                     const name = currentLang === 'ar' ? item.ar : (item.en || item.ar);
                     const notesHtml = item.notes ? `<div class="cart-item-notes-display"><i class="fas fa-comment-alt"></i> ${escapeHtml(item.notes)}</div>` : '';
                     const sizeHtml = item.sizeWeight ? `<div style="font-size:0.78rem;color:var(--gray-500);margin-bottom:2px;">${item.sizeWeight}</div>` : '';
-                    const safeImg = safeImageUrl(item.image);
+                    
+                    const itemImg = getProductImage(item);
+                    const safeImg = safeImageUrl(itemImg);
+
                     return `<div class="cart-item">
-                        <div class="cart-item-image">${item.image ? `<img src="${safeImg}" alt="${name}" onerror="this.src='https://placehold.co/600x600/1F4D34/ffffff?text=Hum+L+Num'">` : '<i class="fas fa-utensils" style="font-size: 2rem; color: var(--gray-400);"></i>'}</div>
+                        <div class="cart-item-image">
+                            <img src="${safeImg}" alt="${name}" onerror="this.src='https://placehold.co/600x600/1F4D34/ffffff?text=The+Hum+Num'">
+                        </div>
                         <div class="cart-item-content">
                             <div class="cart-item-title">${name}</div>
                             ${sizeHtml}
@@ -1797,6 +1946,82 @@
             document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
             el.classList.add('selected');
             selectedPaymentMethod = el.getAttribute('data-value');
+
+            const instapayBox = document.getElementById('instapayDetails');
+            if (instapayBox) {
+                if (selectedPaymentMethod === 'instapay') {
+                    instapayBox.style.display = 'block';
+                } else {
+                    instapayBox.style.display = 'none';
+                }
+            }
+        };
+
+        window.applyPromoCode = async function() {
+            const input = document.getElementById('promoCodeInput');
+            const msgBox = document.getElementById('promoMessage');
+            const code = cleanText(input.value, 30).toUpperCase();
+            input.value = code;
+
+            if (!code) {
+                if (appliedPromo) {
+                    appliedPromo = null;
+                    updateTotals();
+                    msgBox.style.color = 'var(--gray-500)';
+                    msgBox.textContent = currentLang === 'ar' ? 'تم إزالة كود الخصم' : 'Promo code removed';
+                } else {
+                    msgBox.style.color = 'var(--danger)';
+                    msgBox.textContent = currentLang === 'ar' ? 'من فضلك اكتب كود الخصم' : 'Please enter a promo code';
+                }
+                return;
+            }
+
+            const phoneValue = document.getElementById('customerPhone').value;
+            if (!isValidEgyptianPhone(phoneValue)) {
+                msgBox.style.color = 'var(--danger)';
+                msgBox.textContent = currentLang === 'ar' ? 'من فضلك اكتب رقم موبايل صحيح أولاً' : 'Please enter a valid phone number first';
+                return;
+            }
+            const normalizedPhone = normalizePhone(phoneValue);
+
+            const applyBtn = document.getElementById('applyPromoBtn');
+            applyBtn.disabled = true;
+            msgBox.style.color = 'var(--gray-500)';
+            msgBox.textContent = currentLang === 'ar' ? 'جاري التحقق...' : 'Checking...';
+
+            try {
+                const snap = await get(ref(db, 'promo_codes/' + code));
+                if (!snap.exists()) {
+                    appliedPromo = null; updateTotals();
+                    msgBox.style.color = 'var(--danger)';
+                    msgBox.textContent = currentLang === 'ar' ? 'كود الخصم غير موجود' : 'Promo code not found';
+                    return;
+                }
+                const data = snap.val();
+                if (!data.is_active) {
+                    appliedPromo = null; updateTotals();
+                    msgBox.style.color = 'var(--danger)';
+                    msgBox.textContent = currentLang === 'ar' ? 'كود الخصم غير مفعّل' : 'Promo code is inactive';
+                    return;
+                }
+                if (data.used_by && data.used_by[normalizedPhone]) {
+                    appliedPromo = null; updateTotals();
+                    msgBox.style.color = 'var(--danger)';
+                    msgBox.textContent = currentLang === 'ar' ? 'تم استخدام هذا الكود من قبل بهذا الرقم' : 'This code was already used with this phone number';
+                    return;
+                }
+                appliedPromo = { code, type: data.discount_type, value: data.discount_value };
+                updateTotals();
+                msgBox.style.color = 'var(--success)';
+                msgBox.textContent = currentLang === 'ar' ? 'تم تطبيق كود الخصم بنجاح!' : 'Promo code applied successfully!';
+            } catch (e) {
+                console.error(e);
+                appliedPromo = null; updateTotals();
+                msgBox.style.color = 'var(--danger)';
+                msgBox.textContent = currentLang === 'ar' ? 'حدث خطأ أثناء التحقق من الكود' : 'Error verifying promo code';
+            } finally {
+                applyBtn.disabled = false;
+            }
         };
 
         window.openCheckout = function() {
@@ -1804,12 +2029,18 @@
             const { subtotal } = computeTotals();
             if (subtotal < CONFIG.minOrderLimit) return;
 
-            const deliveryInput = document.getElementById('deliveryTime');
-            const pad = (n) => String(n).padStart(2, '0');
-            const minDate = new Date();
-            minDate.setDate(minDate.getDate() + 2);
-            const localIso = `${minDate.getFullYear()}-${pad(minDate.getMonth() + 1)}-${pad(minDate.getDate())}T${pad(minDate.getHours())}:${pad(minDate.getMinutes())}`;
-            deliveryInput.min = localIso;
+            const deliveryDateInput = document.getElementById('delivery-date');
+            if (deliveryDateInput) {
+                const minDate = new Date();
+                minDate.setDate(minDate.getDate() + 2);
+                const pad = (n) => String(n).padStart(2, '0');
+                const minDateStr = `${minDate.getFullYear()}-${pad(minDate.getMonth() + 1)}-${pad(minDate.getDate())}`;
+                
+                deliveryDateInput.min = minDateStr;
+                if (!deliveryDateInput.value || deliveryDateInput.value < minDateStr) {
+                    deliveryDateInput.value = minDateStr;
+                }
+            }
 
             const savedCustomer = loadCustomerFromStorage();
             if (savedCustomer) {
@@ -1822,6 +2053,7 @@
             }
 
             document.getElementById('checkoutModal').classList.add('open');
+            renderCheckoutSummary();
             toggleCart(false);
         };
 
@@ -1844,24 +2076,25 @@
             const errBox = document.getElementById('checkoutError');
             errBox.textContent = '';
 
-            const deliveryTime = document.getElementById('deliveryTime').value;
+            const deliveryDate = document.getElementById('delivery-date').value;
+            const deliveryTimeSelect = document.getElementById('delivery-time').value;
             const orderNote = cleanText(document.getElementById('orderNote').value, 500);
             const customerName = cleanText(document.getElementById('customerName').value, 100);
             const customerPhone = cleanText(document.getElementById('customerPhone').value, 20);
             const customerAddress = cleanText(document.getElementById('customerAddress').value, 500);
 
-            if (!deliveryTime) {
-                errBox.textContent = currentLang === 'ar' ? 'من فضلك اختر تاريخ ووقت الاستلام' : 'Please select delivery date & time';
-                return;
-            }
+            if (!deliveryDate) { errBox.textContent = currentLang === 'ar' ? 'من فضلك اختر تاريخ التوصيل' : 'Please select delivery date'; return; }
+            if (!deliveryTimeSelect) { errBox.textContent = currentLang === 'ar' ? 'من فضلك اختر ساعة التوصيل' : 'Please select delivery time'; return; }
 
-            const selectedDate = new Date(deliveryTime);
+            const chosenDate = new Date(deliveryDate);
+            chosenDate.setHours(0,0,0,0);
+            
             const minAllowedDate = new Date();
             minAllowedDate.setDate(minAllowedDate.getDate() + 2);
-            minAllowedDate.setHours(0, 0, 0, 0);
+            minAllowedDate.setHours(0,0,0,0);
 
-            if (selectedDate < minAllowedDate) {
-                errBox.textContent = currentLang === 'ar' ? 'يجب أن يكون الاستلام بعد يومين على الأقل' : 'Delivery must be at least 2 days ahead';
+            if (chosenDate < minAllowedDate) {
+                errBox.textContent = currentLang === 'ar' ? 'التوصيل متاح بعد 48 ساعة على الأقل (بعد يومين من اليوم)' : 'Delivery must be at least 48 hours ahead';
                 return;
             }
 
@@ -1883,7 +2116,31 @@
             submitBtn.disabled = true;
 
             try {
-                const { subtotal, deliveryFee, grandTotal } = computeTotals();
+                const { subtotal, deliveryFee, discount, grandTotal } = computeTotals();
+                const normalizedPhone = normalizePhone(customerPhone);
+                let redeemedPromoCode = null;
+
+                if (appliedPromo) {
+                    const promoRef = ref(db, `promo_codes/${appliedPromo.code}`);
+                    const promoSnap = await get(promoRef);
+                    if (!promoSnap.exists() || !promoSnap.val().is_active) {
+                        appliedPromo = null; updateTotals();
+                        errBox.textContent = currentLang === 'ar' ? 'كود الخصم لم يعد متاحاً، من فضلك أعد المحاولة' : 'Promo code is no longer available, please try again';
+                        return;
+                    }
+                    const usageRef = ref(db, `promo_codes/${appliedPromo.code}/used_by/${normalizedPhone}`);
+                    const txResult = await runTransaction(usageRef, (current) => {
+                        if (current) return;
+                        return true;
+                    });
+                    if (!txResult.committed) {
+                        appliedPromo = null; updateTotals();
+                        errBox.textContent = currentLang === 'ar' ? 'تم استخدام هذا الكود من قبل بهذا الرقم' : 'This code was already used with this phone number';
+                        return;
+                    }
+                    redeemedPromoCode = appliedPromo.code;
+                }
+
                 const counterRef = ref(db, 'orderCounter');
                 let nextNum = 1000;
 
@@ -1895,12 +2152,14 @@
                 const newOrder = {
                     orderNumber: nextNum,
                     createdAt: serverTimestamp(),
-                    deliveryTime,
+                    deliveryDate: deliveryDate,
+                    deliveryTime: deliveryTimeSelect,
                     orderNote,
                     customer: { name: customerName, phone: customerPhone, address: customerAddress },
                     paymentMethod: selectedPaymentMethod,
                     items: cart,
-                    totals: { subtotal, deliveryFee, grandTotal },
+                    totals: { subtotal, deliveryFee, discount, grandTotal },
+                    promoCode: redeemedPromoCode,
                     status: 'received'
                 };
 
@@ -1911,11 +2170,13 @@
 
                 cart = [];
                 saveCartToStorage();
+                appliedPromo = null;
+                document.getElementById('promoCodeInput').value = '';
+                document.getElementById('promoMessage').textContent = '';
                 updateCart();
 
                 closeCheckout();
                 document.getElementById('orderNumber').textContent = `#${nextNum}`;
-                document.getElementById('successTrackLink').href = `tracking.html?id=${newOrderRef.key}`;document.getElementById('successTrackLink').href = `tracking.html?id=${nextNum}`;
                 document.getElementById('successTrackLink').href = `tracking.html?id=${nextNum}`;
                 document.getElementById('successModal').classList.add('open');
 
@@ -2076,19 +2337,23 @@
                 return "-";
             }
             const value = String(servingsValue).trim();
-            let number = null;
 
             if (value === "شخص" || value === "شخص واحد" || value.includes("شخص واحد")) {
-                number = 1;
-            } else if (value === "شخصين" || value.includes("شخصين")) {
-                number = 2;
-            } else {
-                const match = value.match(/\d+/);
-                if (match) number = parseInt(match[0], 10);
+                return translations[currentLang].servingsText(1);
+            }
+            if (value === "شخصين" || value.includes("شخصين")) {
+                return translations[currentLang].servingsText(2);
             }
 
-            if (number !== null && !Number.isNaN(number)) {
-                return translations[currentLang].servingsText(number);
+            const numbers = (value.match(/\d+/g) || []).map(n => parseInt(n, 10));
+            const min = numbers[0];
+            const max = numbers.length > 1 ? numbers[1] : null;
+
+            if (min !== undefined && !Number.isNaN(min)) {
+                if (max && max !== min) {
+                    return currentLang === "ar" ? `${min} ل ${max} أفراد` : `${min} to ${max} people`;
+                }
+                return translations[currentLang].servingsText(min);
             }
 
             if (currentLang === "en") return "N/A";
@@ -2128,6 +2393,12 @@
                 const text = el.getAttribute(`data-${currentLang}`);
                 if (text !== null && el.children.length === 0) el.textContent = text;
             });
+
+            document.querySelectorAll('#delivery-time option[data-ar]').forEach(opt => {
+                const text = opt.getAttribute(`data-${currentLang}`);
+                if (text) opt.textContent = text;
+            });
+
             document.querySelectorAll('[data-ar-placeholder][data-en-placeholder]').forEach(el => {
                 el.placeholder = el.getAttribute(`data-${currentLang}-placeholder`);
             });
@@ -2235,15 +2506,14 @@
             const isAvailable = product.available !== false;
             const isBestseller = product.bestseller === true;
 
-            // ✅ استخدم دالة safeImageUrl
-            const productImage = safeImageUrl(product.image);
+            const productImage = safeImageUrl(product);
             const imageElement = document.getElementById("p-image");
             imageElement.src = productImage;
             imageElement.alt = currentLang === "ar"
                 ? getLocalizedField(product, "name") || "صورة المنتج"
                 : getLocalizedField(product, "name") || "Product Image";
             imageElement.onerror = function() {
-                this.src = "https://placehold.co/600x600/1F4D34/ffffff?text=Hum+L+Num";
+                this.src = "https://placehold.co/600x600/1F4D34/ffffff?text=The+Hum+Num";
             };
 
             const rawCategory = product.cat || product.category || "";
@@ -2362,6 +2632,8 @@
                 (item.notes || "") === notesText
             );
 
+            const productImg = getProductImage(currentProduct);
+
             if (existing) {
                 existing.qty += currentQty;
             } else {
@@ -2374,7 +2646,7 @@
                     sizeServings: String(size.servings ?? ''),
                     qty: currentQty,
                     notes: notesText,
-                    image: currentProduct.image || ""
+                    image: productImg
                 });
             }
 
@@ -2414,5 +2686,4 @@
 
     </script>
 </body>
-
 </html>

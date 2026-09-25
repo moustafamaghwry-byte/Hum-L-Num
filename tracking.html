@@ -47,6 +47,20 @@
         .search-hint { text-align: center; margin-top: 1rem; color: var(--gray-500); font-size: 0.9rem; }
         .search-hint i { color: var(--accent); margin-inline-end: 4px; }
         
+        .orders-summary-container { display: none; margin-bottom: 2rem; }
+        .orders-summary-container.active { display: block; animation: slideIn 0.5s ease; }
+        
+        .orders-summary-list { display: flex; flex-direction: column; gap: 15px; }
+        .summary-card { display: flex; justify-content: space-between; align-items: center; background: white; border: 2px solid #e9ecef; border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.3s; box-shadow: var(--shadow-md); }
+        .summary-card:hover { border-color: var(--primary); box-shadow: 0 5px 15px rgba(31, 77, 52, 0.15); transform: translateY(-2px); }
+        .summary-info { display: flex; flex-direction: column; gap: 5px; }
+        .summary-info .order-date { color: var(--gray-600); font-size: 0.9em; }
+        .summary-action { display: flex; align-items: center; gap: 15px; }
+        .summary-action .arrow { color: var(--primary); font-weight: bold; font-size: 1.2em; }
+
+        .btn-back { background: var(--gray-600); color: white; margin-bottom: 20px; display: inline-block; border: none; padding: 10px 20px; border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-weight: 700; transition: var(--transition); }
+        .btn-back:hover { background: var(--gray-800); }
+
         .order-card { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 2rem; margin-bottom: 2rem; display: none; }
         .order-card.active { display: block; animation: slideIn 0.5s ease; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -91,7 +105,6 @@
         .total-label { font-size: 1rem; margin-bottom: 0.5rem; opacity: 0.9; }
         .total-amount { font-size: 2rem; font-weight: 900; }
 
-        /* Order Summary / Delivery Fee Breakdown */
         .order-summary { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 0.5rem 1.25rem 1rem; }
         .summary-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.7rem 0; font-size: 1rem; }
         .summary-row + .summary-row { border-top: 1px dashed var(--gray-200); }
@@ -106,7 +119,6 @@
         .edit-summary-box .summary-total .summary-label { font-size: 1.1rem; color: var(--primary-dark); font-weight: 800; }
         .edit-summary-box .summary-total .summary-value { font-size: 1.2rem; color: var(--primary); }
         
-        /* Edit Order Section Styles */
         .edit-section { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 2rem; display: none; }
         .edit-section.active { display: block; }
         
@@ -187,7 +199,7 @@
         <div class="navbar-content">
             <a href="index.html" class="navbar-brand">
                 <img src="logo.png" alt="هَمَّ النَّمَّ" class="navbar-logo">
-                <div class="navbar-title">هَمَّ النَّمَّ <span style="color: var(--accent);">Hum L Num</span></div>
+                <div class="navbar-title">هَمَّ النَّمَّ <span style="color: var(--accent);">The Hum Num</span></div>
             </a>
             <div class="navbar-links">
                 <a href="index.html" id="navHomeText">الرئيسية</a>
@@ -199,12 +211,12 @@
     <div class="container">
         <div class="page-header">
             <h1 id="headerTitle">تابع طلبك</h1>
-            <p id="headerSub">شكرًا لطلبك من هَمَّ النَّمَّ 🏡<br>يمكنك متابعة حالة طلبك أولاً بأول</p>
+            <p id="headerSub">شكرًا لطلبك من هَمَّ النَّمَّ <br>يمكنك متابعة حالة طلبك أولاً بأول</p>
         </div>
 
         <div class="search-box">
-            <form class="search-form" onsubmit="searchOrder(event)">
-                <input type="text" class="search-input" id="orderNumberInput" placeholder="أدخل رقم الطلب أو رقم الموبايل..." required>
+            <form class="search-form" onsubmit="searchOrders(event)">
+                <input type="text" class="search-input" id="searchInput" placeholder="أدخل رقم الطلب أو رقم الموبايل..." required>
                 <button type="submit" class="search-btn" id="searchBtnText">
                     <i class="fas fa-search"></i> <span>بحث</span>
                 </button>
@@ -226,7 +238,17 @@
             <p id="noOrderSub">من فضلك تأكد من رقم الطلب أو رقم الموبايل وحاول مرة أخرى</p>
         </div>
 
+        <div class="orders-summary-container" id="ordersContainer">
+            <div class="page-header" style="margin-bottom: 2rem;">
+                <h2 id="ordersListTitle" style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem;"></h2>
+                <p id="ordersListSubtitle" style="color: var(--gray-600);"></p>
+            </div>
+            <div id="ordersListContent"></div>
+        </div>
+
         <div class="order-card" id="orderCard">
+            <div id="backBtnContainer"></div>
+            
             <div class="order-header">
                 <div class="order-number" id="displayOrderNumber">#0000</div>
                 <span class="order-status" id="displayStatus">-</span>
@@ -288,17 +310,26 @@
                 <div class="items-list" id="itemsList"></div>
             </div>
 
+            <!-- ملخص التتبع (تمت إزالة خانة الإجمالي النهائي الصغير من هنا) -->
+            <div class="order-summary tracking-summary" style="margin-bottom: 1.5rem;">
+                <div class="summary-row">
+                    <span class="summary-label"><i class="fas fa-box"></i> سعر المنتجات:</span>
+                    <strong class="summary-value" id="track-subtotal">0 ج.م</strong>
+                </div>
+                <div class="summary-row" style="color: #e03131;">
+                    <span class="summary-label" style="color: #e03131;"><i class="fas fa-tag"></i> الخصم:</span>
+                    <strong class="summary-value" id="track-discount" style="color: #e03131;">0 ج.م</strong>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label"><i class="fas fa-truck"></i> التوصيل:</span>
+                    <strong class="summary-value" id="track-delivery">0 ج.م</strong>
+                </div>
+            </div>
+
+            <!-- المربع الأخضر الكبير للإجمالي النهائي -->
             <div class="order-summary">
-                <div class="summary-row">
-                    <span class="summary-label"><i class="fas fa-shopping-basket"></i> <span id="lblSubtotal">المجموع الفرعي</span></span>
-                    <span class="summary-value" id="orderSubtotal">0.00 ج.م</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label"><i class="fas fa-truck"></i> <span id="lblDeliveryFee">سعر التوصيل</span></span>
-                    <span class="summary-value" id="orderDeliveryFee">0.00 ج.م</span>
-                </div>
                 <div class="total-box">
-                    <div class="total-label" id="lblTotalAmount">الإجمالي الكلي</div>
+                    <div class="total-label" id="lblTotalAmount">الإجمالي النهائي</div>
                     <div class="total-amount" id="orderTotal">0.00 ج.م</div>
                 </div>
             </div>
@@ -357,7 +388,7 @@
                         <span class="summary-value" id="editableDeliveryFeeVal">0.00 ج.م</span>
                     </div>
                     <div class="summary-row summary-total">
-                        <span class="summary-label" id="lblEditableSubtotal">الإجمالي الكلي:</span>
+                        <span class="summary-label" id="lblEditableSubtotal">الإجمالي النهائي:</span>
                         <span class="summary-value" id="editableGrandTotalVal">0.00 ج.م</span>
                     </div>
                 </div>
@@ -420,7 +451,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA8h_w_JvoPV1PA5QFHJg_nAInFLCSEw9Y",
@@ -438,8 +469,9 @@
         const MIN_ORDER_LIMIT = 150;
 
         let currentOrder = null;
-        let currentOrderId = null;
-        let currentRating = 0;
+        window.currentOrderId = null;
+        window.currentRating = 0;
+        window.fetchedOrders = []; 
         let currentLang = 'ar';
         let availableMenuItems = [];
         let editableItems = [];
@@ -448,8 +480,8 @@
             const urlParams = new URLSearchParams(window.location.search);
             const orderNumFromUrl = urlParams.get('id');
             if (orderNumFromUrl) {
-                document.getElementById('orderNumberInput').value = orderNumFromUrl;
-                searchOrder();
+                document.getElementById('searchInput').value = orderNumFromUrl;
+                searchOrders();
             }
         });
 
@@ -459,7 +491,7 @@
                 navHome: "الرئيسية",
                 langBtn: "EN",
                 headerTitle: "تابع طلبك",
-                headerSub: "شكرًا لطلبك من هَمَّ النَّمَّ 🏡<br>يمكنك متابعة حالة طلبك أولاً بأول",
+                headerSub: "شكرًا لطلبك من هَمَّ النَّمَّ <br>يمكنك متابعة حالة طلبك أولاً بأول",
                 searchPlaceholder: "أدخل رقم الطلب أو رقم الموبايل...",
                 searchBtn: "بحث",
                 searchHint: "يمكنك البحث برقم الطلب (مثال: #1234) أو رقم الموبايل المسجل للطلب",
@@ -478,10 +510,7 @@
                 lblDeliveryTime: "موعد التسليم المطلوب",
                 lblPayMethod: "طريقة الدفع",
                 sectionItems: "الأصناف",
-                lblSubtotal: "المجموع الفرعي",
-                lblDeliveryFee: "سعر التوصيل",
-                deliveryFree: "مجانًا",
-                lblTotalAmount: "الإجمالي الكلي",
+                lblTotalAmount: "الإجمالي النهائي",
                 btnEditOrder: "تعديل الطلب",
                 btnCancelOrder: "إلغاء الطلب",
                 btnRateOrder: "قيّم طلبك",
@@ -490,7 +519,7 @@
                 lblEditItems: "أصناف الطلب",
                 btnAddItemText: "إضافة",
                 selectItemDefault: "-- اختر صنفاً لإضافته --",
-                lblEditableSubtotal: "الإجمالي الكلي:",
+                lblEditableSubtotal: "الإجمالي النهائي:",
                 lblEditItemsSubtotal: "قيمة الأصناف:",
                 lblEditableDeliveryFee: "سعر التوصيل",
                 lblEditPhone: "رقم الموبايل",
@@ -535,11 +564,11 @@
                 alertCancelReceivedOnly: "يمكن إلغاء الطلب فقط عندما تكون الحالة 'تم الاستلام'"
             },
             en: {
-                pageTitle: "Track Order | Hum L Num",
+                pageTitle: "Track Order | The Hum Num",
                 navHome: "Home",
                 langBtn: "عربي",
                 headerTitle: "Track Your Order",
-                headerSub: "Thank you for ordering from Hum L Num 🏡<br>You can track your order status in real-time",
+                headerSub: "Thank you for ordering from The Hum Num <br>You can track your order status in real-time",
                 searchPlaceholder: "Enter order number or phone number...",
                 searchBtn: "Search",
                 searchHint: "You can search by order number (e.g. #1234) or registered phone number",
@@ -558,9 +587,6 @@
                 lblDeliveryTime: "Requested Delivery Time",
                 lblPayMethod: "Payment Method",
                 sectionItems: "Items",
-                lblSubtotal: "Subtotal",
-                lblDeliveryFee: "Delivery Fee",
-                deliveryFree: "Free",
                 lblTotalAmount: "Grand Total",
                 btnEditOrder: "Edit Order",
                 btnCancelOrder: "Cancel Order",
@@ -632,7 +658,7 @@
             document.getElementById('langBtn').textContent = t.langBtn;
             document.getElementById('headerTitle').textContent = t.headerTitle;
             document.getElementById('headerSub').innerHTML = t.headerSub;
-            document.getElementById('orderNumberInput').placeholder = t.searchPlaceholder;
+            document.getElementById('searchInput').placeholder = t.searchPlaceholder;
             document.querySelector('#searchBtnText span').textContent = t.searchBtn;
             document.getElementById('searchHintText').innerHTML = `<i class="fas fa-info-circle"></i> ${t.searchHint}`;
             document.getElementById('loadingText').textContent = t.loadingText;
@@ -652,8 +678,6 @@
             document.getElementById('lblDeliveryTime').textContent = t.lblDeliveryTime;
             document.getElementById('lblPayMethod').textContent = t.lblPayMethod;
             document.getElementById('sectionItems').textContent = t.sectionItems;
-            document.getElementById('lblSubtotal').textContent = t.lblSubtotal;
-            document.getElementById('lblDeliveryFee').textContent = t.lblDeliveryFee;
             document.getElementById('lblTotalAmount').textContent = t.lblTotalAmount;
 
             document.getElementById('btnEditOrderText').textContent = t.btnEditOrder;
@@ -683,6 +707,10 @@
             document.getElementById('txtUploadPhoto').textContent = t.txtUploadPhoto;
             document.getElementById('btnRateBack').textContent = t.btnRateBack;
             document.getElementById('btnRateSubmit').textContent = t.btnRateSubmit;
+
+            if (fetchedOrders.length > 1 && document.getElementById('ordersContainer').classList.contains('active')) {
+                renderOrdersSummaryList(fetchedOrders);
+            }
 
             if (currentOrder) {
                 displayOrder(currentOrder);
@@ -720,7 +748,6 @@
             let grandTotal = Number(order.total ?? (order.totals ? order.totals.grandTotal : 0)) || 0;
             let subtotal = Number(order.subtotal ?? (order.totals ? order.totals.subtotal : 0)) || 0;
 
-            // اشتقاق القيم الناقصة من بعضها (مثال: المجموع الفرعي = الإجمالي - سعر التوصيل)
             if (!subtotal && grandTotal) subtotal = grandTotal - deliveryFee;
             if (!grandTotal) grandTotal = subtotal + deliveryFee;
             if (subtotal < 0) subtotal = 0;
@@ -736,84 +763,183 @@
             return p;
         }
 
-        window.searchOrder = async function(e) {
+        function hideResults() {
+            document.getElementById('orderCard').classList.remove('active');
+            document.getElementById('noOrderState').classList.remove('active');
+            document.getElementById('ordersContainer').classList.remove('active');
+        }
+
+        function showLoading() {
+            document.getElementById('loadingState').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingState').style.display = 'none';
+        }
+
+        function showNotFound() {
+            document.getElementById('noOrderState').classList.add('active');
+        }
+
+        window.searchOrders = async function(e) {
             if (e && e.preventDefault) e.preventDefault();
             const t = i18n[currentLang];
-            const input = document.getElementById('orderNumberInput').value.trim();
+            const query = document.getElementById('searchInput').value.trim();
             
-            if (!input) {
+            if (!query) {
                 alert(t.alertEnterInput);
                 return;
             }
-            
-            document.getElementById('loadingState').style.display = 'block';
-            document.getElementById('orderCard').classList.remove('active');
-            document.getElementById('noOrderState').classList.remove('active');
+
+            showLoading();
+            hideResults();
             
             try {
                 const snapshot = await get(ref(db, 'orders'));
                 const orders = snapshot.val();
                 
+                hideLoading();
+
                 if (!orders) {
-                    showNoOrder();
+                    showNotFound();
                     return;
                 }
                 
-                const searchValue = input.replace('#', '').trim();
+                const searchValue = query.replace('#', '').trim();
                 const isNumber = /^\d+$/.test(searchValue);
                 
-                let orderEntry = null;
+                let results = [];
                 
                 if (isNumber && searchValue.length >= 4) {
-                    orderEntry = Object.entries(orders).find(([id, order]) => 
-                        order.orderNumber && order.orderNumber.toString() === searchValue
-                    );
-                    
-                    if (!orderEntry) {
-                        const normalizedSearch = normalizePhone(searchValue);
-                        orderEntry = Object.entries(orders).find(([id, order]) => {
-                            const cust = getCustomerDetails(order);
-                            const orderPhone = normalizePhone(cust.phone);
-                            return orderPhone === normalizedSearch || orderPhone.endsWith(normalizedSearch.slice(-9));
-                        });
+                    const exactMatch = Object.entries(orders).find(([id, o]) => o.orderNumber && o.orderNumber.toString() === searchValue);
+                    if (exactMatch) {
+                        results.push({ id: exactMatch[0], ...exactMatch[1] });
                     }
-                } else {
-                    const normalizedSearch = normalizePhone(input);
-                    orderEntry = Object.entries(orders).find(([id, order]) => {
+                }
+                
+                if (results.length === 0) {
+                    const normalizedSearch = normalizePhone(searchValue);
+                    Object.entries(orders).forEach(([id, order]) => {
                         const cust = getCustomerDetails(order);
                         const orderPhone = normalizePhone(cust.phone);
-                        return orderPhone === normalizedSearch || orderPhone.endsWith(normalizedSearch.slice(-9));
+                        if (orderPhone === normalizedSearch || orderPhone.endsWith(normalizedSearch.slice(-9))) {
+                            results.push({ id, ...order });
+                        }
                     });
                 }
                 
-                if (!orderEntry) {
-                    showNoOrder();
-                    return;
+                results.sort((a, b) => getOrderDate(b).getTime() - getOrderDate(a).getTime());
+                fetchedOrders = results;
+
+                if (results.length === 0) {
+                    showNotFound();
+                } else if (results.length === 1) {
+                    renderSingleOrder(results[0]);
+                } else {
+                    renderOrdersSummaryList(results);
                 }
-                
-                const [orderId, order] = orderEntry;
-                currentOrder = order;
-                currentOrderId = orderId;
-                
-                displayOrder(order);
-                document.getElementById('loadingState').style.display = 'none';
-                document.getElementById('orderCard').classList.add('active');
             } catch (error) {
-                console.error('Error loading order:', error);
-                showNoOrder();
+                console.error('Error:', error);
+                hideLoading();
+                showNotFound();
             }
         };
 
-        function showNoOrder() {
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('noOrderState').classList.add('active');
-        }
+        window.renderOrdersSummaryList = function(orders) {
+            const container = document.getElementById('ordersListContent');
+            const title = document.getElementById('ordersListTitle');
+            const subtitle = document.getElementById('ordersListSubtitle');
+
+            const isEn = currentLang === 'en';
+            title.textContent = isEn ? `Your Orders (${orders.length})` : `طلباتك (${orders.length})`;
+            subtitle.textContent = isEn ? 'Click on an order to view full details' : 'اضغط على الطلب لعرض تفاصيله الكاملة';
+
+            let html = '<div class="orders-summary-list">';
+            orders.forEach(order => {
+                const statusClass = order.status || 'received';
+                const statusText = getStatusText(order.status);
+                
+                const locale = isEn ? 'en-US' : 'ar-EG';
+                const orderDate = getOrderDate(order);
+                const dateStr = orderDate.getTime() > 0 ? orderDate.toLocaleString(locale, {
+                    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                }) : '';
+
+                html += `
+                    <div class="summary-card" onclick="showOrderDetails('${order.id}')">
+                        <div class="summary-info">
+                            <span class="order-number" style="color:var(--primary); font-weight:bold; font-size:1.1rem;">
+                                ${isEn ? 'Order' : 'طلب'} #${order.orderNumber || order.id.substring(0, 6)}
+                            </span>
+                            <span class="order-date">${dateStr}</span>
+                        </div>
+                        <div class="summary-action">
+                            <span class="order-status ${statusClass}">${statusText}</span>
+                            <span class="arrow"><i class="fas fa-arrow-${isEn ? 'right' : 'left'}"></i></span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+            document.getElementById('ordersContainer').classList.add('active');
+        };
+
+        window.renderSingleOrder = function(order) {
+            currentOrder = order;
+            window.currentOrderId = order.id;
+
+            const backBtnContainer = document.getElementById('backBtnContainer');
+            if (fetchedOrders.length > 1) {
+                const btnText = currentLang === 'en' ? 'Back to Orders List' : 'رجوع لقائمة الطلبات';
+                const iconDir = currentLang === 'en' ? 'left' : 'right';
+                backBtnContainer.innerHTML = `<button class="btn btn-back" onclick="showSummaryList()"><i class="fas fa-arrow-${iconDir}"></i> ${btnText}</button>`;
+            } else {
+                backBtnContainer.innerHTML = '';
+            }
+
+            displayOrder(order);
+            document.getElementById('orderCard').classList.add('active');
+
+            if (window.currentOrderId) {
+                const orderRef = ref(db, 'orders/' + window.currentOrderId);
+                
+                onValue(orderRef, (snapshot) => {
+                    const updatedOrder = snapshot.val();
+                    
+                    if (updatedOrder) {
+                        const subtotal = updatedOrder.totals?.subtotal || updatedOrder.subtotal || 0;
+                        const discount = updatedOrder.totals?.discount || updatedOrder.discount || 0;
+                        const deliveryFee = updatedOrder.totals?.deliveryFee || updatedOrder.deliveryFee || 0;
+                        const grandTotal = updatedOrder.totals?.grandTotal || updatedOrder.total || 0;
+                        
+                        document.getElementById('track-subtotal').textContent = Number(subtotal).toFixed(2) + ' ج.م';
+                        document.getElementById('track-discount').textContent = '- ' + Number(discount).toFixed(2) + ' ج.م';
+                        document.getElementById('track-delivery').textContent = Number(deliveryFee).toFixed(2) + ' ج.م';
+                    }
+                });
+            }
+        };
+
+        window.showOrderDetails = function(orderId) {
+            const order = fetchedOrders.find(o => o.id === orderId);
+            if (order) {
+                document.getElementById('ordersContainer').classList.remove('active');
+                renderSingleOrder(order);
+            }
+        };
+
+        window.showSummaryList = function() {
+            document.getElementById('orderCard').classList.remove('active');
+            document.getElementById('ordersContainer').classList.add('active');
+        };
 
         function displayOrder(order) {
             const t = i18n[currentLang];
             const locale = currentLang === 'en' ? 'en-US' : 'ar-EG';
 
-            document.getElementById('displayOrderNumber').textContent = `#${order.orderNumber || 'N/A'}`;
+            document.getElementById('displayOrderNumber').textContent = `#${order.orderNumber || order.id.substring(0, 6)}`;
             
             const statusEl = document.getElementById('displayStatus');
             statusEl.textContent = getStatusText(order.status);
@@ -866,7 +992,7 @@
                         <div class="item-row">
                             <div>
                                 <div class="item-name">${itemName}${sizeInfo}</div>
-                                ${item.notes ? `<div class="item-qty">${t.notes}: ${item.notes}</div>` : ''}
+                                ${item.notes ? `<div class="item-qty">${t.notes}:${item.notes}</div>` : ''}
                             </div>
                             <div style="text-align: ${currentLang === 'en' ? 'right' : 'left'};">
                                 <div class="item-price">${price.toFixed(2)} ${t.currency}</div>
@@ -877,17 +1003,6 @@
                 }).join('');
             } else {
                 itemsList.innerHTML = `<p style="text-align: center; color: var(--gray-500);">${t.noItems}</p>`;
-            }
-            
-            document.getElementById('orderSubtotal').textContent = `${totals.subtotal.toFixed(2)} ${t.currency}`;
-
-            const deliveryFeeEl = document.getElementById('orderDeliveryFee');
-            if (totals.deliveryFee > 0) {
-                deliveryFeeEl.textContent = `${totals.deliveryFee.toFixed(2)} ${t.currency}`;
-                deliveryFeeEl.classList.remove('free');
-            } else {
-                deliveryFeeEl.textContent = t.deliveryFree;
-                deliveryFeeEl.classList.add('free');
             }
 
             document.getElementById('orderTotal').textContent = `${totals.grandTotal.toFixed(2)} ${t.currency}`;
@@ -1132,7 +1247,7 @@
 
             return { subtotal, grandTotal, deliveryFee };
         }
-		
+        
         window.hideEditSection = function() {
             document.getElementById('editSection').classList.remove('active');
             document.getElementById('orderCard').classList.add('active');
@@ -1141,7 +1256,7 @@
         window.saveOrderEdit = async function(e) {
             e.preventDefault();
             const t = i18n[currentLang];
-            if (!currentOrderId) return;
+            if (!window.currentOrderId) return;
 
             if (editableItems.length === 0) {
                 alert(t.alertEmptyOrder);
@@ -1168,8 +1283,7 @@
             };
 
             try {
-                await update(ref(db, `orders/${currentOrderId}`), updates);
-                
+                await update(ref(db, `orders/${window.currentOrderId}`), updates);
                 localStorage.setItem('orders_updated', Date.now());
 
                 alert(t.alertSaved);
@@ -1182,7 +1296,6 @@
             }
         };
 
-        // ✅ دالة تأكيد إلغاء الطلب
         window.confirmCancelOrder = function() {
             const t = i18n[currentLang];
             if (currentOrder && currentOrder.status && currentOrder.status !== 'received') {
@@ -1195,20 +1308,18 @@
             }
         };
 
-        // ✅ دالة إلغاء الطلب
         window.cancelOrder = async function() {
             const t = i18n[currentLang];
-            if (!currentOrderId) return;
+            if (!window.currentOrderId) return;
 
             try {
-                await update(ref(db, `orders/${currentOrderId}`), {
+                await update(ref(db, `orders/${window.currentOrderId}`), {
                     status: 'cancelled',
                     cancelledAt: new Date().toISOString(),
                     cancelledBy: 'customer'
                 });
 
                 localStorage.setItem('orders_updated', Date.now());
-
                 alert(t.cancelledSuccess);
                 
                 currentOrder.status = 'cancelled';
@@ -1217,7 +1328,6 @@
                 document.getElementById('btnEditOrder').style.display = 'none';
                 document.getElementById('btnCancelOrder').style.display = 'none';
                 document.getElementById('ratingBtn').style.display = 'none';
-                
             } catch (error) {
                 console.error('Error cancelling order:', error);
                 alert(t.cancelledError);
@@ -1240,7 +1350,7 @@
         };
 
         window.setRating = function(rating) {
-            currentRating = rating;
+            window.currentRating = rating;
             document.querySelectorAll('.star').forEach((star, index) => {
                 if (index < rating) {
                     star.classList.add('active');
@@ -1254,20 +1364,20 @@
             e.preventDefault();
             const t = i18n[currentLang];
             
-            if (!currentOrderId) return;
-            if (currentRating === 0) {
+            if (!window.currentOrderId) return;
+            if (window.currentRating === 0) {
                 alert(t.alertSelectStars);
                 return;
             }
             
             const rating = {
-                rating: currentRating,
+                rating: window.currentRating,
                 comment: document.getElementById('ratingComment').value,
                 submittedAt: new Date().toISOString()
             };
             
             try {
-                await update(ref(db, `orders/${currentOrderId}/rating`), rating);
+                await update(ref(db, `orders/${window.currentOrderId}/rating`), rating);
                 alert(t.alertThankYou);
                 hideRatingSection();
             } catch (error) {

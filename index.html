@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هَم النَّم | Hum L Num - طعم البيت لحد باب بيتك</title>
+    <title>هَم النَّم | The Hum Num - طعم البيت لحد باب بيتك</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -216,20 +216,90 @@
         .form-input { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: 12px; font-family: 'Cairo', sans-serif; font-size: 0.95rem; transition: all 0.3s; background: var(--gray-50); }
         .form-input:focus { outline: none; border-color: var(--primary); background: var(--white); }
         .form-textarea { resize: vertical; min-height: 80px; }
-        .datetime-wrapper { position: relative; background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%); border: 2px solid var(--gray-200); border-radius: 16px; padding: 4px; transition: all 0.3s ease; }
-        .datetime-wrapper:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(31, 77, 52, 0.1), 0 8px 20px rgba(31, 77, 52, 0.1); transform: translateY(-2px); }
-        .datetime-wrapper input[type="datetime-local"] { width: 100%; padding: 14px 50px 14px 16px; border: none; border-radius: 12px; font-family: 'Cairo', sans-serif; font-size: 1rem; font-weight: 600; background: transparent; color: var(--primary-dark); cursor: pointer; transition: all 0.3s; }
-        .datetime-wrapper input[type="datetime-local"]:focus { outline: none; }
-        .datetime-wrapper input[type="datetime-local"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0; position: absolute; right: 0; top: 0; width: 100%; height: 100%; }
-        .datetime-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 1rem; pointer-events: none; box-shadow: 0 4px 10px rgba(31, 77, 52, 0.2); }
-        body.lang-en .datetime-icon { right: auto; left: 16px; }
-        .datetime-hint { display: flex; align-items: center; gap: 6px; margin-top: 8px; padding: 8px 12px; background: rgba(201, 162, 39, 0.08); border-radius: 8px; font-size: 0.8rem; color: var(--accent-dark); font-weight: 600; }
-        .datetime-hint i { color: var(--accent); }
+        
+        /* تنسيقات ميعاد التوصيل والدفع */
+        .delivery-container, .payment-card {
+          background: #fdfdfd;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px;
+          margin-bottom: 20px;
+        }
+        .delivery-info-banner {
+          background-color: #f0fdf4;
+          color: #166534;
+          border: 1px solid #bbf7d0;
+          padding: 10px 14px;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 13px;
+          margin-bottom: 16px;
+          text-align: center;
+          line-height: 1.5;
+        }
+        .form-row {
+          display: flex;
+          gap: 12px;
+        }
+        .input-group {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        .input-group label {
+          font-size: 13px;
+          font-weight: bold;
+          color: #374151;
+          margin-bottom: 6px;
+        }
+        .input-group input, .input-group select {
+          padding: 10px;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-size: 14px;
+          outline: none;
+          background-color: #fff;
+        }
+        .instapay-card {
+          border-right: 4px solid #7c3aed;
+          animation: fadeIn 0.3s ease-in-out;
+        }
+        body.lang-en .instapay-card {
+          border-right: none;
+          border-left: 4px solid #7c3aed;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .ipa-address {
+          font-size: 14px;
+          color: #1f2937;
+          margin-bottom: 12px;
+        }
+        .instapay-link-btn {
+          display: inline-block;
+          background-color: #7c3aed;
+          color: #ffffff;
+          padding: 10px 18px;
+          border-radius: 8px;
+          text-decoration: none;
+          font-weight: bold;
+          font-size: 14px;
+          text-align: center;
+          transition: background-color 0.2s;
+        }
+        .instapay-link-btn:hover {
+          background-color: #6d28d9;
+        }
+
         .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
         .payment-option { padding: 1rem; border: 2px solid var(--gray-200); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.3s; background: var(--gray-50); }
         .payment-option:hover { border-color: var(--primary); }
-        .payment-option.selected { border-color: var(--primary); background: rgba(31, 77, 52, 0.05); }
+        .payment-option.selected { border-color: #7c3aed; background: rgba(124, 58, 237, 0.05); }
+        .payment-option.selected[data-value="cash"] { border-color: var(--primary); background: rgba(31, 77, 52, 0.05); }
         .payment-option i { font-size: 1.5rem; color: var(--primary); margin-bottom: 0.5rem; display: block; }
+        .payment-option[data-value="instapay"] i { color: #7c3aed; }
         .payment-option-text { font-weight: 700; font-size: 0.9rem; color: var(--primary-dark); }
         .modal-footer { padding: 1.5rem; border-top: 2px solid var(--gray-200); display: flex; gap: 1rem; }
         .modal-footer .btn { flex: 1; justify-content: center; }
@@ -278,22 +348,33 @@
             .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
             .cart-sidebar { width: 100%; left: -100%; }
             body:not(.lang-en) .cart-sidebar { right: -100%; }
-            .payment-options { grid-template-columns: 1fr; }
+            .payment-options { grid-template-columns: 1fr 1fr; }
             .footer-social a { width: 45px; height: 45px; font-size: 1.2rem; }
-            .menu-grid { grid-template-columns: 1fr; }
+            .menu-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
             .toast-notification { top: 80px; left: 10px; right: 10px; max-width: none; }
-            .menu-item-image { height: 180px; }
-            .menu-item-content { padding: 1.4rem 1.15rem; }
-            .menu-item-title { font-size: 1.1rem; }
-            .menu-item-price { font-size: 1rem; }
-            .add-to-cart { width: 36px; height: 36px; }
-            .bestseller-ribbon { padding: 4px 12px; font-size: 0.65rem; top: 10px; right: 10px; }
-            body.lang-en .bestseller-ribbon { right: auto; left: 10px; }
+            .menu-item { border-radius: 12px; }
+            .menu-item-image { height: 85px; }
+            .menu-item-content { padding: 0.5rem 0.45rem; }
+            .menu-item-title { font-size: 0.72rem; margin-bottom: 0.15rem; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+            .menu-item-description { display: none; }
+            .menu-item-meta { display: none; }
+            .menu-item-footer { flex-wrap: wrap; gap: 0.3rem; }
+            .menu-item-price { font-size: 0.72rem; }
+            .menu-item-price span { font-size: 0.55rem; }
+            .add-to-cart { width: 24px; height: 24px; font-size: 0.68rem; }
+            .item-qty-control { padding: 3px 6px; gap: 4px; border-radius: 8px; }
+            .qty-btn-sm { width: 20px; height: 20px; font-size: 0.78rem; border-radius: 5px; }
+            .item-qty-count { font-size: 0.72rem; min-width: 14px; }
+            .quick-view-btn { width: 22px; height: 22px; font-size: 0.6rem; top: 6px; left: 6px; }
+            body.lang-en .quick-view-btn { left: auto; right: 6px; }
+            .bestseller-ribbon { padding: 2px 7px; font-size: 0.5rem; top: 6px; right: 6px; }
+            body.lang-en .bestseller-ribbon { right: auto; left: 6px; }
             
             .social-sidebar { bottom: 90px; top: auto; left: 10px; transform: none; flex-direction: row; }
             body.lang-en .social-sidebar { left: auto; right: 10px; }
             .social-btn { width: 40px; height: 40px; font-size: 1.1rem; }
             .social-btn:hover { transform: scale(1.15) translateY(-5px); }
+            .form-row { flex-direction: column; gap: 10px; }
         }
         @media (max-width: 480px) {
             .hero-title { font-size: 1.8rem; }
@@ -302,14 +383,18 @@
             .hero-actions .btn { width: 100%; max-width: 280px; justify-content: center; }
             .navbar-menu a { font-size: 0.8rem; padding: 5px 10px; }
             .menu-badge { font-size: 0.9rem; padding: 5px 12px; }
+            .menu-grid { gap: 0.4rem; }
+            .menu-item-image { height: 75px; }
+            .menu-item-content { padding: 0.45rem 0.4rem; }
+            .menu-item-title { font-size: 0.68rem; }
         }
     </style>
 </head>
 <body>
     <!-- Floating Social Sidebar -->
     <div class="social-sidebar">
-        <a href="https://facebook.com" target="_blank" class="social-btn fb" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://instagram.com" target="_blank" class="social-btn ig" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.facebook.com/share/1C29MBjTW7/?mibextid=wwXIfr" target="_blank" class="social-btn fb" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/thehumnum_catering?stkn=MXR4Ym1qdjZjejRuZw==" target="_blank" class="social-btn ig" title="Instagram"><i class="fab fa-instagram"></i></a>
         <a href="https://wa.me/201158899779" target="_blank" class="social-btn wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
     </div>
 
@@ -320,7 +405,7 @@
                 <div class="navbar-title-wrap">
                     <div class="navbar-title">
                         هَم النَّم
-                        <span class="sub-title" data-ar="Hum L Num" data-en="Hum L Num">Hum L Num</span>
+                        <span class="sub-title" data-ar="The Hum Num" data-en="The Hum Num">The Hum Num</span>
                     </div>
                 </div>
             </a>
@@ -356,11 +441,13 @@
                     <a href="#menu" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> <span data-ar="اطلب دلوقتي" data-en="Order Now">اطلب دلوقتي</span></a>
                     <button class="btn btn-outline" onclick="openCustomOrderModal()"><i class="fas fa-magic"></i> <span data-ar="طلب خاص" data-en="Custom Order">طلب خاص</span></button>
                 </div>
+                <!--
                 <div class="hero-stats">
                     <div class="stat-item"><div class="stat-number" id="statOrders">0+</div><div class="stat-label" data-ar="طلب سعيد" data-en="Happy Orders">طلب سعيد</div></div>
                     <div class="stat-item"><div class="stat-number" id="statItems">0+</div><div class="stat-label" data-ar="صنف متنوع" data-en="Diverse Items">صنف متنوع</div></div>
                     <div class="stat-item"><div class="stat-number">4.9</div><div class="stat-label" data-ar="تقييم العملاء" data-en="Customer Rating">تقييم العملاء</div></div>
                 </div>
+                -->
             </div>
             <div class="hero-visual">
                 <div class="hero-image-container">
@@ -418,12 +505,12 @@
                 <div>
                     <div class="footer-brand">
                         <img src="logo.png" alt="هَم النَّم" class="footer-logo">
-                        <div class="footer-brand-text" data-ar="هَم النَّم" data-en="Hum L Num">هَم النَّم</div>
+                        <div class="footer-brand-text" data-ar="هَم النَّم" data-en="The Hum Num">هَم النَّم</div>
                     </div>
                     <p class="footer-desc" data-ar="طعم البيت، لحد باب بيتك 🏡<br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك" data-en="Home taste, delivered to your door 🏡<br>Fresh dishes prepared with love and care from our kitchen to your home">طعم البيت، لحد باب بيتك 🏡<br>أطباق طازة محضّرة بحب وعناية من مطبخنا لبيتك</p>
                     <div class="footer-social">
-                        <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/share/1C29MBjTW7/?mibextid=wwXIfr" target="_blank" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/thehumnum_catering?stkn=MXR4Ym1qdjZjejRuZw==" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a>
                         <a href="https://wa.me/201158899779" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
@@ -445,7 +532,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2026 <span data-ar="هَم النَّم" data-en="Hum L Num">هَم النَّم</span>. <span data-ar="جميع الحقوق محفوظة." data-en="All rights reserved.">جميع الحقوق محفوظة.</span></p>
+                <p>© 2026 <span data-ar="هَم النَّم" data-en="The Hum Num">هَم النَّم</span>. <span data-ar="جميع الحقوق محفوظة." data-en="All rights reserved.">جميع الحقوق محفوظة.</span></p>
             </div>
         </div>
     </footer>
@@ -462,6 +549,7 @@
         <div class="cart-footer">
             <div class="cart-total"><span data-ar="الإجمالي الفرعي" data-en="Subtotal">الإجمالي الفرعي</span><span id="subtotal">0.00 ج.م</span></div>
             <div class="cart-total"><span data-ar="رسوم التوصيل" data-en="Delivery Fee">رسوم التوصيل</span><span id="deliveryFee">0.00 ج.م</span></div>
+            <div class="cart-total" id="discountRow" style="display:none; color: var(--success);"><span data-ar="الخصم" data-en="Discount">الخصم</span><span id="discountAmount">0.00 ج.م</span></div>
             <div class="cart-total grand"><span data-ar="الإجمالي الكلي" data-en="Grand Total">الإجمالي الكلي</span><span id="grandTotal">0.00 ج.م</span></div>
             <div id="minOrderWarning" class="min-order-warning" style="display: none;">
                 <i class="fas fa-exclamation-circle"></i>
@@ -559,21 +647,53 @@
                 <button class="cart-close" onclick="closeCheckout()" style="background: rgba(255,255,255,0.2);"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label" data-ar="تاريخ ووقت الاستلام" data-en="Delivery Date & Time">
-                        <i class="far fa-calendar-alt" style="color: var(--accent); margin-left: 6px;"></i>
-                        <span data-ar="تاريخ ووقت الاستلام" data-en="Delivery Date & Time">تاريخ ووقت الاستلام</span>
-                        <span style="color:var(--danger); font-size:0.75rem;" data-ar="(بعد يومين على الأقل)" data-en="(at least 2 days ahead)">(بعد يومين على الأقل)</span>
-                    </label>
-                    <div class="datetime-wrapper">
-                        <input type="datetime-local" class="form-input" id="deliveryTime">
-                        <div class="datetime-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="checkout-summary" id="checkoutSummary" style="background: var(--gray-100); border-radius: 14px; padding: 14px 16px; margin-bottom: 1.25rem;">
+                    <div style="font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:6px; color:var(--primary-dark);">
+                        <i class="fas fa-receipt"></i> <span data-ar="ملخص الطلب" data-en="Order Summary">ملخص الطلب</span>
                     </div>
-                    <div class="datetime-hint">
-                        <i class="fas fa-info-circle"></i>
-                        <span data-ar="اضغط على الأيقونة أو الحقل لاختيار التاريخ والوقت المناسب لك" data-en="Click the icon or field to select your preferred date and time">اضغط على الأيقونة أو الحقل لاختيار التاريخ والوقت المناسب لك</span>
-                    </div>
+                    <div id="checkoutItemsList" style="margin-bottom:8px;"></div>
+                    <div class="cart-total"><span data-ar="الإجمالي الفرعي" data-en="Subtotal">الإجمالي الفرعي</span><span id="checkoutSubtotal">0.00 ج.م</span></div>
+                    <div class="cart-total"><span data-ar="رسوم التوصيل" data-en="Delivery Fee">رسوم التوصيل</span><span id="checkoutDeliveryFee">0.00 ج.م</span></div>
+                    <div class="cart-total" id="checkoutDiscountRow" style="display:none; color: var(--success);"><span data-ar="الخصم" data-en="Discount">الخصم</span><span id="checkoutDiscountAmount">0.00 ج.م</span></div>
+                    <div class="cart-total grand"><span data-ar="الإجمالي الكلي" data-en="Grand Total">الإجمالي الكلي</span><span id="checkoutGrandTotal">0.00 ج.م</span></div>
                 </div>
+
+                <!-- قسم تحديد ميعاد والتاريخ والتوصيل -->
+                <div class="delivery-container">
+                  <div class="delivery-info-banner">
+    📌 <span data-ar="التوصيل بعد 48 ساعة | متوفر من 1 إلى 9 مساءً" data-en="Delivery after 48 hours | Available from 1 PM to 9 PM">التوصيل بعد 48 ساعة | متوفر يومياً من 1 إلى 9 مساءً</span><br>
+    <small style="font-weight: normal; font-size: 0.85rem;" data-ar="(التجمع الخامس - وباقي المناطق قريباً)" data-en="(Fifth Settlement - other areas coming soon)">(التجمع الخامس - وباقي المناطق قريباً)</small>
+</div>
+
+                  <div class="form-row">
+                    <!-- اختيار التاريخ -->
+                    <div class="input-group">
+                      <label for="delivery-date">
+                          <span data-ar="تاريخ التوصيل" data-en="Delivery Date">تاريخ التوصيل</span> 
+                          <span style="color:var(--danger); font-size:0.75rem;" data-ar="(بعد 48 ساعة)" data-en="(after 48 hours)">(بعد 48 ساعة)</span>
+                      </label>
+                      <input type="date" id="delivery-date" name="deliveryDate" required>
+                    </div>
+
+                    <!-- اختيار الوقت -->
+                    <div class="input-group">
+                      <label for="delivery-time" data-ar="ساعة التوصيل" data-en="Delivery Time">ساعة التوصيل</label>
+                      <select id="delivery-time" name="deliveryTime" required>
+                        <option value="" disabled selected data-ar="اختر الوقت المناسب" data-en="Select convenient time">اختر الوقت المناسب</option>
+                        <option value="1 مساءً" data-ar="1 مساءً" data-en="1 PM">1 مساءً</option>
+                        <option value="2 مساءً" data-ar="2 مساءً" data-en="2 PM">2 مساءً</option>
+                        <option value="3 مساءً" data-ar="3 مساءً" data-en="3 PM">3 مساءً</option>
+                        <option value="4 مساءً" data-ar="4 مساءً" data-en="4 PM">4 مساءً</option>
+                        <option value="5 مساءً" data-ar="5 مساءً" data-en="5 PM">5 مساءً</option>
+                        <option value="6 مساءً" data-ar="6 مساءً" data-en="6 PM">6 مساءً</option>
+                        <option value="7 مساءً" data-ar="7 مساءً" data-en="7 PM">7 مساءً</option>
+                        <option value="8 مساءً" data-ar="8 مساءً" data-en="8 PM">8 مساءً</option>
+                        <option value="9 مساءً" data-ar="9 مساءً" data-en="9 PM">9 مساءً</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label" data-ar="ملاحظة على الطلب" data-en="Order Note">ملاحظة على الطلب</label>
                     <textarea class="form-input form-textarea" id="orderNote" data-ar-placeholder="أي ملاحظات عامة على الطلب..." data-en-placeholder="Any general notes..." placeholder="أي ملاحظات عامة على الطلب..."></textarea>
@@ -594,18 +714,43 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="form-label" data-ar="كود الخصم (اختياري)" data-en="Promo Code (optional)">كود الخصم (اختياري)</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" class="form-input" id="promoCodeInput" placeholder="DISCOUNT20" style="flex:1; text-transform:uppercase;">
+                        <button type="button" class="btn btn-outline" id="applyPromoBtn" onclick="applyPromoCode()" style="white-space:nowrap; padding:0 16px;" data-ar="تطبيق" data-en="Apply">تطبيق</button>
+                    </div>
+                    <div id="promoMessage" style="font-size:0.82rem; font-weight:700; min-height:1.3em; margin-top:6px;"></div>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label" data-ar="طريقة الدفع" data-en="Payment Method">طريقة الدفع</label>
                     <div class="payment-options">
                         <div class="payment-option selected" data-value="cash" onclick="selectPayment(this)">
                             <i class="fas fa-money-bill-wave"></i>
                             <div class="payment-option-text" data-ar="كاش" data-en="Cash">كاش</div>
                         </div>
-                        <div class="payment-option" data-value="card" onclick="selectPayment(this)">
-                            <i class="fas fa-credit-card"></i>
-                            <div class="payment-option-text" data-ar="فيزا" data-en="Card">فيزا</div>
+                        <div class="payment-option" data-value="instapay" onclick="selectPayment(this)">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div class="payment-option-text" data-ar="InstaPay" data-en="InstaPay">InstaPay</div>
                         </div>
                     </div>
                 </div>
+
+                <!-- قسم الدفع عبر InstaPay -->
+                <div id="instapayDetails" class="payment-card instapay-card" style="display: none; margin-top: 12px;">
+                  <div class="instapay-header">
+                    <span class="pay-title" style="font-weight: 800; color: #7c3aed; font-size: 0.95rem;" data-ar="الدفع عن طريق InstaPay" data-en="Payment via InstaPay">الدفع عن طريق InstaPay</span>
+                  </div>
+                  
+                  <div class="instapay-details" style="margin-top: 8px;">
+                    <p class="ipa-address"><span data-ar="عنوان الحساب (IPA):" data-en="Account Address (IPA):">عنوان الحساب (IPA):</span> <strong>memasaib@instapay</strong></p>
+                    
+                    <a href="https://ipn.eg/S/memasaib/instapay/2jSY1y" target="_blank" rel="noopener noreferrer" class="instapay-link-btn" style="display: block; width: 100%; text-align: center;" data-ar="اضغط هنا للدفع عبر تطبيق InstaPay" data-en="Click here to pay via InstaPay app">
+                      اضغط هنا للدفع عبر تطبيق InstaPay
+                    </a>
+                  </div>
+                </div>
+
                 <div id="checkoutError" style="color:var(--danger);font-size:0.9rem;min-height:1.5em; font-weight:700; text-align:center;"></div>
             </div>
             <div class="modal-footer">
@@ -648,7 +793,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, onValue, push, runTransaction, serverTimestamp, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, onValue, get, push, runTransaction, serverTimestamp, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA8h_w_JvoPV1PA5QFHJg_nAInFLCSEw9Y",
@@ -665,9 +810,9 @@
 
         const CONFIG = {
             businessNameAr: "هَم النَّم",
-            businessNameEn: "Hum L Num",
+            businessNameEn: "The Hum Num",
             whatsappNumber: "201158899779",
-            deliveryFee: 30,
+            deliveryFee: 60,
             minOrderLimit: 150,
             currencyAr: "ج.م",
             currencyEn: "EGP"
@@ -683,6 +828,7 @@
         let searchQuery = '';
         let currentQvItem = null;
         let selectedPaymentMethod = 'cash';
+        let appliedPromo = null;
 
         function saveCartToStorage() { try { localStorage.setItem('humLNumCart', JSON.stringify(cart)); } catch (e) {} }
         function loadCartFromStorage() { try { const saved = localStorage.getItem('humLNumCart'); if (saved) cart = JSON.parse(saved); } catch (e) { cart = []; } }
@@ -695,7 +841,8 @@
             const orders = snapshot.val() || {};
             const salesCount = {};
             let totalOrdersCount = Object.keys(orders).length;
-            document.getElementById('statOrders').textContent = totalOrdersCount + '+';
+            const statOrdersEl = document.getElementById('statOrders');
+            if (statOrdersEl) statOrdersEl.textContent = totalOrdersCount + '+';
 
             Object.values(orders).forEach(order => {
                 if (!order.items) return;
@@ -711,7 +858,8 @@
             const data = snapshot.val() || {};
             MENU = Object.entries(data).map(([id, item]) => ({ id, ...item })).filter(item => item.available !== false);
             cart = cart.filter(ci => MENU.some(m => m.id === ci.id));
-            document.getElementById('statItems').textContent = MENU.length + '+';
+            const statItemsEl = document.getElementById('statItems');
+            if (statItemsEl) statItemsEl.textContent = MENU.length + '+';
             renderMenu();
             updateCart();
         });
@@ -811,11 +959,7 @@
                 const isAvailable = item.available !== false;
                 const description = currentLang === 'ar' ? (item.descriptionAr || item.arDesc || item.description || '') : (item.descriptionEn || item.enDesc || item.description || '');
                 const weight = defaultSize.weight || (currentLang === 'ar' ? '400 جم' : '400g');
-                const servings = defaultSize.servings || '4';
-                
-                const servingsText = currentLang === 'ar' 
-                    ? `تكفي ${servings} ${servings === '1' ? 'شخص' : servings === '2' ? 'شخصين' : 'أشخاص'}`
-                    : `Serves ${servings} ${servings === '1' ? 'person' : 'people'}`;
+                const servingsText = formatServingsRange(defaultSize.servings);
                     
                 const cartItem = cart.find(c => c.id === item.id && c.sizeWeight === defaultSize.weight);
                 const currentQty = cartItem ? cartItem.qty : 0;
@@ -849,7 +993,7 @@
                         <div class="menu-item-footer">
                             <div class="menu-item-price">${price} <span>${currency}</span></div>
                             <div class="item-qty-control" id="qty-control-${item.id}">
-                                ${!isAvailable ? `<button class="add-to-cart disabled" disabled><i class="fas fa-ban"></i></button>` : hasMultipleSizes(item) ? `<a href="product.html?id=${item.id}" class="add-to-cart" title="${currentLang === 'ar' ? 'اختر الحجم' : 'Choose size'}"><i class="fas fa-arrow-left"></i></a>` : getQtyControlHtml(item.id, defaultSize.weight, currentQty)}
+                                ${!isAvailable ? `<button class="add-to-cart disabled" disabled><i class="fas fa-ban"></i></button>` : hasMultipleSizes(item) ? `<a href="product.html?id=${item.id}" class="add-to-cart" title="${currentLang === 'ar' ? 'اختر الحجم' : 'Choose size'}"><i class="fas fa-plus"></i></a>` : getQtyControlHtml(item.id, defaultSize.weight, currentQty)}
                             </div>
                         </div>
                     </div>
@@ -857,21 +1001,45 @@
             }).join('');
         }
 
-        /* Cards for items with more than one size link to the product page to
-           pick a size, instead of adding straight to the cart. */
         function hasMultipleSizes(item) {
             return Array.isArray(item.sizes) && item.sizes.length > 1;
         }
 
-        /* An item can either have a flat price/weight/servings, or a `sizes` array
-           (used by the product details page). The grid always adds the first size
-           by default, so this keeps price/qty in sync with product.html for the
-           same item + size combination. */
         function getDefaultSize(item) {
             if (Array.isArray(item.sizes) && item.sizes.length) {
                 return item.sizes[0];
             }
             return { weight: item.weight || '', price: item.price || 0, servings: item.servings || 1 };
+        }
+
+        // Parses servings values coming from the admin panel, which can be either
+        // a plain number ("4") or a range string like "يكفي عدد أفراد 1 ل 2" /
+        // "يكفي عدد أفراد من 2 ل 4", and returns a display string in the current language.
+        function formatServingsRange(servingsValue) {
+            if (servingsValue === null || servingsValue === undefined || String(servingsValue).trim() === '') {
+                return currentLang === 'ar' ? 'تكفي 4 أشخاص' : 'Serves 4 people';
+            }
+            const value = String(servingsValue).trim();
+            const numbers = (value.match(/\d+/g) || []).map(n => parseInt(n, 10));
+
+            let min = numbers[0];
+            let max = numbers.length > 1 ? numbers[1] : null;
+
+            if (min === undefined || Number.isNaN(min)) {
+                // No numbers found; fall back to showing the raw value as-is.
+                return currentLang === 'ar' ? value : value;
+            }
+
+            if (currentLang === 'ar') {
+                if (max && max !== min) return `تكفي من ${min} ل ${max} أفراد`;
+                if (min === 1) return 'تكفي شخص واحد';
+                if (min === 2) return 'تكفي شخصين';
+                return `تكفي ${min} أشخاص`;
+            } else {
+                if (max && max !== min) return `Serves ${min} to ${max} people`;
+                if (min === 1) return 'Serves 1 person';
+                return `Serves ${min} people`;
+            }
         }
 
         function getQtyControlHtml(itemId, sizeWeight, qty) {
@@ -957,11 +1125,15 @@
             document.getElementById('customError').textContent = '';
         };
 
-        function isValidEgyptianPhone(value) {
+        function normalizePhone(value) {
             let phone = String(value || '').replace(/[^\d+]/g, '');
             if (phone.startsWith('+20')) phone = '0' + phone.slice(3);
             else if (phone.startsWith('20')) phone = '0' + phone.slice(2);
-            return /^01[0125]\d{8}$/.test(phone);
+            return phone;
+        }
+
+        function isValidEgyptianPhone(value) {
+            return /^01[0125]\d{8}$/.test(normalizePhone(value));
         }
 
         window.sendCustomOrderToWhatsApp = function () {
@@ -989,21 +1161,64 @@
         function computeTotals() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             const deliveryFee = subtotal > 0 ? CONFIG.deliveryFee : 0;
-            return { subtotal, deliveryFee, grandTotal: subtotal > 0 ? subtotal + deliveryFee : 0 };
+            let discount = 0;
+            if (appliedPromo && subtotal > 0) {
+                discount = appliedPromo.type === 'percentage' ? (subtotal * appliedPromo.value / 100) : appliedPromo.value;
+                discount = Math.max(0, Math.min(discount, subtotal));
+            }
+            const grandTotal = subtotal > 0 ? Math.max(subtotal + deliveryFee - discount, 0) : 0;
+            return { subtotal, deliveryFee, discount, grandTotal };
+        }
+
+        function renderCheckoutSummary() {
+            const itemsList = document.getElementById('checkoutItemsList');
+            if (!itemsList) return;
+            const currency = getCurrency();
+            if (cart.length === 0) {
+                itemsList.innerHTML = `<div style="text-align:center; color:var(--gray-500); font-size:0.85rem; padding:6px 0;">${currentLang === 'ar' ? 'السلة فارغة' : 'Cart is empty'}</div>`;
+            } else {
+                itemsList.innerHTML = cart.map(item => {
+                    const name = currentLang === 'ar' ? item.ar : (item.en || item.ar);
+                    return `<div style="display:flex; justify-content:space-between; gap:10px; font-size:0.88rem; padding:5px 0; border-bottom:1px dashed var(--gray-300);">
+                        <span>${name} <span style="color:var(--gray-500);">×${item.qty}</span></span>
+                        <span style="font-weight:700; white-space:nowrap;">${(item.price * item.qty).toFixed(2)} ${currency}</span>
+                    </div>`;
+                }).join('');
+            }
+            const { subtotal, deliveryFee, discount, grandTotal } = computeTotals();
+            document.getElementById('checkoutSubtotal').textContent = `${subtotal.toFixed(2)} ${currency}`;
+            document.getElementById('checkoutDeliveryFee').textContent = `${deliveryFee.toFixed(2)} ${currency}`;
+            const discountRow = document.getElementById('checkoutDiscountRow');
+            if (discount > 0) {
+                discountRow.style.display = 'flex';
+                document.getElementById('checkoutDiscountAmount').textContent = `-${discount.toFixed(2)} ${currency}`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+            document.getElementById('checkoutGrandTotal').textContent = `${grandTotal.toFixed(2)} ${currency}`;
         }
 
         function updateTotals() {
-            const { subtotal, deliveryFee, grandTotal } = computeTotals();
+            const { subtotal, deliveryFee, discount, grandTotal } = computeTotals();
             const currency = getCurrency();
             document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} ${currency}`;
             document.getElementById('deliveryFee').textContent = `${deliveryFee.toFixed(2)} ${currency}`;
+            const discountRow = document.getElementById('discountRow');
+            if (discountRow) {
+                if (discount > 0) {
+                    discountRow.style.display = 'flex';
+                    document.getElementById('discountAmount').textContent = `-${discount.toFixed(2)} ${currency}`;
+                } else {
+                    discountRow.style.display = 'none';
+                }
+            }
             document.getElementById('grandTotal').textContent = `${grandTotal.toFixed(2)} ${currency}`;
+            renderCheckoutSummary();
 
             const checkoutBtn = document.getElementById('checkoutBtn');
             const minWarning = document.getElementById('minOrderWarning');
             const remainingSpan = document.getElementById('remainingAmount');
 
-            // التحقق من الحد الأدنى (150 ج.م) بدون رسوم التوصيل (على الإجمالي الفرعي)
             if (subtotal < CONFIG.minOrderLimit && cart.length > 0) {
                 const diff = CONFIG.minOrderLimit - subtotal;
                 minWarning.style.display = 'block';
@@ -1097,10 +1312,87 @@
             menu.classList.toggle('open');
         };
 
+        /* وظيفة اختيار طريقة الدفع وإظهار بيانات InstaPay عند اختياره */
         window.selectPayment = function(el) {
             document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
             el.classList.add('selected');
             selectedPaymentMethod = el.getAttribute('data-value');
+
+            const instapayBox = document.getElementById('instapayDetails');
+            if (instapayBox) {
+                if (selectedPaymentMethod === 'instapay') {
+                    instapayBox.style.display = 'block';
+                } else {
+                    instapayBox.style.display = 'none';
+                }
+            }
+        };
+
+        window.applyPromoCode = async function() {
+            const input = document.getElementById('promoCodeInput');
+            const msgBox = document.getElementById('promoMessage');
+            const code = cleanText(input.value, 30).toUpperCase();
+            input.value = code;
+
+            if (!code) {
+                if (appliedPromo) {
+                    appliedPromo = null;
+                    updateTotals();
+                    msgBox.style.color = 'var(--gray-500)';
+                    msgBox.textContent = currentLang === 'ar' ? 'تم إزالة كود الخصم' : 'Promo code removed';
+                } else {
+                    msgBox.style.color = 'var(--danger)';
+                    msgBox.textContent = currentLang === 'ar' ? 'من فضلك اكتب كود الخصم' : 'Please enter a promo code';
+                }
+                return;
+            }
+
+            const phoneValue = document.getElementById('customerPhone').value;
+            if (!isValidEgyptianPhone(phoneValue)) {
+                msgBox.style.color = 'var(--danger)';
+                msgBox.textContent = currentLang === 'ar' ? 'من فضلك اكتب رقم موبايل صحيح أولاً' : 'Please enter a valid phone number first';
+                return;
+            }
+            const normalizedPhone = normalizePhone(phoneValue);
+
+            const applyBtn = document.getElementById('applyPromoBtn');
+            applyBtn.disabled = true;
+            msgBox.style.color = 'var(--gray-500)';
+            msgBox.textContent = currentLang === 'ar' ? 'جاري التحقق...' : 'Checking...';
+
+            try {
+                const snap = await get(ref(db, 'promo_codes/' + code));
+                if (!snap.exists()) {
+                    appliedPromo = null; updateTotals();
+                    msgBox.style.color = 'var(--danger)';
+                    msgBox.textContent = currentLang === 'ar' ? 'كود الخصم غير موجود' : 'Promo code not found';
+                    return;
+                }
+                const data = snap.val();
+                if (!data.is_active) {
+                    appliedPromo = null; updateTotals();
+                    msgBox.style.color = 'var(--danger)';
+                    msgBox.textContent = currentLang === 'ar' ? 'كود الخصم غير مفعّل' : 'Promo code is inactive';
+                    return;
+                }
+                if (data.used_by && data.used_by[normalizedPhone]) {
+                    appliedPromo = null; updateTotals();
+                    msgBox.style.color = 'var(--danger)';
+                    msgBox.textContent = currentLang === 'ar' ? 'تم استخدام هذا الكود من قبل بهذا الرقم' : 'This code was already used with this phone number';
+                    return;
+                }
+                appliedPromo = { code, type: data.discount_type, value: data.discount_value };
+                updateTotals();
+                msgBox.style.color = 'var(--success)';
+                msgBox.textContent = currentLang === 'ar' ? 'تم تطبيق كود الخصم بنجاح!' : 'Promo code applied successfully!';
+            } catch (e) {
+                console.error(e);
+                appliedPromo = null; updateTotals();
+                msgBox.style.color = 'var(--danger)';
+                msgBox.textContent = currentLang === 'ar' ? 'حدث خطأ أثناء التحقق من الكود' : 'Error verifying promo code';
+            } finally {
+                applyBtn.disabled = false;
+            }
         };
 
         window.openCheckout = function() {
@@ -1108,12 +1400,19 @@
             const { subtotal } = computeTotals();
             if (subtotal < CONFIG.minOrderLimit) return;
             
-            const deliveryInput = document.getElementById('deliveryTime');
-            const pad = (n) => String(n).padStart(2, '0');
-            const minDate = new Date();
-            minDate.setDate(minDate.getDate() + 2);
-            const localIso = `${minDate.getFullYear()}-${pad(minDate.getMonth() + 1)}-${pad(minDate.getDate())}T${pad(minDate.getHours())}:${pad(minDate.getMinutes())}`;
-            deliveryInput.min = localIso;
+            // ضبط تاريخ التوصيل الافتراضي والحد الأدنى (بعد 48 ساعة من الآن)
+            const deliveryDateInput = document.getElementById('delivery-date');
+            if (deliveryDateInput) {
+                const minDate = new Date();
+                minDate.setDate(minDate.getDate() + 2); // إضافة يومين (48 ساعة)
+                const pad = (n) => String(n).padStart(2, '0');
+                const minDateStr = `${minDate.getFullYear()}-${pad(minDate.getMonth() + 1)}-${pad(minDate.getDate())}`;
+                
+                deliveryDateInput.min = minDateStr;
+                if (!deliveryDateInput.value || deliveryDateInput.value < minDateStr) {
+                    deliveryDateInput.value = minDateStr;
+                }
+            }
 
             const savedCustomer = loadCustomerFromStorage();
             if (savedCustomer) {
@@ -1126,6 +1425,7 @@
             }
 
             document.getElementById('checkoutModal').classList.add('open');
+            renderCheckoutSummary();
             toggleCart(false);
         };
 
@@ -1146,21 +1446,26 @@
             const errBox = document.getElementById('checkoutError');
             errBox.textContent = '';
 
-            const deliveryTime = document.getElementById('deliveryTime').value;
+            const deliveryDate = document.getElementById('delivery-date').value;
+            const deliveryTimeSelect = document.getElementById('delivery-time').value;
             const orderNote = cleanText(document.getElementById('orderNote').value, 500);
             const customerName = cleanText(document.getElementById('customerName').value, 100);
             const customerPhone = cleanText(document.getElementById('customerPhone').value, 20);
             const customerAddress = cleanText(document.getElementById('customerAddress').value, 500);
 
-            if (!deliveryTime) { errBox.textContent = currentLang === 'ar' ? 'من فضلك اختر تاريخ ووقت الاستلام' : 'Please select delivery date & time'; return; }
+            if (!deliveryDate) { errBox.textContent = currentLang === 'ar' ? 'من فضلك اختر تاريخ التوصيل' : 'Please select delivery date'; return; }
+            if (!deliveryTimeSelect) { errBox.textContent = currentLang === 'ar' ? 'من فضلك اختر ساعة التوصيل' : 'Please select delivery time'; return; }
+
+            // Validation: التأكد من أن التاريخ المدخل لا يقل عن 48 ساعة (بعد يومين)
+            const chosenDate = new Date(deliveryDate);
+            chosenDate.setHours(0,0,0,0);
             
-            const selectedDate = new Date(deliveryTime);
             const minAllowedDate = new Date();
             minAllowedDate.setDate(minAllowedDate.getDate() + 2);
             minAllowedDate.setHours(0,0,0,0);
-            
-            if (selectedDate < minAllowedDate) {
-                errBox.textContent = currentLang === 'ar' ? 'يجب أن يكون الاستلام بعد يومين على الأقل' : 'Delivery must be at least 2 days ahead';
+
+            if (chosenDate < minAllowedDate) {
+                errBox.textContent = currentLang === 'ar' ? 'التوصيل متاح بعد 48 ساعة على الأقل (بعد يومين من اليوم)' : 'Delivery must be at least 48 hours ahead';
                 return;
             }
 
@@ -1173,7 +1478,31 @@
             submitBtn.disabled = true;
 
             try {
-                const { subtotal, deliveryFee, grandTotal } = computeTotals();
+                const { subtotal, deliveryFee, discount, grandTotal } = computeTotals();
+                const normalizedPhone = normalizePhone(customerPhone);
+                let redeemedPromoCode = null;
+
+                if (appliedPromo) {
+                    const promoRef = ref(db, `promo_codes/${appliedPromo.code}`);
+                    const promoSnap = await get(promoRef);
+                    if (!promoSnap.exists() || !promoSnap.val().is_active) {
+                        appliedPromo = null; updateTotals();
+                        errBox.textContent = currentLang === 'ar' ? 'كود الخصم لم يعد متاحاً، من فضلك أعد المحاولة' : 'Promo code is no longer available, please try again';
+                        return;
+                    }
+                    const usageRef = ref(db, `promo_codes/${appliedPromo.code}/used_by/${normalizedPhone}`);
+                    const txResult = await runTransaction(usageRef, (current) => {
+                        if (current) return;
+                        return true;
+                    });
+                    if (!txResult.committed) {
+                        appliedPromo = null; updateTotals();
+                        errBox.textContent = currentLang === 'ar' ? 'تم استخدام هذا الكود من قبل بهذا الرقم' : 'This code was already used with this phone number';
+                        return;
+                    }
+                    redeemedPromoCode = appliedPromo.code;
+                }
+
                 const counterRef = ref(db, 'orderCounter');
                 let nextNum = 1000;
                 
@@ -1185,12 +1514,14 @@
                 const newOrder = {
                     orderNumber: nextNum,
                     createdAt: serverTimestamp(),
-                    deliveryTime,
+                    deliveryDate: deliveryDate,
+                    deliveryTime: deliveryTimeSelect,
                     orderNote,
                     customer: { name: customerName, phone: customerPhone, address: customerAddress },
                     paymentMethod: selectedPaymentMethod,
                     items: cart,
-                    totals: { subtotal, deliveryFee, grandTotal },
+                    totals: { subtotal, deliveryFee, discount, grandTotal },
+                    promoCode: redeemedPromoCode,
                     status: 'received'
                 };
 
@@ -1201,13 +1532,15 @@
 
                 cart = [];
                 saveCartToStorage();
+                appliedPromo = null;
+                document.getElementById('promoCodeInput').value = '';
+                document.getElementById('promoMessage').textContent = '';
                 updateCart();
 
                 closeCheckout();
                 document.getElementById('orderNumber').textContent = `#${nextNum}`;
-                document.getElementById('successTrackLink').href = `tracking.html?id=${newOrderRef.key}`;
+                document.getElementById('successTrackLink').href = `tracking.html?id=${nextNum}`;
                 document.getElementById('successModal').classList.add('open');
-			    document.getElementById('successTrackLink').href = `tracking.html?id=${nextNum}`;
 
             } catch (e) {
                 console.error(e);

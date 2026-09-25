@@ -244,6 +244,10 @@
                 <div class="sidebar-menu-item" data-section="menu" onclick="showSection('menu')">
                     <i class="fas fa-utensils"></i><span>المنيو</span>
                 </div>
+                <!-- الزر الجديد للبرومو كود -->
+                <div class="sidebar-menu-item" data-section="promo" onclick="showSection('promo')">
+                    <i class="fas fa-ticket-alt"></i><span>أكواد الخصم</span>
+                </div>
                 <div class="sidebar-menu-item" onclick="handleLogout()">
                     <i class="fas fa-sign-out-alt"></i><span>تسجيل الخروج</span>
                 </div>
@@ -260,6 +264,7 @@
             </div>
 
             <div id="overviewSection" class="section">
+                <!-- محتوى لوحة التحكم موجود كما هو -->
                 <div class="stats-grid">
                     <div class="stat-card clickable" onclick="filterOrdersByStatus('all')">
                         <div class="stat-card-header">
@@ -315,9 +320,13 @@
                 </div>
             </div>
 
+            <!-- قسم الطلبات -->
             <div id="ordersSection" class="section" style="display: none;">
                 <div class="card">
-                    <div class="card-header"><h3 class="card-title">إدارة الطلبات</h3></div>
+                    <div class="card-header">
+                        <h3 class="card-title">إدارة الطلبات</h3>
+                        <button class="btn" style="background: var(--danger); color: #fff; width: auto; min-height: 38px;" onclick="clearAllOrders()"><i class="fas fa-trash-alt"></i> مسح كل الطلبات وإعادة الترقيم</button>
+                    </div>
                     <div class="card-body">
                         <div class="filter-bar">
                             <select class="filter-select" id="statusFilter" onchange="filterOrders()">
@@ -342,6 +351,7 @@
                 </div>
             </div>
 
+            <!-- قسم المنيو -->
             <div id="menuSection" class="section" style="display: none;">
                 <div class="card">
                     <div class="card-header">
@@ -352,6 +362,57 @@
                 </div>
             </div>
 
+            <!-- قسم إدارة البرومو كود الجديد -->
+            <div id="promoSection" class="section" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header"><h3 class="card-title">إدارة البرومو كود</h3></div>
+                    <div class="card-body">
+                        <!-- نموذج إضافة كود جديد -->
+                        <form id="add-promo-form" style="margin-bottom: 2rem;">
+                            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr auto; align-items: end; gap: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="promo-code-name">اسم الكود</label>
+                                    <input type="text" id="promo-code-name" class="form-input" placeholder="مثال: DISCOUNT20" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="promo-discount-value">قيمة الخصم</label>
+                                    <input type="number" id="promo-discount-value" class="form-input" placeholder="الرقم فقط" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="promo-discount-type">نوع الخصم</label>
+                                    <select id="promo-discount-type" class="form-select">
+                                        <option value="percentage">نسبة مئوية (%)</option>
+                                        <option value="fixed">مبلغ ثابت</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <button type="submit" class="btn btn-primary" style="min-height: 48px;">إضافة الكود</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- جدول عرض الأكواد الحالية -->
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>الكود</th>
+                                        <th>نوع الخصم</th>
+                                        <th>قيمة الخصم</th>
+                                        <th>الحالة</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="promo-codes-list">
+                                    <!-- سيتم حقن البيانات هنا بواسطة الجافاسكريبت -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قسم التقارير -->
             <div id="reportsSection" class="section" style="display: none;">
                 <div class="card">
                     <div class="card-header"><h3 class="card-title">التقارير</h3></div>
@@ -408,6 +469,7 @@
             <div class="modal-body"><div id="orderDetails"></div></div>
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeOrderModal()">إغلاق</button>
+                <button class="btn" style="background: var(--danger); color: #fff;" onclick="deleteOrder(currentOrderId)"><i class="fas fa-trash-alt"></i> حذف الطلب</button>
                 <button class="btn btn-primary" onclick="saveOrderChanges()">حفظ التعديلات</button>
             </div>
         </div>
@@ -422,6 +484,7 @@
             </div>
             <div class="modal-body">
                 <form id="itemForm">
+                    <!-- نموذج المنيو موجود كما هو -->
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">
@@ -530,7 +593,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, onValue, push, update, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, onValue, push, update, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -548,7 +611,7 @@
         const auth = getAuth(app);
 
         let currentUser = null, allOrders = [], menuItems = [], currentOrderId = null, editingItemId = null, currentDateRange = 'today';
-        let ordersUnsubscribe = null, menuUnsubscribe = null;
+        let ordersUnsubscribe = null, menuUnsubscribe = null, promoUnsubscribe = null;
         let sizeCounter = 0;
 
         function escapeHtml(value) { return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
@@ -563,6 +626,27 @@
             else if (typeof value === 'string') { date = new Date(value); if (isNaN(date.getTime())) { const n = Number(value); if (Number.isFinite(n)) date = n > 100000000000 ? new Date(n) : new Date(n * 1000); } }
             else if (typeof value === 'object') { if (value.seconds !== undefined) date = new Date(Number(value.seconds) * 1000); else if (value._seconds !== undefined) date = new Date(Number(value._seconds) * 1000); }
             return (!date || isNaN(date.getTime())) ? '-' : date.toLocaleString('ar-EG');
+        }
+
+        // بيبني نص موعد التوصيل من deliveryDate (التاريخ) + deliveryTime (الساعة، نص زي "5 مساءً")
+        // اللي بيتبعتوا كحقلين منفصلين من index.html و product.html عند إنشاء الطلب
+        function formatDeliveryAppointment(order) {
+            if (order.deliveryTimeTarget) {
+                const target = formatDateTime(order.deliveryTimeTarget);
+                if (target !== '-') return target;
+            }
+            const hasDate = order.deliveryDate !== undefined && order.deliveryDate !== null && order.deliveryDate !== '';
+            const hasTime = order.deliveryTime !== undefined && order.deliveryTime !== null && order.deliveryTime !== '';
+            if (hasDate) {
+                let dateLabel = order.deliveryDate;
+                const d = new Date(order.deliveryDate);
+                if (!isNaN(d.getTime())) {
+                    dateLabel = d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+                }
+                return hasTime ? `${dateLabel} - ${order.deliveryTime}` : dateLabel;
+            }
+            if (hasTime) return order.deliveryTime;
+            return '-';
         }
 
         function getOrderDate(order) {
@@ -589,7 +673,8 @@
             const grandTotal = order.total ?? (order.totals ? order.totals.grandTotal : 0);
             const subtotal = order.subtotal ?? (order.totals ? order.totals.subtotal : 0);
             const deliveryFee = order.deliveryFee ?? (order.totals ? order.totals.deliveryFee : 0);
-            return { grandTotal, subtotal, deliveryFee };
+            const discount = order.discount ?? (order.totals ? order.totals.discount : 0);
+            return { grandTotal, subtotal, deliveryFee, discount };
         }
 
         window.toggleSidebar = function() {
@@ -646,24 +731,15 @@
         function cleanupFirebaseListeners() {
             if (ordersUnsubscribe) { ordersUnsubscribe(); ordersUnsubscribe = null; }
             if (menuUnsubscribe) { menuUnsubscribe(); menuUnsubscribe = null; }
+            if (promoUnsubscribe) { promoUnsubscribe(); promoUnsubscribe = null; }
         }
 
-        // ==========================================
-        // دوال الاستماع اللحظي للطلبات المدمجة (Realtime Orders)
-        // ==========================================
         function setupRealtimeOrders(databaseInstance) {
             const ordersRef = ref(databaseInstance, 'orders');
-
             ordersUnsubscribe = onValue(ordersRef, (snapshot) => {
                 const data = snapshot.val();
-                
                 if (data) {
-                    allOrders = Object.keys(data).map(key => ({
-                        id: key,
-                        ...data[key]
-                    }));
-
-                    // 1. تحديث الجدول واجهة المستخدم (UI) والتقارير والإحصائيات
+                    allOrders = Object.keys(data).map(key => ({ id: key, ...data[key] }));
                     renderOrders();
                     updateStats();
                     updateReports();
@@ -673,24 +749,104 @@
                     updateStats();
                     updateReports();
                 }
-            }, (error) => {
-                console.error("خطأ في جلب البيانات لحظياً: ", error);
-            });
+            }, (error) => { console.error("خطأ في جلب البيانات لحظياً: ", error); });
         }
 
         function loadDashboard() {
             cleanupFirebaseListeners();
-            
-            // تفعيل الاستماع اللحظي للطلبات باستخدام دالة setupRealtimeOrders
             setupRealtimeOrders(db);
-
-            // تفعيل الاستماع اللحظي للمنيو
+            
             menuUnsubscribe = onValue(ref(db, 'menu'), (snapshot) => {
                 const data = snapshot.val();
                 menuItems = data ? Object.entries(data).map(([id, item]) => ({ id, ...item })) : [];
                 renderMenu();
             }, (error) => { console.error('Menu listener error:', error); });
+
+            fetchPromoCodes();
         }
+
+        // عمليات البرومو كود
+        document.getElementById('add-promo-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            
+            const codeName = document.getElementById('promo-code-name').value.trim().toUpperCase();
+            const discountValue = parseFloat(document.getElementById('promo-discount-value').value);
+            const discountType = document.getElementById('promo-discount-type').value;
+            
+            if (codeName === '' || isNaN(discountValue)) {
+                alert('الرجاء إدخال بيانات صحيحة');
+                return;
+            }
+
+            try {
+                await set(ref(db, 'promo_codes/' + codeName), {
+                    discount_value: discountValue,
+                    discount_type: discountType,
+                    is_active: true, 
+                    created_at: new Date().toISOString()
+                });
+                alert('تم إضافة البرومو كود بنجاح!');
+                document.getElementById('add-promo-form').reset();
+            } catch (error) {
+                console.error('خطأ في إضافة الكود:', error);
+                alert('حدث خطأ أثناء حفظ الكود.');
+            }
+        });
+
+        function fetchPromoCodes() {
+            const promoList = document.getElementById('promo-codes-list');
+            promoUnsubscribe = onValue(ref(db, 'promo_codes'), (snapshot) => {
+                promoList.innerHTML = ''; 
+                const data = snapshot.val();
+                
+                if (!data) {
+                    promoList.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fas fa-ticket-alt"></i><div>لا توجد أكواد خصم حالياً</div></div></td></tr>`;
+                    return;
+                }
+
+                Object.entries(data).forEach(([code, codeData]) => {
+                    const typeLabel = codeData.discount_type === 'percentage' ? 'نسبة مئوية' : 'مبلغ ثابت';
+                    const valueLabel = codeData.discount_type === 'percentage' ? '%' : 'جنيه';
+                    const statusLabel = codeData.is_active ? 'نشط' : 'متوقف';
+                    const statusBadge = codeData.is_active ? 'status-delivered' : 'status-cancelled';
+                    const toggleActionText = codeData.is_active ? 'إيقاف' : 'تفعيل';
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${escapeHtml(code)}</strong></td>
+                        <td>${typeLabel}</td>
+                        <td>${codeData.discount_value} ${valueLabel}</td>
+                        <td><span class="status-badge ${statusBadge}">${statusLabel}</span></td>
+                        <td>
+                            <button class="action-btn" style="background-color: var(--${codeData.is_active ? 'warning' : 'success'}); color: white;" onclick="togglePromoStatus('${escapeHtml(code)}', ${codeData.is_active})">
+                                ${toggleActionText}
+                            </button>
+                            <button class="action-btn" style="background-color: var(--danger); color: white;" onclick="deletePromoCode('${escapeHtml(code)}')">
+                                حذف
+                            </button>
+                        </td>
+                    `;
+                    promoList.appendChild(tr);
+                });
+            }, (error) => { console.error("خطأ في جلب الأكواد: ", error); });
+        }
+
+        window.togglePromoStatus = async function(codeName, currentStatus) {
+            if (!currentUser) return;
+            try {
+                await update(ref(db, 'promo_codes/' + codeName), { is_active: !currentStatus });
+            } catch (error) { console.error('خطأ في تحديث حالة الكود:', error); alert('حدث خطأ أثناء تحديث حالة الكود'); }
+        };
+
+        window.deletePromoCode = async function(codeName) {
+            if (!currentUser) return;
+            if (confirm(`هل أنت متأكد من حذف الكود ${codeName}؟ لا يمكن التراجع عن هذه الخطوة.`)) {
+                try {
+                    await remove(ref(db, 'promo_codes/' + codeName));
+                } catch (error) { console.error('خطأ في عملية الحذف:', error); alert('حدث خطأ أثناء عملية الحذف'); }
+            }
+        };
 
         function updateStats() {
             const now = new Date();
@@ -723,7 +879,7 @@
             tbody.innerHTML = filtered.map(order => {
                 const orderDate = getOrderDate(order);
                 const orderTime = orderDate ? orderDate.toLocaleString('ar-EG') : '-';
-                const deliveryTime = formatDateTime(order.deliveryTimeTarget || order.deliveryTime);
+                const deliveryTime = formatDeliveryAppointment(order);
                 const cust = getCustomerDetails(order);
                 const totals = getOrderTotals(order);
 
@@ -735,7 +891,10 @@
                     <td>${orderTime}</td>
                     <td>${deliveryTime}</td>
                     <td><span class="status-badge status-${escapeHtml(order.status || 'received')}">${escapeHtml(getStatusText(order.status))}</span></td>
-                    <td><button class="action-btn action-btn-view" onclick="viewOrder('${escapeHtml(order.id)}')"><i class="fas fa-eye"></i> عرض</button></td>
+                    <td>
+                        <button class="action-btn action-btn-view" onclick="viewOrder('${escapeHtml(order.id)}')"><i class="fas fa-eye"></i> عرض</button>
+                        <button class="action-btn" style="background-color: var(--danger); color: #fff;" onclick="deleteOrder('${escapeHtml(order.id)}')"><i class="fas fa-trash-alt"></i> حذف</button>
+                    </td>
                 </tr>`;
             }).join('');
         }
@@ -780,7 +939,7 @@
             
             const cust = getCustomerDetails(order);
             const totals = getOrderTotals(order);
-            const deliveryTimeVal = formatDateTime(order.deliveryTimeTarget || order.deliveryTime);
+            const deliveryTimeVal = formatDeliveryAppointment(order);
             const payMethodVal = (order.paymentMethod || order.payMethod) === 'card' ? 'فيزا' : 'كاش';
 
             const rawItems = order.items;
@@ -794,6 +953,11 @@
                     ${item.notes ? `<div style="font-size:0.85rem; color:var(--gray-500); margin-top:0.25rem;">ملاحظات الصنف: ${escapeHtml(item.notes)}</div>` : ''}
                 </div>`;
             }).join('') : '<p>لا توجد أصناف</p>';
+
+            let subtotal = parseFloat(totals.subtotal) || 0;     
+            let discount = parseFloat(totals.discount) || 0;     
+            let delivery = parseFloat(totals.deliveryFee) || 0;  
+            let finalTotal = (subtotal - discount) + delivery;   
 
             document.getElementById('orderDetails').innerHTML = `
                 <div style="margin-bottom:1.5rem;">
@@ -816,10 +980,12 @@
                         <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>ملغي</option>
                     </select>
                 </div>
-                <div style="background:var(--gray-100); padding:1rem; border-radius:8px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;"><span>المجموع الفرعي:</span><strong>${formatMoney(totals.subtotal)}</strong></div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;"><span>التوصيل:</span><strong>${formatMoney(totals.deliveryFee)}</strong></div>
-                    <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; color:var(--primary); border-top:2px solid var(--gray-300); padding-top:0.5rem; margin-top:0.5rem;"><span>الإجمالي:</span><span>${formatMoney(totals.grandTotal)}</span></div>
+                <div class="order-details-summary" style="background:var(--gray-100); padding:1rem; border-radius:8px;">
+                    <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">سعر المنتجات: <span id="orderSubtotalText">${subtotal.toFixed(2)} ج.م</span></p>
+                    <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">الخصم: <span id="orderDiscountText" class="text-danger">-${discount.toFixed(2)} ج.م</span></p>
+                    <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">التوصيل: <span id="orderDeliveryText">${delivery.toFixed(2)} ج.م</span></p>
+                    <hr style="border:0; border-top:1px solid var(--gray-300); margin:0.5rem 0;">
+                    <h4 style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; color:var(--primary); padding-top:0.5rem;">الإجمالي النهائي: <span id="orderFinalTotalText">${finalTotal.toFixed(2)} ج.م</span></h4>
                 </div>`;
             document.getElementById('orderModal').classList.add('active');
         };
@@ -837,24 +1003,91 @@
             } catch (error) { console.error('Save order error:', error); alert('حدث خطأ أثناء حفظ التعديلات.'); }
         };
 
-        window.addSizeField = function(weight = '', price = '', servings = '') {
+        window.deleteOrder = async function(orderId) {
+            if (!orderId) return;
+            const order = allOrders.find(o => o.id === orderId);
+            const label = order ? `رقم ${formatOrderNumber(order.orderNumber)}` : orderId;
+            if (!confirm(`متأكد إنك عايز تحذف الطلب ${label}؟ الإجراء ده مش هيترجع فيه.`)) return;
+            try {
+                await remove(ref(db, `orders/${orderId}`));
+                if (currentOrderId === orderId) closeOrderModal();
+            } catch (error) {
+                console.error('Delete order error:', error);
+                alert('حدث خطأ أثناء حذف الطلب.');
+            }
+        };
+
+        window.clearAllOrders = async function() {
+            if (!allOrders.length) { alert('لا توجد طلبات لحذفها.'); return; }
+            if (!confirm(`متأكد إنك عايز تمسح كل الطلبات (${allOrders.length} طلب) وتصفّر ترقيم الطلبات؟ الإجراء ده نهائي ومش هيترجع فيه.`)) return;
+            const confirmText = prompt('اكتب "حذف" للتأكيد النهائي:');
+            if (confirmText !== 'حذف') { alert('تم إلغاء العملية.'); return; }
+            try {
+                await remove(ref(db, 'orders'));
+                await remove(ref(db, 'orderCounter'));
+                alert('تم مسح كل الطلبات وإعادة ترقيم الطلبات من البداية بنجاح.');
+                closeOrderModal();
+            } catch (error) {
+                console.error('Clear all orders error:', error);
+                alert('حدث خطأ أثناء مسح الطلبات.');
+            }
+        };
+
+window.addSizeField = function(weight = '', price = '', servings = '') {
             sizeCounter++;
             const container = document.getElementById('sizesContainer');
             const sizeDiv = document.createElement('div');
             sizeDiv.className = 'size-field';
+            
+            // تهيئة القيم القديمة للحجم والكمية
+            let parsedVal = weight;
+            let parsedUnit = 'جرام';
+            
+            if (typeof weight === 'string') {
+                if (weight.includes('كيلو') || weight.includes('كجم')) parsedUnit = 'كيلو';
+                else if (weight.includes('طبق')) parsedUnit = 'طبق';
+                parsedVal = weight.replace(parsedUnit, '').replace('جم', '').trim();
+            }
+
+            // تحديث ذكي للبيانات القديمة لتتوافق مع التنسيق الجديد
+            let servingsVal = 'يكفي عدد أفراد 1 ل 2'; // القيمة الافتراضية
+            const sStr = String(servings);
+            
+            if (sStr.includes('8')) {
+                servingsVal = 'يكفي عدد أفراد من 6 ل 8';
+            } else if (sStr.includes('6')) {
+                servingsVal = 'يكفي عدد أفراد من 4 ل 6';
+            } else if (sStr.includes('4')) {
+                servingsVal = 'يكفي عدد أفراد من 2 ل 4';
+            } else if (sStr.includes('2') || sStr.includes('1') || sStr.includes('شخص') || sStr.includes('فرد')) {
+                servingsVal = 'يكفي عدد أفراد 1 ل 2';
+            }
+
             sizeDiv.innerHTML = `
-                <div class="size-field-row">
+                <div class="size-field-row" style="grid-template-columns: 1.2fr 1fr 1.5fr auto;">
                     <div>
-                        <label>الوزن</label>
-                        <input type="text" class="form-input size-weight" placeholder="مثال: 400 جم" value="${escapeHtml(weight)}">
+                        <label>الحجم / الكمية</label>
+                        <div style="display: flex; gap: 4px;">
+                            <input type="text" class="form-input size-weight-val" placeholder="الرقم" value="${escapeHtml(parsedVal)}" style="width: 50%;">
+                            <select class="form-select size-weight-unit" style="width: 50%; padding: 8px 4px;">
+                                <option value="جرام" ${parsedUnit === 'جرام' ? 'selected' : ''}>جرام</option>
+                                <option value="كيلو" ${parsedUnit === 'كيلو' ? 'selected' : ''}>كيلو</option>
+                                <option value="طبق" ${parsedUnit === 'طبق' ? 'selected' : ''}>طبق</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
                         <label>السعر (ج.م)</label>
                         <input type="number" class="form-input size-price" placeholder="0" value="${price}" min="0" step="0.01">
                     </div>
                     <div>
-                        <label>يكفي (أشخاص)</label>
-                        <input type="number" class="form-input size-servings" placeholder="2" value="${servings}" min="1">
+                        <label>تكفي عدد أفراد</label>
+                        <select class="form-select size-servings">
+                            <option value="يكفي عدد أفراد 1 ل 2" ${servingsVal === 'يكفي عدد أفراد 1 ل 2' ? 'selected' : ''}>1 ل 2</option>
+                            <option value="يكفي عدد أفراد من 2 ل 4" ${servingsVal === 'يكفي عدد أفراد من 2 ل 4' ? 'selected' : ''}>من 2 ل 4</option>
+                            <option value="يكفي عدد أفراد من 4 ل 6" ${servingsVal === 'يكفي عدد أفراد من 4 ل 6' ? 'selected' : ''}>من 4 ل 6</option>
+                            <option value="يكفي عدد أفراد من 6 ل 8" ${servingsVal === 'يكفي عدد أفراد من 6 ل 8' ? 'selected' : ''}>من 6 ل 8</option>
+                        </select>
                     </div>
                     <button type="button" class="btn btn-outline" onclick="removeSizeField(this)" style="padding: 8px 12px; margin-bottom: 2px;">
                         <i class="fas fa-trash"></i>
@@ -863,10 +1096,8 @@
             `;
             container.appendChild(sizeDiv);
         };
-
-        window.removeSizeField = function(btn) {
-            btn.closest('.size-field').remove();
-        };
+		
+        window.removeSizeField = function(btn) { btn.closest('.size-field').remove(); };
 
         function renderMenu() {
             const grid = document.getElementById('menuGrid');
@@ -938,9 +1169,7 @@
             
             document.getElementById('sizesContainer').innerHTML = '';
             if (item.sizes && item.sizes.length > 0) {
-                item.sizes.forEach(size => {
-                    addSizeField(size.weight, size.price, size.servings);
-                });
+                item.sizes.forEach(size => { addSizeField(size.weight, size.price, size.servings); });
             } else if (item.price) {
                 addSizeField(item.weight || '400 جم', item.price, item.servings || 2);
             } else {
@@ -952,72 +1181,49 @@
 
         window.closeItemModal = function() { document.getElementById('itemModal').classList.remove('active'); editingItemId = null; };
 
-        // في قسم حفظ المنتج
-window.saveMenuItem = async function() {
-    if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
-    
-    const nameAr = document.getElementById('itemNameAr').value.trim();
-    const nameEn = document.getElementById('itemNameEn').value.trim();
-    const category = document.getElementById('itemCategory').value;
-    const descriptionAr = document.getElementById('itemDescAr').value.trim();
-    const descriptionEn = document.getElementById('itemDescEn').value.trim();
-    const image = document.getElementById('itemImage').value.trim();
-    const available = document.getElementById('itemAvailable').checked;
-    const bestseller = document.getElementById('itemBestseller').checked;
-    const ingredients = document.getElementById('itemIngredients').value.trim();
-    const ingredientsEn = document.getElementById('itemIngredientsEn').value.trim();
-
-    const sizes = [];
-    document.querySelectorAll('.size-field').forEach(field => {
-        const weight = field.querySelector('.size-weight').value.trim();
-        const price = parseFloat(field.querySelector('.size-price').value) || 0;
-        const servings = parseInt(field.querySelector('.size-servings').value) || 1;
-        if (weight && price > 0) {
-            sizes.push({ weight, price, servings });
-        }
-    });
-
-    if (!nameAr) { alert('من فضلك أدخل اسم الصنف.'); return; }
-    if (sizes.length === 0) { alert('من فضلك أضف حجم واحد على الأقل.'); return; }
-    if (!image) { alert('من فضلك أدخل رابط الصورة.'); return; }
-
-    // ✅ التحقق من أن رابط الصورة صحيح
-    const validImageUrl = image.startsWith('http') ? image : `https://${image}`;
-
-    const itemData = { 
-        nameAr, 
-        nameEn, 
-        cat: category, 
-        descriptionAr, 
-        descriptionEn,
-        image: validImageUrl,  // 👈 حفظ الصورة بصيغة موحدة
-        available, 
-        bestseller,
-        sizes,
-        ingredients,
-        ingredientsEn,
-        updatedAt: new Date().toISOString() 
-    };
-
-    try {
-        if (editingItemId) {
-            await update(ref(db, `menu/${editingItemId}`), itemData);
-        } else {
-            await push(ref(db, 'menu'), { ...itemData, createdAt: new Date().toISOString() });
-        }
-        closeItemModal();
-        alert('تم حفظ الصنف بنجاح!');
-    } catch (error) {
-        console.error('Error saving item:', error);
-        alert('حدث خطأ أثناء حفظ الصنف.');
-    }
-};
-
-
-        window.toggleItemAvailability = async function(itemId, available) {
+        window.saveMenuItem = async function() {
             if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
-            try { await update(ref(db, `menu/${itemId}`), { available: Boolean(available), updatedAt: new Date().toISOString() }); }
-            catch (error) { console.error('Error toggling availability:', error); alert('حدث خطأ أثناء تحديث حالة الصنف.'); }
+            
+            const nameAr = document.getElementById('itemNameAr').value.trim();
+            const nameEn = document.getElementById('itemNameEn').value.trim();
+            const category = document.getElementById('itemCategory').value;
+            const descriptionAr = document.getElementById('itemDescAr').value.trim();
+            const descriptionEn = document.getElementById('itemDescEn').value.trim();
+            const image = document.getElementById('itemImage').value.trim();
+            const available = document.getElementById('itemAvailable').checked;
+            const bestseller = document.getElementById('itemBestseller').checked;
+            const ingredients = document.getElementById('itemIngredients').value.trim();
+            const ingredientsEn = document.getElementById('itemIngredientsEn').value.trim();
+
+            const sizes = [];
+            document.querySelectorAll('.size-field').forEach(field => {
+                const weightVal = field.querySelector('.size-weight-val').value.trim();
+                const weightUnit = field.querySelector('.size-weight-unit').value;
+                const weight = weightVal ? `${weightVal} ${weightUnit}` : weightUnit;
+                const price = parseFloat(field.querySelector('.size-price').value) || 0;
+                const servings = field.querySelector('.size-servings').value;
+                
+                if (weight && price > 0) { 
+                    sizes.push({ weight, price, servings }); 
+                }
+            });
+
+            if (!nameAr) { alert('من فضلك أدخل اسم الصنف.'); return; }
+            if (sizes.length === 0) { alert('من فضلك أضف حجم واحد وسعر صحيح على الأقل.'); return; }
+            if (!image) { alert('من فضلك أدخل رابط الصورة.'); return; }
+
+            const validImageUrl = image.startsWith('http') ? image : `https://${image}`;
+            const itemData = { nameAr, nameEn, cat: category, descriptionAr, descriptionEn, image: validImageUrl, available, bestseller, sizes, ingredients, ingredientsEn, updatedAt: new Date().toISOString() };
+
+            try {
+                if (editingItemId) {
+                    await update(ref(db, `menu/${editingItemId}`), itemData);
+                } else {
+                    await push(ref(db, 'menu'), { ...itemData, createdAt: new Date().toISOString() });
+                }
+                closeItemModal();
+                alert('تم حفظ الصنف بنجاح!');
+            } catch (error) { console.error('Error saving item:', error); alert('حدث خطأ أثناء حفظ الصنف.'); }
         };
 
         window.deleteMenuItem = async function(itemId) {
@@ -1034,7 +1240,8 @@ window.saveMenuItem = async function() {
                 overview: { id: 'overviewSection', title: 'لوحة التحكم' },
                 orders: { id: 'ordersSection', title: 'إدارة الطلبات' },
                 reports: { id: 'reportsSection', title: 'التقارير' },
-                menu: { id: 'menuSection', title: 'إدارة المنيو' }
+                menu: { id: 'menuSection', title: 'إدارة المنيو' },
+                promo: { id: 'promoSection', title: 'أكواد الخصم' }
             };
             const config = sectionMap[section];
             if (!config) return;
@@ -1045,7 +1252,6 @@ window.saveMenuItem = async function() {
             if (activeMenuItem) activeMenuItem.classList.add('active');
             if (section === 'reports') updateReports();
 
-            // Auto close sidebar on mobile screen when switching sections
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
                 const overlay = document.getElementById('sidebarOverlay');
