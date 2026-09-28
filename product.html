@@ -418,6 +418,82 @@
             font-weight: 700;
         }
 
+        .prep-selection {
+            margin-bottom: 1.25rem;
+        }
+
+        .prep-selection h3 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .prep-selection h3 i {
+            color: var(--accent);
+        }
+
+        .prep-options-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .prep-option-pill {
+            flex: 1;
+            min-width: 110px;
+        }
+
+        .prep-option-pill input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .prep-option-pill label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 10px 8px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .prep-option-pill input[type="radio"]:checked + label {
+            border-color: var(--primary);
+            background: rgba(31, 77, 52, 0.06);
+        }
+
+        .prep-option-pill .prep-pill-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--gray-800);
+        }
+
+        .prep-option-pill input[type="radio"]:checked + label .prep-pill-name {
+            color: var(--primary-dark);
+        }
+
+        .prep-option-pill .prep-pill-extra {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-weight: 600;
+        }
+
+        .prep-option-pill input[type="radio"]:checked + label .prep-pill-extra {
+            color: var(--primary);
+        }
+
         .ingredients-section {
             background: var(--white);
             padding: 1.1rem 1.25rem;
@@ -1439,6 +1515,14 @@
                 </div>
             </div>
 
+            <div class="prep-selection" id="prepSelection" style="display: none;">
+                <h3>
+                    <i class="fas fa-thermometer-half"></i>
+                    <span id="choosePrepTitle">اختر حالة التحضير</span>
+                </h3>
+                <div class="prep-options-group" id="prepOptionsGroup"></div>
+            </div>
+
             <div class="ingredients-section" id="ingredientsSection" style="display: none;">
                 <h3 class="ingredients-title">
                     <i class="fas fa-leaf"></i>
@@ -1671,7 +1755,8 @@
             push,
             runTransaction,
             serverTimestamp,
-            set
+            set,
+            onValue
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
@@ -1705,6 +1790,12 @@
         };
 
         let currentProduct = null;
+        let selectedPrepKey = null;
+        const PREP_LABELS = {
+            frozen: { ar: "فروزين", en: "Frozen" },
+            half: { ar: "نصف سوي", en: "Half-cooked" },
+            hot: { ar: "سخن (جاهز)", en: "Hot & Ready" }
+        };
         let currentQty = 1;
         let currentLang = localStorage.getItem("humLNumLanguage") || "ar";
         let selectedSizeIndex = 0;
@@ -1712,6 +1803,7 @@
         let orderSubmitting = false;
         let selectedPaymentMethod = 'cash';
         let appliedPromo = null;
+        let autoDiscountSettings = { enabled: false, threshold: 0, percentage: 0, maxDiscount: 0 };
 
         function getProductImage(prod) {
             if (!prod) return "";
@@ -1791,14 +1883,56 @@
             }
         }
 
+        async function getNextOrderNumber() {
+            try {
+                const freedSnap = await get(ref(db, 'freedOrderNumbers'));
+                const freedData = freedSnap.val();
+                if (freedData) {
+                    const freeNumbers = Object.keys(freedData)
+                        .map(n => parseInt(n, 10))
+                        .filter(n => !isNaN(n))
+                        .sort((a, b) => a - b);
+                    for (const num of freeNumbers) {
+                        const freedRef = ref(db, `freedOrderNumbers/${num}`);
+                        const result = await runTransaction(freedRef, (current) => {
+                            if (current === true) return null;
+                            return;
+                        });
+                        if (result.committed) return num;
+                    }
+                }
+            } catch (e) {
+                console.error('Error checking freed order numbers:', e);
+            }
+
+            const counterRef = ref(db, 'orderCounter');
+            let nextNum = 1000;
+            await runTransaction(counterRef, (current) => {
+                nextNum = (current || 1000) + 1;
+                return nextNum;
+            });
+            return nextNum;
+        }
+
+        function computeAutoDiscount(subtotal) {
+            if (!autoDiscountSettings.enabled || subtotal <= 0) return 0;
+            if (subtotal < (Number(autoDiscountSettings.threshold) || 0)) return 0;
+            const raw = subtotal * (Number(autoDiscountSettings.percentage) || 0) / 100;
+            const capped = Math.min(raw, Number(autoDiscountSettings.maxDiscount) || 0);
+            return Math.max(0, Math.min(capped, subtotal));
+        }
+
         function computeTotals() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
             const deliveryFee = subtotal > 0 ? CONFIG.deliveryFee : 0;
-            let discount = 0;
-            if (appliedPromo && subtotal > 0) {
-                discount = appliedPromo.type === 'percentage' ? (subtotal * appliedPromo.value / 100) : appliedPromo.value;
-                discount = Math.max(0, Math.min(discount, subtotal));
+            let promoDiscount = 0;
+            if (appliedPromo && subtotal > 0 && (!appliedPromo.minOrder || subtotal >= appliedPromo.minOrder)) {
+                promoDiscount = appliedPromo.type === 'percentage' ? (subtotal * appliedPromo.value / 100) : appliedPromo.value;
+                if (appliedPromo.maxDiscount) promoDiscount = Math.min(promoDiscount, appliedPromo.maxDiscount);
+                promoDiscount = Math.max(0, Math.min(promoDiscount, subtotal));
             }
+            const autoDiscount = computeAutoDiscount(subtotal);
+            const discount = Math.max(promoDiscount, autoDiscount);
             const grandTotal = subtotal > 0 ? Math.max(subtotal + deliveryFee - discount, 0) : 0;
             return { subtotal, deliveryFee, discount, grandTotal };
         }
@@ -1812,8 +1946,9 @@
             } else {
                 itemsList.innerHTML = cart.map(item => {
                     const name = currentLang === 'ar' ? item.ar : (item.en || item.ar);
+                    const prepSuffix = item.prepLabel ? ` - ${item.prepLabel}` : '';
                     return `<div style="display:flex; justify-content:space-between; gap:10px; font-size:0.88rem; padding:5px 0; border-bottom:1px dashed var(--gray-300);">
-                        <span>${name} <span style="color:var(--gray-500);">×${item.qty}</span></span>
+                        <span>${name}${prepSuffix} <span style="color:var(--gray-500);">×${item.qty}</span></span>
                         <span style="font-weight:700; white-space:nowrap;">${(item.price * item.qty).toFixed(2)} ${currency}</span>
                     </div>`;
                 }).join('');
@@ -1888,6 +2023,7 @@
                     const name = currentLang === 'ar' ? item.ar : (item.en || item.ar);
                     const notesHtml = item.notes ? `<div class="cart-item-notes-display"><i class="fas fa-comment-alt"></i> ${escapeHtml(item.notes)}</div>` : '';
                     const sizeHtml = item.sizeWeight ? `<div style="font-size:0.78rem;color:var(--gray-500);margin-bottom:2px;">${item.sizeWeight}</div>` : '';
+                    const prepHtml = item.prepLabel ? `<div style="font-size:0.78rem;color:var(--primary);font-weight:700;margin-bottom:2px;"><i class="fas fa-thermometer-half"></i> ${escapeHtml(item.prepLabel)}</div>` : '';
                     
                     const itemImg = getProductImage(item);
                     const safeImg = safeImageUrl(itemImg);
@@ -1899,6 +2035,7 @@
                         <div class="cart-item-content">
                             <div class="cart-item-title">${name}</div>
                             ${sizeHtml}
+                            ${prepHtml}
                             ${notesHtml}
                             <div class="cart-item-price">${item.price} ${currency}</div>
                             <div class="cart-item-actions">
@@ -2010,7 +2147,18 @@
                     msgBox.textContent = currentLang === 'ar' ? 'تم استخدام هذا الكود من قبل بهذا الرقم' : 'This code was already used with this phone number';
                     return;
                 }
-                appliedPromo = { code, type: data.discount_type, value: data.discount_value };
+                const minOrderAmount = Number(data.min_order_amount) || 0;
+                const currentSubtotal = computeTotals().subtotal;
+                if (minOrderAmount > 0 && currentSubtotal < minOrderAmount) {
+                    appliedPromo = null; updateTotals();
+                    msgBox.style.color = 'var(--danger)';
+                    const t = translations[currentLang];
+                    msgBox.textContent = currentLang === 'ar'
+                        ? `الحد الأدنى لاستخدام الكود ده ${minOrderAmount} ${t.currencyText}`
+                        : `Minimum order for this code is ${minOrderAmount} ${t.currencyText}`;
+                    return;
+                }
+                appliedPromo = { code, type: data.discount_type, value: data.discount_value, minOrder: minOrderAmount, maxDiscount: Number(data.max_discount) || 0 };
                 updateTotals();
                 msgBox.style.color = 'var(--success)';
                 msgBox.textContent = currentLang === 'ar' ? 'تم تطبيق كود الخصم بنجاح!' : 'Promo code applied successfully!';
@@ -2141,13 +2289,7 @@
                     redeemedPromoCode = appliedPromo.code;
                 }
 
-                const counterRef = ref(db, 'orderCounter');
-                let nextNum = 1000;
-
-                await runTransaction(counterRef, (current) => {
-                    nextNum = (current || 1000) + 1;
-                    return nextNum;
-                });
+                const nextNum = await getNextOrderNumber();
 
                 const newOrder = {
                     orderNumber: nextNum,
@@ -2204,6 +2346,7 @@
                 chooseSizeTitle: "اختر الحجم",
                 priceLabel: "السعر:",
                 servesLabel: "يكفي:",
+                choosePrepTitle: "اختر حالة التحضير",
                 customizeBtnText: "✍️ تخصيص الطلب (إضافة ملاحظة)",
                 customizeLabelText: "تعديلاتك أو ملاحظاتك على الصنف:",
                 customizePlaceholder: "مثال: بدون بصل، صوص زيادة، تسوية متوسطة...",
@@ -2244,6 +2387,7 @@
                 chooseSizeTitle: "Choose Size",
                 priceLabel: "Price:",
                 servesLabel: "Serves:",
+                choosePrepTitle: "Choose Preparation",
                 customizeBtnText: "✍️ Customize Order (Add Note)",
                 customizeLabelText: "Your customizations or notes for this item:",
                 customizePlaceholder: "e.g., No onions, extra sauce, medium well...",
@@ -2379,6 +2523,7 @@
             document.getElementById("freshText").textContent = t.freshText;
             document.getElementById("currencyText").textContent = t.currencyText;
             document.getElementById("chooseSizeTitle").textContent = t.chooseSizeTitle;
+            document.getElementById("choosePrepTitle").textContent = t.choosePrepTitle;
             document.getElementById("priceLabel").textContent = t.priceLabel;
             document.getElementById("servesLabel").textContent = t.servesLabel;
             document.getElementById("ingredientsTitle").textContent = t.ingredientsTitle;
@@ -2476,14 +2621,76 @@
             }
 
             const size = currentProduct.sizes[selectedSizeIndex];
-            const t = translations[currentLang];
 
-            document.getElementById("selectedPrice").textContent = `${size.price} ${t.currencyText}`;
-            document.getElementById("p-price").textContent = size.price;
             document.getElementById("selectedServings").textContent = formatServings(size.servings);
             document.getElementById("p-servings").textContent = formatServings(size.servings);
             document.getElementById("p-weight").textContent = formatWeight(size.weight);
+            refreshPriceDisplay();
         };
+
+        function getSelectedPrepExtra() {
+            if (!currentProduct || !selectedPrepKey || !Array.isArray(currentProduct.prepOptions)) return 0;
+            const opt = currentProduct.prepOptions.find(o => o.key === selectedPrepKey);
+            return opt ? (Number(opt.extraPrice) || 0) : 0;
+        }
+
+        function refreshPriceDisplay() {
+            if (!currentProduct) return;
+            let basePrice = 0;
+            if (Array.isArray(currentProduct.sizes) && currentProduct.sizes.length > 0) {
+                const size = currentProduct.sizes[selectedSizeIndex] || currentProduct.sizes[0];
+                basePrice = Number(size.price) || 0;
+            } else {
+                basePrice = Number(currentProduct.price) || 0;
+            }
+            const total = basePrice + getSelectedPrepExtra();
+            const t = translations[currentLang];
+
+            document.getElementById("p-price").textContent = total;
+            const selectedPriceEl = document.getElementById("selectedPrice");
+            if (selectedPriceEl) selectedPriceEl.textContent = `${total} ${t.currencyText}`;
+        }
+
+        window.selectPrepOption = function(key) {
+            selectedPrepKey = key || null;
+            refreshPriceDisplay();
+        };
+
+        function renderPrepOptions(product) {
+            const section = document.getElementById('prepSelection');
+            const group = document.getElementById('prepOptionsGroup');
+            const options = Array.isArray(product.prepOptions) ? product.prepOptions.filter(o => o && o.key) : [];
+
+            if (options.length === 0) {
+                selectedPrepKey = null;
+                section.style.display = 'none';
+                group.innerHTML = '';
+                return;
+            }
+
+            const previousKey = options.some(o => o.key === selectedPrepKey) ? selectedPrepKey : options[0].key;
+            selectedPrepKey = previousKey;
+
+            section.style.display = 'block';
+            const t = translations[currentLang];
+            const currency = t.currencyText;
+
+            const optionPills = options.map(opt => {
+                const label = (PREP_LABELS[opt.key] && PREP_LABELS[opt.key][currentLang]) || opt.label || opt.key;
+                const extra = Number(opt.extraPrice) || 0;
+                const isChecked = selectedPrepKey === opt.key;
+                return `
+                <div class="prep-option-pill">
+                    <input type="radio" name="prepOption" id="prep_${opt.key}" value="${opt.key}" ${isChecked ? 'checked' : ''} onchange="selectPrepOption('${opt.key}')">
+                    <label for="prep_${opt.key}">
+                        <span class="prep-pill-name">${escapeHtml(label)}</span>
+                        ${extra > 0 ? `<span class="prep-pill-extra">+${extra} ${currency}</span>` : ''}
+                    </label>
+                </div>`;
+            }).join('');
+
+            group.innerHTML = optionPills;
+        }
 
         window.toggleCustomization = function() {
             const box = document.getElementById('customizationBox');
@@ -2554,16 +2761,18 @@
                 updatePriceAndServings();
             } else if (Array.isArray(product.sizes) && product.sizes.length === 1) {
                 sizeSection.style.display = "none";
+                selectedSizeIndex = 0;
                 const size = product.sizes[0];
                 document.getElementById("p-weight").textContent = formatWeight(size.weight);
-                document.getElementById("p-price").textContent = size.price;
                 document.getElementById("p-servings").textContent = formatServings(size.servings);
             } else {
                 sizeSection.style.display = "none";
                 document.getElementById("p-weight").textContent = formatWeight(product.weight);
-                document.getElementById("p-price").textContent = product.price || 0;
                 document.getElementById("p-servings").textContent = formatServings(product.servings);
             }
+
+            renderPrepOptions(product);
+            refreshPriceDisplay();
 
             const button = document.getElementById("addToCartBtn");
             if (!isAvailable) {
@@ -2626,10 +2835,20 @@
             const notesInput = document.getElementById("itemCustomNotes");
             const notesText = notesInput ? notesInput.value.trim() : "";
 
+            const prepExtra = getSelectedPrepExtra();
+            const prepOption = (selectedPrepKey && Array.isArray(currentProduct.prepOptions))
+                ? currentProduct.prepOptions.find(o => o.key === selectedPrepKey)
+                : null;
+            const prepLabel = prepOption
+                ? ((PREP_LABELS[prepOption.key] && PREP_LABELS[prepOption.key][currentLang]) || prepOption.label || prepOption.key)
+                : "";
+            const unitPrice = (Number(size.price) || 0) + prepExtra;
+
             const existing = cart.find(item =>
                 item.id === currentProduct.id &&
                 item.sizeWeight === size.weight &&
-                (item.notes || "") === notesText
+                (item.notes || "") === notesText &&
+                (item.prepKey || "") === (selectedPrepKey || "")
             );
 
             const productImg = getProductImage(currentProduct);
@@ -2641,11 +2860,13 @@
                     id: currentProduct.id,
                     ar: currentProduct.nameAr || currentProduct.name || "",
                     en: currentProduct.nameEn || currentProduct.nameEnglish || currentProduct.englishName || "",
-                    price: size.price,
+                    price: unitPrice,
                     sizeWeight: size.weight,
                     sizeServings: String(size.servings ?? ''),
                     qty: currentQty,
                     notes: notesText,
+                    prepKey: selectedPrepKey || "",
+                    prepLabel: prepLabel,
                     image: productImg
                 });
             }
@@ -2679,10 +2900,25 @@
             document.getElementById("qtyValue").textContent = currentQty;
         };
 
+        function listenAutoDiscountSettings() {
+            if (!db) return;
+            onValue(ref(db, 'settings/autoDiscount'), (snapshot) => {
+                const data = snapshot.val() || {};
+                autoDiscountSettings = {
+                    enabled: !!data.enabled,
+                    threshold: Number(data.threshold) || 0,
+                    percentage: Number(data.percentage) || 0,
+                    maxDiscount: Number(data.maxDiscount) || 0
+                };
+                updateTotals();
+            }, (error) => { console.error('Auto discount settings listener error:', error); });
+        }
+
         loadCartFromStorage();
         applyLanguage();
         loadProduct();
         updateCart();
+        listenAutoDiscountSettings();
 
     </script>
 </body>

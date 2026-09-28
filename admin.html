@@ -157,6 +157,13 @@
         .size-field-row label { font-size: 0.8rem; color: var(--gray-600); display: block; margin-bottom: 4px; }
         .size-field-row .form-input { padding: 8px 10px; }
 
+        .prep-option-row { display: flex; align-items: center; gap: 12px; background: var(--gray-50); padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--gray-200); flex-wrap: wrap; }
+        .prep-option-check { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--primary-dark); min-width: 140px; cursor: pointer; }
+        .prep-option-check input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+        .prep-option-row .prep-option-price { flex: 1; min-width: 140px; padding: 8px 10px; }
+        .prep-option-row .prep-option-price:disabled { background: var(--gray-100); cursor: not-allowed; color: var(--gray-500); }
+        .prep-option-badge { display: inline-block; background: var(--gray-100); color: var(--gray-700); font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 4px; margin-top: 4px; }
+
         /* Mobile Responsive Adjustments */
         @media (max-width: 768px) {
             .mobile-toggle-btn { display: inline-flex; align-items: center; justify-content: center; }
@@ -365,14 +372,49 @@
             <!-- قسم إدارة البرومو كود الجديد -->
             <div id="promoSection" class="section" style="display: none;">
                 <div class="card mb-4">
+                    <div class="card-header"><h3 class="card-title">الخصم التلقائي على الأوردر</h3></div>
+                    <div class="card-body">
+                        <p style="color: var(--gray-600); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                            لما إجمالي الأوردر (قبل التوصيل) يوصل للحد الأدنى، هيتطبق خصم بنسبة مئوية تلقائيًا على العميل من غير ما يحتاج كود، بحد أقصى للخصم متحدد. لو العميل مستخدم كود برومو في نفس الوقت، هياخد الأعلى بين الاتنين.
+                        </p>
+                        <form id="auto-discount-form">
+                            <div class="form-row" style="grid-template-columns: auto 1fr 1fr 1fr auto; align-items: end; gap: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">تفعيل</label>
+                                    <label style="display:flex; align-items:center; gap:8px; min-height:48px; cursor:pointer;">
+                                        <input type="checkbox" id="auto-discount-enabled" style="width:20px; height:20px; cursor:pointer;">
+                                        <span id="auto-discount-enabled-label" style="font-weight:700; color: var(--gray-600);">متوقف</span>
+                                    </label>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="auto-discount-threshold">الحد الأدنى للطلب (ج.م)</label>
+                                    <input type="number" id="auto-discount-threshold" class="form-input" placeholder="مثال: 500" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="auto-discount-percentage">نسبة الخصم (%)</label>
+                                    <input type="number" id="auto-discount-percentage" class="form-input" placeholder="مثال: 30" min="0" max="100" step="0.01" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="auto-discount-max">أقصى خصم (ج.م)</label>
+                                    <input type="number" id="auto-discount-max" class="form-input" placeholder="مثال: 130" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <button type="submit" class="btn btn-primary" style="min-height: 48px;">حفظ</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
                     <div class="card-header"><h3 class="card-title">إدارة البرومو كود</h3></div>
                     <div class="card-body">
                         <!-- نموذج إضافة كود جديد -->
                         <form id="add-promo-form" style="margin-bottom: 2rem;">
-                            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr auto; align-items: end; gap: 1rem;">
+                            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto; align-items: end; gap: 1rem;">
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label class="form-label" for="promo-code-name">اسم الكود</label>
-                                    <input type="text" id="promo-code-name" class="form-input" placeholder="مثال: DISCOUNT20" required>
+                                    <input type="text" id="promo-code-name" class="form-input" placeholder="مثال: TAG30" required>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label class="form-label" for="promo-discount-value">قيمة الخصم</label>
@@ -384,6 +426,14 @@
                                         <option value="percentage">نسبة مئوية (%)</option>
                                         <option value="fixed">مبلغ ثابت</option>
                                     </select>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="promo-min-order">أقل قيمة أوردر (اختياري)</label>
+                                    <input type="number" id="promo-min-order" class="form-input" placeholder="مثال: 500" min="0" step="0.01">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="promo-max-discount">أقصى خصم (اختياري)</label>
+                                    <input type="number" id="promo-max-discount" class="form-input" placeholder="مثال: 130" min="0" step="0.01">
                                 </div>
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <button type="submit" class="btn btn-primary" style="min-height: 48px;">إضافة الكود</button>
@@ -399,6 +449,8 @@
                                         <th>الكود</th>
                                         <th>نوع الخصم</th>
                                         <th>قيمة الخصم</th>
+                                        <th>أقل أوردر</th>
+                                        <th>أقصى خصم</th>
                                         <th>الحالة</th>
                                         <th>الإجراءات</th>
                                     </tr>
@@ -524,6 +576,18 @@
                         <div class="ingredients-hint">
                             <i class="fas fa-info-circle"></i>
                             أضف كل حجم مع سعره وعدد الأشخاص الذي يكفيهم.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-thermometer-half" style="color: var(--accent); margin-left: 4px;"></i>
+                            حالات التحضير المتاحة
+                        </label>
+                        <div id="prepOptionsContainer" style="margin-top: 10px;"></div>
+                        <div class="ingredients-hint">
+                            <i class="fas fa-info-circle"></i>
+                            اختار الحالات المتاحة للصنف ده (اختياري) وحدد سعر إضافي لكل حالة يتزود على سعر الحجم المختار.
                         </div>
                     </div>
 
@@ -763,7 +827,50 @@
             }, (error) => { console.error('Menu listener error:', error); });
 
             fetchPromoCodes();
+            fetchAutoDiscountSettings();
         }
+
+        // عمليات الخصم التلقائي على الأوردر
+        document.getElementById('auto-discount-enabled').addEventListener('change', function() {
+            document.getElementById('auto-discount-enabled-label').textContent = this.checked ? 'مفعّل' : 'متوقف';
+        });
+
+        function fetchAutoDiscountSettings() {
+            onValue(ref(db, 'settings/autoDiscount'), (snapshot) => {
+                const data = snapshot.val() || {};
+                document.getElementById('auto-discount-enabled').checked = !!data.enabled;
+                document.getElementById('auto-discount-enabled-label').textContent = data.enabled ? 'مفعّل' : 'متوقف';
+                document.getElementById('auto-discount-threshold').value = data.threshold ?? 500;
+                document.getElementById('auto-discount-percentage').value = data.percentage ?? 30;
+                document.getElementById('auto-discount-max').value = data.maxDiscount ?? 130;
+            }, (error) => { console.error('خطأ في جلب إعدادات الخصم التلقائي:', error); });
+        }
+
+        document.getElementById('auto-discount-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+
+            const enabled = document.getElementById('auto-discount-enabled').checked;
+            const threshold = parseFloat(document.getElementById('auto-discount-threshold').value);
+            const percentage = parseFloat(document.getElementById('auto-discount-percentage').value);
+            const maxDiscount = parseFloat(document.getElementById('auto-discount-max').value);
+
+            if (isNaN(threshold) || isNaN(percentage) || isNaN(maxDiscount) || threshold < 0 || percentage < 0 || maxDiscount < 0) {
+                alert('الرجاء إدخال أرقام صحيحة وموجبة.');
+                return;
+            }
+
+            try {
+                await set(ref(db, 'settings/autoDiscount'), {
+                    enabled, threshold, percentage, maxDiscount,
+                    updatedAt: new Date().toISOString()
+                });
+                alert('تم حفظ إعدادات الخصم التلقائي بنجاح!');
+            } catch (error) {
+                console.error('خطأ في حفظ إعدادات الخصم التلقائي:', error);
+                alert('حدث خطأ أثناء الحفظ.');
+            }
+        });
 
         // عمليات البرومو كود
         document.getElementById('add-promo-form').addEventListener('submit', async function(e) {
@@ -773,8 +880,12 @@
             const codeName = document.getElementById('promo-code-name').value.trim().toUpperCase();
             const discountValue = parseFloat(document.getElementById('promo-discount-value').value);
             const discountType = document.getElementById('promo-discount-type').value;
+            const minOrderRaw = document.getElementById('promo-min-order').value;
+            const maxDiscountRaw = document.getElementById('promo-max-discount').value;
+            const minOrderAmount = minOrderRaw === '' ? 0 : parseFloat(minOrderRaw);
+            const maxDiscount = maxDiscountRaw === '' ? 0 : parseFloat(maxDiscountRaw);
             
-            if (codeName === '' || isNaN(discountValue)) {
+            if (codeName === '' || isNaN(discountValue) || isNaN(minOrderAmount) || isNaN(maxDiscount) || minOrderAmount < 0 || maxDiscount < 0) {
                 alert('الرجاء إدخال بيانات صحيحة');
                 return;
             }
@@ -783,6 +894,8 @@
                 await set(ref(db, 'promo_codes/' + codeName), {
                     discount_value: discountValue,
                     discount_type: discountType,
+                    min_order_amount: minOrderAmount,
+                    max_discount: maxDiscount,
                     is_active: true, 
                     created_at: new Date().toISOString()
                 });
@@ -801,7 +914,7 @@
                 const data = snapshot.val();
                 
                 if (!data) {
-                    promoList.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fas fa-ticket-alt"></i><div>لا توجد أكواد خصم حالياً</div></div></td></tr>`;
+                    promoList.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-ticket-alt"></i><div>لا توجد أكواد خصم حالياً</div></div></td></tr>`;
                     return;
                 }
 
@@ -811,12 +924,16 @@
                     const statusLabel = codeData.is_active ? 'نشط' : 'متوقف';
                     const statusBadge = codeData.is_active ? 'status-delivered' : 'status-cancelled';
                     const toggleActionText = codeData.is_active ? 'إيقاف' : 'تفعيل';
+                    const minOrderText = codeData.min_order_amount ? `${codeData.min_order_amount} ج.م` : '—';
+                    const maxDiscountText = codeData.max_discount ? `${codeData.max_discount} ج.م` : '—';
                     
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td><strong>${escapeHtml(code)}</strong></td>
                         <td>${typeLabel}</td>
                         <td>${codeData.discount_value} ${valueLabel}</td>
+                        <td>${minOrderText}</td>
+                        <td>${maxDiscountText}</td>
                         <td><span class="status-badge ${statusBadge}">${statusLabel}</span></td>
                         <td>
                             <button class="action-btn" style="background-color: var(--${codeData.is_active ? 'warning' : 'success'}); color: white;" onclick="togglePromoStatus('${escapeHtml(code)}', ${codeData.is_active})">
@@ -1010,6 +1127,9 @@
             if (!confirm(`متأكد إنك عايز تحذف الطلب ${label}؟ الإجراء ده مش هيترجع فيه.`)) return;
             try {
                 await remove(ref(db, `orders/${orderId}`));
+                if (order && order.orderNumber) {
+                    await set(ref(db, `freedOrderNumbers/${order.orderNumber}`), true);
+                }
                 if (currentOrderId === orderId) closeOrderModal();
             } catch (error) {
                 console.error('Delete order error:', error);
@@ -1025,6 +1145,7 @@
             try {
                 await remove(ref(db, 'orders'));
                 await remove(ref(db, 'orderCounter'));
+                await remove(ref(db, 'freedOrderNumbers'));
                 alert('تم مسح كل الطلبات وإعادة ترقيم الطلبات من البداية بنجاح.');
                 closeOrderModal();
             } catch (error) {
@@ -1099,6 +1220,40 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
 		
         window.removeSizeField = function(btn) { btn.closest('.size-field').remove(); };
 
+        const PREP_OPTIONS = [
+            { key: 'frozen', label: 'فروزين' },
+            { key: 'half', label: 'نصف سوي' },
+            { key: 'hot', label: 'سخن (جاهز)' }
+        ];
+
+        function renderPrepOptionsForm(savedOptions) {
+            const container = document.getElementById('prepOptionsContainer');
+            const savedMap = {};
+            (savedOptions || []).forEach(o => { savedMap[o.key] = o; });
+
+            container.innerHTML = PREP_OPTIONS.map(opt => {
+                const saved = savedMap[opt.key];
+                const checked = !!saved;
+                const price = saved ? saved.extraPrice : '';
+                return `
+                    <div class="prep-option-row" data-prep-key="${opt.key}">
+                        <label class="prep-option-check">
+                            <input type="checkbox" class="prep-option-enabled" id="prepEnabled_${opt.key}" ${checked ? 'checked' : ''} onchange="togglePrepPriceInput('${opt.key}')">
+                            <span>${opt.label}</span>
+                        </label>
+                        <input type="number" class="form-input prep-option-price" id="prepPrice_${opt.key}" placeholder="سعر إضافي (ج.م)" min="0" step="0.01" value="${price}" ${checked ? '' : 'disabled'}>
+                    </div>`;
+            }).join('');
+        }
+
+        window.togglePrepPriceInput = function(key) {
+            const checkbox = document.getElementById(`prepEnabled_${key}`);
+            const priceInput = document.getElementById(`prepPrice_${key}`);
+            if (!checkbox || !priceInput) return;
+            priceInput.disabled = !checkbox.checked;
+            if (!checkbox.checked) priceInput.value = '';
+        };
+
         function renderMenu() {
             const grid = document.getElementById('menuGrid');
             if (!menuItems.length) { grid.innerHTML = `<div class="empty-state"><i class="fas fa-utensils"></i><div>لا توجد أصناف في المنيو حتى الآن</div></div>`; return; }
@@ -1130,6 +1285,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                             ${hasIngredients ? ' • <i class="fas fa-leaf" style="color: var(--success);"></i> مكونات' : ''}
                         </div>
                         <div class="menu-item-price">${priceText}</div>
+                        ${item.prepOptions && item.prepOptions.length ? `<div>${item.prepOptions.map(p => `<span class="prep-option-badge">${escapeHtml(p.label)} +${formatMoney(p.extraPrice)}</span>`).join('')}</div>` : ''}
                         <div class="menu-item-actions">
                             <button class="btn-sm btn-edit" onclick="editMenuItem('${escapeHtml(item.id)}')"><i class="fas fa-edit"></i> تعديل</button>
                             <button class="btn-sm btn-toggle" onclick="toggleItemAvailability('${escapeHtml(item.id)}', ${!available})"><i class="fas fa-${available ? 'check' : 'times'}"></i> ${available ? 'متاح' : 'غير متاح'}</button>
@@ -1148,6 +1304,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             document.getElementById('itemBestseller').checked = false;
             document.getElementById('sizesContainer').innerHTML = '';
             addSizeField('400 جم', 0, 2);
+            renderPrepOptionsForm(null);
             document.getElementById('itemModal').classList.add('active');
         };
 
@@ -1175,6 +1332,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             } else {
                 addSizeField('400 جم', 0, 2);
             }
+            renderPrepOptionsForm(item.prepOptions);
             
             document.getElementById('itemModal').classList.add('active');
         };
@@ -1208,12 +1366,22 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 }
             });
 
+            const prepOptions = [];
+            PREP_OPTIONS.forEach(opt => {
+                const checkbox = document.getElementById(`prepEnabled_${opt.key}`);
+                if (checkbox && checkbox.checked) {
+                    const priceInput = document.getElementById(`prepPrice_${opt.key}`);
+                    const extraPrice = parseFloat(priceInput.value) || 0;
+                    prepOptions.push({ key: opt.key, label: opt.label, extraPrice });
+                }
+            });
+
             if (!nameAr) { alert('من فضلك أدخل اسم الصنف.'); return; }
             if (sizes.length === 0) { alert('من فضلك أضف حجم واحد وسعر صحيح على الأقل.'); return; }
             if (!image) { alert('من فضلك أدخل رابط الصورة.'); return; }
 
             const validImageUrl = image.startsWith('http') ? image : `https://${image}`;
-            const itemData = { nameAr, nameEn, cat: category, descriptionAr, descriptionEn, image: validImageUrl, available, bestseller, sizes, ingredients, ingredientsEn, updatedAt: new Date().toISOString() };
+            const itemData = { nameAr, nameEn, cat: category, descriptionAr, descriptionEn, image: validImageUrl, available, bestseller, sizes, prepOptions, ingredients, ingredientsEn, updatedAt: new Date().toISOString() };
 
             try {
                 if (editingItemId) {

@@ -371,6 +371,7 @@
                                 <option value="">-- اختر صنفاً لإضافته --</option>
                             </select>
                             <select class="select-input" id="menuSizeSelect" style="display: none;"></select>
+                            <select class="select-input" id="menuPrepSelect" style="display: none;"></select>
                             <button type="button" class="btn btn-outline" onclick="addNewItemFromMenu()" style="padding: 9px 16px; min-height: auto;">
                                 <i class="fas fa-plus"></i> <span id="btnAddItemText">إضافة</span>
                             </button>
@@ -992,6 +993,7 @@
                         <div class="item-row">
                             <div>
                                 <div class="item-name">${itemName}${sizeInfo}</div>
+                                ${item.prepLabel ? `<div class="item-qty" style="color: var(--accent-dark); font-weight: 700;">${item.prepLabel}</div>` : ''}
                                 ${item.notes ? `<div class="item-qty">${t.notes}:${item.notes}</div>` : ''}
                             </div>
                             <div style="text-align: ${currentLang === 'en' ? 'right' : 'left'};">
@@ -1085,6 +1087,12 @@
             document.getElementById('editSection').classList.add('active');
         };
 
+        const PREP_LABELS = {
+            frozen: { ar: "فروزين", en: "Frozen" },
+            half: { ar: "نصف سوي", en: "Half-cooked" },
+            hot: { ar: "سخن (جاهز)", en: "Hot & Ready" }
+        };
+
         function populateMenuDropdown() {
             const t = i18n[currentLang];
             const select = document.getElementById('menuItemSelect');
@@ -1099,8 +1107,11 @@
         window.onMenuItemSelect = function() {
             const itemId = document.getElementById('menuItemSelect').value;
             const sizeSelect = document.getElementById('menuSizeSelect');
+            const prepSelect = document.getElementById('menuPrepSelect');
             sizeSelect.style.display = 'none';
             sizeSelect.innerHTML = '';
+            prepSelect.style.display = 'none';
+            prepSelect.innerHTML = '';
 
             if (!itemId) return;
             const item = availableMenuItems.find(i => i.id === itemId);
@@ -1111,6 +1122,16 @@
                 item.sizes.forEach((s, idx) => {
                     sizeSelect.innerHTML += `<option value="${idx}">${s.weight} — ${s.price} ${i18n[currentLang].currency}</option>`;
                 });
+            }
+
+            if (Array.isArray(item.prepOptions) && item.prepOptions.length > 0) {
+                const t = i18n[currentLang];
+                prepSelect.style.display = 'block';
+                prepSelect.innerHTML = item.prepOptions.map((opt, idx) => {
+                    const label = (PREP_LABELS[opt.key] && PREP_LABELS[opt.key][currentLang]) || opt.label || opt.key;
+                    const extra = Number(opt.extraPrice) || 0;
+                    return `<option value="${idx}">${label}${extra > 0 ? ' (+' + extra + ' ' + t.currency + ')' : ''}</option>`;
+                }).join('');
             }
         };
 
@@ -1133,10 +1154,22 @@
                 sizeWeight = item.weight || '';
             }
 
+            let prepKey = '';
+            let prepLabel = '';
+            if (Array.isArray(item.prepOptions) && item.prepOptions.length > 0) {
+                const prepVal = document.getElementById('menuPrepSelect').value;
+                const opt = item.prepOptions[parseInt(prepVal, 10)] || item.prepOptions[0];
+                if (opt) {
+                    prepKey = opt.key;
+                    prepLabel = (PREP_LABELS[opt.key] && PREP_LABELS[opt.key][currentLang]) || opt.label || opt.key;
+                    price += Number(opt.extraPrice) || 0;
+                }
+            }
+
             const nameAr = item.nameAr || item.name || '';
             const nameEn = item.nameEn || item.en || nameAr;
 
-            const existingIndex = editableItems.findIndex(i => (i.ar === nameAr || i.name === nameAr) && i.sizeWeight === sizeWeight);
+            const existingIndex = editableItems.findIndex(i => (i.ar === nameAr || i.name === nameAr) && i.sizeWeight === sizeWeight && (i.prepKey || '') === prepKey);
 
             if (existingIndex > -1) {
                 editableItems[existingIndex].qty = Number(editableItems[existingIndex].qty || 1) + 1;
@@ -1147,12 +1180,16 @@
                     name: nameAr,
                     price: price,
                     sizeWeight: sizeWeight,
+                    prepKey: prepKey,
+                    prepLabel: prepLabel,
                     qty: 1
                 });
             }
 
             document.getElementById('menuItemSelect').value = '';
             document.getElementById('menuSizeSelect').style.display = 'none';
+            document.getElementById('menuPrepSelect').style.display = 'none';
+            document.getElementById('menuPrepSelect').innerHTML = '';
 
             renderEditableItems();
         };
@@ -1174,6 +1211,7 @@
                         <div class="editable-item-row">
                             <div class="editable-item-info">
                                 <div style="font-weight: 700; color: var(--primary-dark);">${itemName}${sizeInfo}</div>
+                                ${item.prepLabel ? `<div style="font-size: 0.78rem; color: var(--accent-dark); font-weight: 700;"><i class="fas fa-thermometer-half"></i> ${item.prepLabel}</div>` : ''}
                                 <div style="font-size: 0.85rem; color: var(--primary); font-weight: 700;">${price.toFixed(2)} ${t.currency}</div>
                             </div>
                             <div class="qty-controls">
