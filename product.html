@@ -1425,6 +1425,7 @@
             background: var(--primary);
             color: var(--white);
         }
+            select.form-input { cursor: pointer; background: var(--white); }
     </style>
 </head>
 
@@ -1653,6 +1654,10 @@
                     <label class="form-label" data-ar="رقم الموبايل *" data-en="Phone Number *">رقم الموبايل *</label>
                     <input type="tel" class="form-input" id="customerPhone" placeholder="01xxxxxxxxx">
                 </div>
+                <div class="form-group" id="areaGroup">
+                    <label class="form-label" for="customerArea" data-ar="المنطقة *" data-en="Area *">المنطقة *</label>
+                    <select class="form-input" id="customerArea" onchange="onAreaChange()"></select>
+                </div>
                 <div class="form-group">
                     <label class="form-label" data-ar="العنوان بالتفصيل *" data-en="Detailed Address *">العنوان بالتفصيل *</label>
                     <input type="text" class="form-input" id="customerAddress" data-ar-placeholder="العنوان بالتفصيل" data-en-placeholder="Detailed address" placeholder="العنوان بالتفصيل">
@@ -1783,10 +1788,58 @@
             businessNameAr: "هَم النَّم",
             businessNameEn: "The Hum Num",
             whatsappNumber: "201158899779",
-            deliveryFee: 60,
             minOrderLimit: 150,
             currencyAr: "ج.م",
             currencyEn: "EGP"
+        };
+
+        // ===== مناطق التوصيل (بتتحدد من الأدمن) =====
+        const OTHER_AREA_ID = '__other';
+        let DELIVERY_AREAS = [];
+        let selectedAreaId = (() => { try { return localStorage.getItem('humNumArea') || ''; } catch (e) { return ''; } })();
+        function isOtherArea() { return selectedAreaId === OTHER_AREA_ID; }
+        function getSelectedArea() { return DELIVERY_AREAS.find(a => a.id === selectedAreaId) || null; }
+        function areaName(a) { return currentLang === 'ar' ? (a.nameAr || a.nameEn || '') : (a.nameEn || a.nameAr || ''); }
+        function hasAreaSelection() { return isOtherArea() || !!getSelectedArea(); }
+        function isDeliveryFeePending() { return isOtherArea(); }
+        function getDeliveryFee() {
+            const a = getSelectedArea();
+            return a ? (Number(a.fee) || 0) : 0;
+        }
+        function formatDeliveryFee(fee, currency) {
+            if (isOtherArea()) return currentLang === 'ar' ? 'يُحدد لاحقاً' : 'To be confirmed';
+            if (!getSelectedArea()) return currentLang === 'ar' ? 'حسب المنطقة' : 'Depends on area';
+            return `${fee.toFixed(2)} ${currency}`;
+        }
+        function getSelectedAreaSnapshot() {
+            if (isOtherArea()) return { id: 'other', nameAr: 'منطقة أخرى', nameEn: 'Other area', fee: 0, pending: true };
+            const a = getSelectedArea();
+            return a ? { id: a.id, nameAr: a.nameAr || '', nameEn: a.nameEn || a.nameAr || '', fee: Number(a.fee) || 0, pending: false } : null;
+        }
+        function renderAreaOptions() {
+            const sel = document.getElementById('customerArea');
+            if (!sel) return;
+            const currency = currentLang === 'ar' ? CONFIG.currencyAr : CONFIG.currencyEn;
+            sel.innerHTML = '';
+            const ph = document.createElement('option');
+            ph.value = ''; ph.textContent = currentLang === 'ar' ? 'اختر المنطقة' : 'Select your area';
+            sel.appendChild(ph);
+            DELIVERY_AREAS.forEach(a => {
+                const o = document.createElement('option');
+                o.value = a.id;
+                o.textContent = `${areaName(a)} — ${(Number(a.fee) || 0).toFixed(2)} ${currency}`;
+                sel.appendChild(o);
+            });
+            const other = document.createElement('option');
+            other.value = OTHER_AREA_ID;
+            other.textContent = currentLang === 'ar' ? 'منطقة أخرى (سعر التوصيل يُحدد لاحقاً)' : 'Other area (delivery fee to be confirmed)';
+            sel.appendChild(other);
+            sel.value = hasAreaSelection() ? selectedAreaId : '';
+        }
+        window.onAreaChange = function() {
+            selectedAreaId = document.getElementById('customerArea').value;
+            try { localStorage.setItem('humNumArea', selectedAreaId); } catch (e) {}
+            updateTotals();
         };
 
         let currentProduct = null;
@@ -1924,7 +1977,7 @@
 
         function computeTotals() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            const deliveryFee = subtotal > 0 ? CONFIG.deliveryFee : 0;
+            const deliveryFee = subtotal > 0 ? getDeliveryFee() : 0;
             let promoDiscount = 0;
             if (appliedPromo && subtotal > 0 && (!appliedPromo.minOrder || subtotal >= appliedPromo.minOrder)) {
                 promoDiscount = appliedPromo.type === 'percentage' ? (subtotal * appliedPromo.value / 100) : appliedPromo.value;
@@ -1955,7 +2008,7 @@
             }
             const { subtotal, deliveryFee, discount, grandTotal } = computeTotals();
             document.getElementById('checkoutSubtotal').textContent = `${subtotal.toFixed(2)} ${currency}`;
-            document.getElementById('checkoutDeliveryFee').textContent = `${deliveryFee.toFixed(2)} ${currency}`;
+            document.getElementById('checkoutDeliveryFee').textContent = formatDeliveryFee(deliveryFee, currency);
             const discountRow = document.getElementById('checkoutDiscountRow');
             if (discount > 0) {
                 discountRow.style.display = 'flex';
@@ -1970,7 +2023,7 @@
             const { subtotal, deliveryFee, discount, grandTotal } = computeTotals();
             const currency = getCurrency();
             document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} ${currency}`;
-            document.getElementById('deliveryFee').textContent = `${deliveryFee.toFixed(2)} ${currency}`;
+            document.getElementById('deliveryFee').textContent = formatDeliveryFee(deliveryFee, currency);
             const discountRow = document.getElementById('discountRow');
             if (discountRow) {
                 if (discount > 0) {
@@ -2254,6 +2307,7 @@
                 errBox.textContent = currentLang === 'ar' ? 'رقم موبايل غير صحيح' : 'Invalid phone number';
                 return;
             }
+            if (!hasAreaSelection()) { errBox.textContent = currentLang === 'ar' ? 'من فضلك اختر المنطقة' : 'Please select your area'; return; }
             if (!customerAddress) {
                 errBox.textContent = currentLang === 'ar' ? 'من فضلك اكتب العنوان بالتفصيل' : 'Please enter detailed address';
                 return;
@@ -2298,9 +2352,10 @@
                     deliveryTime: deliveryTimeSelect,
                     orderNote,
                     customer: { name: customerName, phone: customerPhone, address: customerAddress },
+                    deliveryArea: getSelectedAreaSnapshot(),
                     paymentMethod: selectedPaymentMethod,
                     items: cart,
-                    totals: { subtotal, deliveryFee, discount, grandTotal },
+                    totals: { subtotal, deliveryFee, discount, grandTotal, deliveryFeePending: isDeliveryFeePending() },
                     promoCode: redeemedPromoCode,
                     status: 'received'
                 };
@@ -2511,6 +2566,7 @@
         };
 
         function applyLanguage() {
+            if (typeof renderAreaOptions === 'function') renderAreaOptions();
             const t = translations[currentLang];
             document.documentElement.lang = currentLang;
             document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
@@ -2902,7 +2958,17 @@
 
         function listenAutoDiscountSettings() {
             if (!db) return;
-            onValue(ref(db, 'settings/autoDiscount'), (snapshot) => {
+            onValue(ref(db, 'settings/deliveryAreas'), (snapshot) => {
+            const data = snapshot.val() || {};
+            DELIVERY_AREAS = Object.entries(data).map(([id, a]) => ({ id, ...a }))
+                .filter(a => a.active !== false && (a.nameAr || a.nameEn))
+                .sort((a, b) => (a.order || 0) - (b.order || 0));
+            if (selectedAreaId !== OTHER_AREA_ID && !DELIVERY_AREAS.some(a => a.id === selectedAreaId)) selectedAreaId = '';
+            renderAreaOptions();
+            updateTotals();
+        });
+
+        onValue(ref(db, 'settings/autoDiscount'), (snapshot) => {
                 const data = snapshot.val() || {};
                 autoDiscountSettings = {
                     enabled: !!data.enabled,

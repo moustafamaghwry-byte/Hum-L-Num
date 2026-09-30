@@ -223,6 +223,16 @@
         @media (max-width: 420px) {
             .stats-grid { grid-template-columns: 1fr; }
         }
+            .area-row { display: grid; grid-template-columns: 1.3fr 1.3fr 110px auto auto; gap: 0.6rem; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--gray-200, #eee); }
+        .area-row:last-child { border-bottom: none; }
+        .area-active { display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+        .area-active input { width: 20px; height: 20px; cursor: pointer; }
+        .area-actions { display: flex; gap: 0.5rem; }
+        @media (max-width: 768px) {
+            .area-row { grid-template-columns: 1fr 1fr; }
+            .area-row > input:first-child, .area-row > input:nth-child(2) { grid-column: span 2; }
+            #add-area-form .form-row { grid-template-columns: 1fr !important; }
+        }
     </style>
 </head>
 <body>
@@ -274,6 +284,9 @@
                 </div>
                 <div class="sidebar-menu-item" data-section="menu" onclick="showSection('menu')">
                     <i class="fas fa-utensils"></i><span>المنيو</span>
+                </div>
+                <div class="sidebar-menu-item" data-section="areas" onclick="showSection('areas')">
+                    <i class="fas fa-map-marker-alt"></i><span>مناطق التوصيل</span>
                 </div>
                 <!-- الزر الجديد للبرومو كود -->
                 <div class="sidebar-menu-item" data-section="promo" onclick="showSection('promo')">
@@ -395,6 +408,41 @@
                         <button class="btn btn-primary" onclick="openAddItemModal()" style="width: auto; min-height: 38px;"><i class="fas fa-plus"></i> إضافة صنف</button>
                     </div>
                     <div class="card-body"><div class="menu-grid" id="menuGrid"></div></div>
+                </div>
+            </div>
+
+            <!-- قسم مناطق التوصيل -->
+            <div id="areasSection" class="section" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header"><h3 class="card-title">مناطق التوصيل وأسعارها</h3></div>
+                    <div class="card-body">
+                        <p style="color: var(--gray-600); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                            المناطق دي بتظهر للعميل في صفحة الـ Checkout كقايمة منسدلة، وسعر التوصيل بيتحسب حسب المنطقة اللي بيختارها. في آخر القايمة بيظهر خيار "منطقة أخرى" تلقائي، وسعر التوصيل فيه بيظهر للعميل "يُحدد لاحقاً" وانت بتحدده من تفاصيل الطلب.
+                        </p>
+                        <form id="add-area-form">
+                            <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr auto; align-items: end; gap: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="area-name-ar">اسم المنطقة (عربي)</label>
+                                    <input type="text" id="area-name-ar" class="form-input" placeholder="مثال: التجمع الخامس" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="area-name-en">اسم المنطقة (English)</label>
+                                    <input type="text" id="area-name-en" class="form-input" placeholder="e.g. Fifth Settlement" dir="ltr">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="area-fee">سعر التوصيل (ج.م)</label>
+                                    <input type="number" id="area-fee" class="form-input" placeholder="مثال: 60" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <button type="submit" class="btn btn-primary" style="min-height: 48px;"><i class="fas fa-plus"></i> إضافة</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header"><h3 class="card-title">المناطق الحالية</h3></div>
+                    <div class="card-body"><div id="deliveryAreasList"></div></div>
                 </div>
             </div>
 
@@ -967,7 +1015,71 @@
 
             fetchPromoCodes();
             fetchAutoDiscountSettings();
+            fetchDeliveryAreas();
         }
+
+        // ===== مناطق التوصيل =====
+        let deliveryAreas = [];
+
+        function fetchDeliveryAreas() {
+            onValue(ref(db, 'settings/deliveryAreas'), (snapshot) => {
+                const data = snapshot.val() || {};
+                deliveryAreas = Object.entries(data).map(([id, a]) => ({ id, ...a })).sort((a, b) => (a.order || 0) - (b.order || 0));
+                renderDeliveryAreas();
+            }, (error) => { console.error('Delivery areas listener error:', error); });
+        }
+
+        function renderDeliveryAreas() {
+            const box = document.getElementById('deliveryAreasList');
+            if (!box) return;
+            if (!deliveryAreas.length) {
+                box.innerHTML = '<p style="color: var(--gray-500); text-align:center; padding: 1rem;">لسه مفيش مناطق. ضيف أول منطقة من الفورم اللي فوق.</p>';
+                return;
+            }
+            box.innerHTML = deliveryAreas.map(a => `
+                <div class="area-row">
+                    <input type="text" class="form-input" id="area-ar-${a.id}" value="${escapeHtml(a.nameAr || '')}" placeholder="الاسم بالعربي">
+                    <input type="text" class="form-input" id="area-en-${a.id}" value="${escapeHtml(a.nameEn || '')}" placeholder="English name" dir="ltr">
+                    <input type="number" class="form-input" id="area-fee-${a.id}" value="${Number(a.fee) || 0}" min="0" step="0.01" placeholder="السعر">
+                    <label class="area-active"><input type="checkbox" id="area-active-${a.id}" ${a.active !== false ? 'checked' : ''} onchange="saveDeliveryArea('${a.id}')"><span>مفعّلة</span></label>
+                    <div class="area-actions">
+                        <button class="btn btn-primary" style="width:auto; min-height:44px;" onclick="saveDeliveryArea('${a.id}')"><i class="fas fa-save"></i> حفظ</button>
+                        <button class="btn btn-delete" style="width:auto; min-height:44px;" onclick="deleteDeliveryArea('${a.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`).join('');
+        }
+
+        document.getElementById('add-area-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            const nameAr = document.getElementById('area-name-ar').value.trim();
+            const nameEn = document.getElementById('area-name-en').value.trim();
+            const fee = parseFloat(document.getElementById('area-fee').value);
+            if (!nameAr || isNaN(fee) || fee < 0) { alert('من فضلك اكتب اسم المنطقة وسعر توصيل صحيح.'); return; }
+            try {
+                await push(ref(db, 'settings/deliveryAreas'), { nameAr, nameEn: nameEn || nameAr, fee, active: true, order: Date.now(), updatedAt: new Date().toISOString() });
+                this.reset();
+            } catch (error) { console.error('Error adding area:', error); alert('حدث خطأ أثناء إضافة المنطقة.'); }
+        });
+
+        window.saveDeliveryArea = async function(id) {
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            const nameAr = document.getElementById('area-ar-' + id).value.trim();
+            const nameEn = document.getElementById('area-en-' + id).value.trim();
+            const fee = parseFloat(document.getElementById('area-fee-' + id).value);
+            const active = document.getElementById('area-active-' + id).checked;
+            if (!nameAr || isNaN(fee) || fee < 0) { alert('من فضلك اكتب اسم المنطقة وسعر توصيل صحيح.'); return; }
+            try {
+                await update(ref(db, 'settings/deliveryAreas/' + id), { nameAr, nameEn: nameEn || nameAr, fee, active, updatedAt: new Date().toISOString() });
+            } catch (error) { console.error('Error saving area:', error); alert('حدث خطأ أثناء حفظ المنطقة.'); }
+        };
+
+        window.deleteDeliveryArea = async function(id) {
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            if (!confirm('هل أنت متأكد من حذف المنطقة؟')) return;
+            try { await remove(ref(db, 'settings/deliveryAreas/' + id)); }
+            catch (error) { console.error('Error deleting area:', error); alert('حدث خطأ أثناء حذف المنطقة.'); }
+        };
 
         // عمليات الخصم التلقائي على الأوردر
         document.getElementById('auto-discount-enabled').addEventListener('change', function() {
@@ -1220,6 +1332,7 @@
                     <h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">معلومات العميل</h4>
                     <p><strong>الاسم:</strong> ${escapeHtml(cust.name)}</p>
                     <p><strong>الهاتف:</strong> ${renderPhoneLink(cust.phone)}</p>
+                    ${order.deliveryArea ? `<p><strong>المنطقة:</strong> ${escapeHtml(order.deliveryArea.nameAr || order.deliveryArea.nameEn || '')}</p>` : ''}
                     <p><strong>العنوان:</strong> ${escapeHtml(cust.address)}</p>
                     <p><strong>موعد التوصيل المطلوب:</strong> ${escapeHtml(deliveryTimeVal)}</p>
                     <p><strong>طريقة الدفع:</strong> ${escapeHtml(payMethodVal)}</p>
@@ -1239,7 +1352,8 @@
                 <div class="order-details-summary" style="background:var(--gray-100); padding:1rem; border-radius:8px;">
                     <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">سعر المنتجات: <span id="orderSubtotalText">${subtotal.toFixed(2)} ج.م</span></p>
                     <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">الخصم: <span id="orderDiscountText" class="text-danger">-${discount.toFixed(2)} ج.م</span></p>
-                    <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">التوصيل: <span id="orderDeliveryText">${delivery.toFixed(2)} ج.م</span></p>
+                    <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">التوصيل: ${(order.deliveryArea && order.deliveryArea.pending) ? `<span id="orderDeliveryText" style="display:flex; align-items:center; gap:6px;"><input type="number" id="orderDeliveryFeeInput" class="form-input" min="0" step="0.01" placeholder="حدد السعر" style="width:120px; min-height:36px; padding:4px 8px;"> ج.م</span>` : `<span id="orderDeliveryText">${delivery.toFixed(2)} ج.م</span>`}</p>
+                    ${(order.deliveryArea && order.deliveryArea.pending) ? '<p style="font-size:0.8rem; color: var(--warning, #b7791f); margin-bottom:0.5rem;">العميل اختار "منطقة أخرى" — سعر التوصيل لسه متحددش. اكتبه واضغط حفظ وهيتحدّث الإجمالي للعميل.</p>' : ''}
                     <hr style="border:0; border-top:1px solid var(--gray-300); margin:0.5rem 0;">
                     <h4 style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; color:var(--primary); padding-top:0.5rem;">الإجمالي النهائي: <span id="orderFinalTotalText">${finalTotal.toFixed(2)} ج.م</span></h4>
                 </div>`;
@@ -1253,7 +1367,23 @@
             const select = document.getElementById('orderStatusSelect');
             if (!select) { closeOrderModal(); return; }
             try {
-                await update(ref(db, `orders/${currentOrderId}`), { status: select.value, updatedAt: new Date().toISOString() });
+                const updates = { status: select.value, updatedAt: new Date().toISOString() };
+                const feeInput = document.getElementById('orderDeliveryFeeInput');
+                const ord = allOrders.find(o => o.id === currentOrderId);
+                if (feeInput && feeInput.value !== '' && ord) {
+                    const fee = parseFloat(feeInput.value);
+                    if (isNaN(fee) || fee < 0) { alert('سعر التوصيل غير صحيح.'); return; }
+                    const tt = getOrderTotals(ord);
+                    const newGrand = (toNumber(tt.subtotal) - toNumber(tt.discount)) + fee;
+                    updates['totals/deliveryFee'] = fee;
+                    updates['totals/grandTotal'] = newGrand;
+                    updates['totals/deliveryFeePending'] = false;
+                    updates['deliveryArea/fee'] = fee;
+                    updates['deliveryArea/pending'] = false;
+                    if (ord.deliveryFee !== undefined) updates['deliveryFee'] = fee;
+                    if (ord.total !== undefined) updates['total'] = newGrand;
+                }
+                await update(ref(db, `orders/${currentOrderId}`), updates);
                 alert('تم حفظ تعديلات الطلب بنجاح.');
                 closeOrderModal();
             } catch (error) { console.error('Save order error:', error); alert('حدث خطأ أثناء حفظ التعديلات.'); }
@@ -1555,6 +1685,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 orders: { id: 'ordersSection', title: 'إدارة الطلبات' },
                 reports: { id: 'reportsSection', title: 'التقارير' },
                 menu: { id: 'menuSection', title: 'إدارة المنيو' },
+                areas: { id: 'areasSection', title: 'مناطق التوصيل' },
                 promo: { id: 'promoSection', title: 'أكواد الخصم' }
             };
             const config = sectionMap[section];

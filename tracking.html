@@ -523,6 +523,7 @@
                 lblEditableSubtotal: "الإجمالي النهائي:",
                 lblEditItemsSubtotal: "قيمة الأصناف:",
                 lblEditableDeliveryFee: "سعر التوصيل",
+                deliveryPending: "يُحدد لاحقاً",
                 lblEditPhone: "رقم الموبايل",
                 lblEditAddress: "العنوان",
                 lblEditDeliveryTime: "تاريخ ووقت الاستلام المطلوب",
@@ -600,6 +601,7 @@
                 lblEditableSubtotal: "Grand Total:",
                 lblEditItemsSubtotal: "Items Total:",
                 lblEditableDeliveryFee: "Delivery Fee",
+                deliveryPending: "To be confirmed",
                 lblEditPhone: "Phone Number",
                 lblEditAddress: "Address",
                 lblEditDeliveryTime: "Requested Delivery Date & Time",
@@ -917,7 +919,7 @@
                         
                         document.getElementById('track-subtotal').textContent = Number(subtotal).toFixed(2) + ' ج.م';
                         document.getElementById('track-discount').textContent = '- ' + Number(discount).toFixed(2) + ' ج.م';
-                        document.getElementById('track-delivery').textContent = Number(deliveryFee).toFixed(2) + ' ج.م';
+                        document.getElementById('track-delivery').textContent = (updatedOrder.deliveryArea && updatedOrder.deliveryArea.pending && !Number(deliveryFee)) ? 'يُحدد لاحقاً' : Number(deliveryFee).toFixed(2) + ' ج.م';
                     }
                 });
             }
@@ -953,7 +955,9 @@
 
             document.getElementById('customerName').textContent = cust.name;
             document.getElementById('customerPhone').textContent = cust.phone;
-            document.getElementById('customerAddress').textContent = cust.address;
+            const areaObj = order.deliveryArea || (order.customer && order.customer.area) || null;
+            const areaLabel = areaObj ? (currentLang === 'en' ? (areaObj.nameEn || areaObj.nameAr) : (areaObj.nameAr || areaObj.nameEn)) : '';
+            document.getElementById('customerAddress').textContent = areaLabel ? `${areaLabel} — ${cust.address}` : cust.address;
             
             const orderDate = getOrderDate(order);
             if (orderDate.getTime() > 0) {
@@ -1256,7 +1260,11 @@
             document.getElementById('editableSubtotalVal').textContent = `${subtotal.toFixed(2)} ${t.currency}`;
 
             const editableDeliveryEl = document.getElementById('editableDeliveryFeeVal');
-            if (deliveryFee > 0) {
+            const feePending = !!(currentOrder && currentOrder.deliveryArea && currentOrder.deliveryArea.pending) && !(deliveryFee > 0);
+            if (feePending) {
+                editableDeliveryEl.textContent = t.deliveryPending;
+                editableDeliveryEl.classList.remove('free');
+            } else if (deliveryFee > 0) {
                 editableDeliveryEl.textContent = `${deliveryFee.toFixed(2)} ${t.currency}`;
                 editableDeliveryEl.classList.remove('free');
             } else {
