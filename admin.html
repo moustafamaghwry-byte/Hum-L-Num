@@ -131,18 +131,29 @@
         .btn-edit { background: var(--warning); color: var(--white); }
         .btn-toggle { background: var(--success); color: var(--white); }
         .btn-delete { background: var(--danger); color: var(--white); }
+        .btn-toggle.off { background: var(--gray-500); }
+        .menu-item-card.unavailable { border-color: var(--danger); }
+        .menu-item-card.unavailable .menu-item-image img { filter: grayscale(1); opacity: 0.5; }
+        .menu-item-card.unavailable .menu-item-name,
+        .menu-item-card.unavailable .menu-item-price { opacity: 0.55; text-decoration: line-through; }
+        .unavailable-badge { position: absolute; top: 10px; right: 10px; background: var(--danger); color: var(--white); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; z-index: 2; box-shadow: var(--shadow-md); }
         
         /* Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px); }
         .modal-overlay.active { display: flex; }
-        .modal { background: var(--white); border-radius: var(--radius-lg); max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal { background: var(--white); border-radius: var(--radius-lg); max-width: 650px; width: 100%; max-height: 90vh; max-height: 90dvh; overflow: hidden; display: flex; flex-direction: column; }
         .modal-header { padding: 1.25rem 1.5rem; border-bottom: 2px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; background: var(--primary); color: var(--white); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
         .modal-title { font-size: 1.15rem; font-weight: 800; }
         .modal-close { background: rgba(255,255,255,0.2); border: none; color: var(--white); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
         .modal-close:hover { background: rgba(255,255,255,0.3); }
-        .modal-body { padding: 1.25rem 1.5rem; }
+        .modal-body { padding: 1.25rem 1.5rem; flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; }
+        .modal-header, .modal-footer { flex-shrink: 0; }
+        .modal-overlay { overscroll-behavior: contain; }
+        html.modal-open, body.modal-open { overflow: hidden; }
         .modal-footer { padding: 1.25rem 1.5rem; border-top: 2px solid var(--gray-200); display: flex; gap: 0.75rem; }
         .modal-footer .btn { flex: 1; }
+        .modal-footer { flex-wrap: wrap; }
+        .modal-footer .btn { min-width: 110px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .form-select { width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200); border-radius: var(--radius-sm); font-family: inherit; font-size: 1rem; background: var(--white); cursor: pointer; }
         .form-select:focus { outline: none; border-color: var(--primary); }
@@ -205,7 +216,7 @@
             .size-field-row { grid-template-columns: 1fr; gap: 8px; }
             
             .modal-overlay { padding: 0.5rem; }
-            .modal { max-height: 94vh; border-radius: var(--radius-md); }
+            .modal { max-height: 94vh; max-height: 94dvh; border-radius: var(--radius-md); }
             .modal-header, .modal-body, .modal-footer { padding: 1rem; }
         }
 
@@ -1232,10 +1243,10 @@
                     <hr style="border:0; border-top:1px solid var(--gray-300); margin:0.5rem 0;">
                     <h4 style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; color:var(--primary); padding-top:0.5rem;">الإجمالي النهائي: <span id="orderFinalTotalText">${finalTotal.toFixed(2)} ج.م</span></h4>
                 </div>`;
-            document.getElementById('orderModal').classList.add('active');
+            document.getElementById('orderModal').classList.add('active'); document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
         };
 
-        window.closeOrderModal = function() { document.getElementById('orderModal').classList.remove('active'); currentOrderId = null; };
+        window.closeOrderModal = function() { document.getElementById('orderModal').classList.remove('active'); document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open'); currentOrderId = null; };
 
         window.saveOrderChanges = async function() {
             if (!currentOrderId) { closeOrderModal(); return; }
@@ -1404,8 +1415,8 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 }
                 
                 const hasIngredients = (item.ingredients || item.ingredientsEn) && (item.ingredients || item.ingredientsEn).trim() !== '';
-                return `<div class="menu-item-card">
-                    <div class="menu-item-image">${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.nameAr || '')}" loading="lazy">` : '<i class="fas fa-utensils"></i>'}</div>
+                return `<div class="menu-item-card${available ? '' : ' unavailable'}">
+                    <div class="menu-item-image">${available ? '' : '<span class="unavailable-badge"><i class="fas fa-ban"></i> غير متاح</span>'}${imageUrl ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.nameAr || '')}" loading="lazy">` : '<i class="fas fa-utensils"></i>'}</div>
                     <div class="menu-item-info">
                         <div class="menu-item-name">${escapeHtml(item.nameAr || 'بدون اسم')} ${item.bestseller ? '⭐' : ''}</div>
                         <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">
@@ -1416,7 +1427,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                         ${item.prepOptions && item.prepOptions.length ? `<div>${item.prepOptions.map(p => `<span class="prep-option-badge">${escapeHtml(p.label)} +${formatMoney(p.extraPrice)}</span>`).join('')}</div>` : ''}
                         <div class="menu-item-actions">
                             <button class="btn-sm btn-edit" onclick="editMenuItem('${escapeHtml(item.id)}')"><i class="fas fa-edit"></i> تعديل</button>
-                            <button class="btn-sm btn-toggle" onclick="toggleItemAvailability('${escapeHtml(item.id)}', ${!available})"><i class="fas fa-${available ? 'check' : 'times'}"></i> ${available ? 'متاح' : 'غير متاح'}</button>
+                            <button class="btn-sm btn-toggle${available ? '' : ' off'}" onclick="toggleItemAvailability('${escapeHtml(item.id)}', ${!available})"><i class="fas fa-${available ? 'check' : 'times'}"></i> ${available ? 'متاح' : 'غير متاح'}</button>
                             <button class="btn-sm btn-delete" onclick="deleteMenuItem('${escapeHtml(item.id)}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
@@ -1433,7 +1444,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             document.getElementById('sizesContainer').innerHTML = '';
             addSizeField('400 جم', 0, 2);
             renderPrepOptionsForm(null);
-            document.getElementById('itemModal').classList.add('active');
+            document.getElementById('itemModal').classList.add('active'); document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
         };
 
         window.editMenuItem = function(itemId) {
@@ -1462,10 +1473,10 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             }
             renderPrepOptionsForm(item.prepOptions);
             
-            document.getElementById('itemModal').classList.add('active');
+            document.getElementById('itemModal').classList.add('active'); document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
         };
 
-        window.closeItemModal = function() { document.getElementById('itemModal').classList.remove('active'); editingItemId = null; };
+        window.closeItemModal = function() { document.getElementById('itemModal').classList.remove('active'); document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open'); editingItemId = null; };
 
         window.saveMenuItem = async function() {
             if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
@@ -1520,6 +1531,13 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 closeItemModal();
                 alert('تم حفظ الصنف بنجاح!');
             } catch (error) { console.error('Error saving item:', error); alert('حدث خطأ أثناء حفظ الصنف.'); }
+        };
+
+        window.toggleItemAvailability = async function(itemId, newValue) {
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            try {
+                await update(ref(db, `menu/${itemId}`), { available: !!newValue, updatedAt: new Date().toISOString() });
+            } catch (error) { console.error('Error toggling availability:', error); alert('حدث خطأ أثناء تغيير حالة الصنف.'); }
         };
 
         window.deleteMenuItem = async function(itemId) {
