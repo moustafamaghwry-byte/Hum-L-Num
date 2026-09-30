@@ -119,12 +119,12 @@
         .bestseller-ribbon { position: absolute; top: 14px; right: 14px; background: var(--white); color: var(--accent-dark); padding: 5px 14px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2px; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 3; white-space: nowrap; pointer-events: none; }
         body.lang-en .bestseller-ribbon { right: auto; left: 14px; }
 
-        .out-of-stock-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.75); display: flex; align-items: center; justify-content: center; z-index: 2; backdrop-filter: blur(2px); }
-        .out-of-stock-overlay span { background: var(--white); color: var(--gray-700); padding: 8px 18px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .out-of-stock-overlay i { font-size: 1rem; color: var(--danger); }
+        .out-of-stock-overlay { position: absolute; inset: 0; background: transparent; display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none; }
+        .out-of-stock-overlay span { background: rgba(0,0,0,0.65); color: #fff; padding: 8px 20px; border-radius: 50px; font-size: 1rem; font-weight: 800; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .out-of-stock-overlay i { font-size: 1rem; color: #ff6b6b; }
 
-        .menu-item.out-of-stock { opacity: 0.9; }
-        .menu-item.out-of-stock .menu-item-content { filter: grayscale(0.2); }
+        .menu-item.out-of-stock { opacity: 1; }
+        
         .add-to-cart.disabled { background: transparent; color: var(--gray-400); border-color: var(--gray-300); cursor: not-allowed; }
         .add-to-cart.disabled:hover { transform: none; background: transparent; color: var(--gray-400); }
 
@@ -887,10 +887,10 @@
 
         onValue(ref(db, 'menu'), (snapshot) => {
             const data = snapshot.val() || {};
-            MENU = Object.entries(data).map(([id, item]) => ({ id, ...item })).filter(item => item.available !== false);
-            cart = cart.filter(ci => MENU.some(m => m.id === ci.id));
+            MENU = Object.entries(data).map(([id, item]) => ({ id, ...item }));
+            cart = cart.filter(ci => MENU.some(m => m.id === ci.id && m.available !== false));
             const statItemsEl = document.getElementById('statItems');
-            if (statItemsEl) statItemsEl.textContent = MENU.length + '+';
+            if (statItemsEl) statItemsEl.textContent = MENU.filter(m => m.available !== false).length + '+';
             renderMenu();
             updateCart();
         });
@@ -1041,9 +1041,9 @@
                 <div class="menu-item-image">
                     ${isBestseller ? `<div class="bestseller-ribbon"><span>${currentLang === 'ar' ? 'الأكثر مبيعاً' : 'Bestseller'}</span></div>` : ''}
                     ${!isAvailable ? `<div class="out-of-stock-overlay"><span><i class="fas fa-times-circle"></i> ${currentLang === 'ar' ? 'غير متاح' : 'Out of Stock'}</span></div>` : ''}
-                    <button class="quick-view-btn" onclick="openQuickView('${item.id}')" title="${currentLang === 'ar' ? 'عرض سريع' : 'Quick View'}">
+                    ${isAvailable ? `<button class="quick-view-btn" onclick="openQuickView('${item.id}')" title="${currentLang === 'ar' ? 'عرض سريع' : 'Quick View'}">
                         <i class="fas fa-expand"></i>
-                    </button>
+                    </button>` : ''}
                     <a href="product.html?id=${item.id}" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%; position: relative; z-index: 1;">
                         ${item.image ? `<img src="${item.image}" alt="${name}">` : '<i class="fas fa-utensils"></i>'}
                     </a>
@@ -1199,7 +1199,7 @@
 
         window.addToCart = function (itemId, openCart = true) {
             const item = MENU.find(i => i.id === itemId);
-            if (!item) return;
+            if (!item || item.available === false) return;
             const defaultSize = getDefaultSize(item);
             const existing = cart.find(i => i.id === itemId && i.sizeWeight === defaultSize.weight);
             if (existing) { 
