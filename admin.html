@@ -102,6 +102,14 @@
         .date-range-inputs .apply-btn { padding: 8px 16px; background: var(--primary); color: var(--white); border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-family: inherit; width: 100%; }
         
         /* Table Controls & Responsiveness */
+        .pf-verdict { border-radius: 14px; padding: 1.25rem; text-align: center; margin-bottom: 1.25rem; border: 2px solid; }
+        .pf-verdict.profit { background: #d3f9d8; color: #2b8a3e; border-color: #2b8a3e; }
+        .pf-verdict.loss { background: #ffe3e3; color: #e03131; border-color: #e03131; }
+        .pf-verdict.even { background: var(--gray-100); color: var(--gray-700); border-color: var(--gray-300); }
+        .pf-verdict .pf-verdict-title { font-size: 1.1rem; font-weight: 800; }
+        .pf-verdict .pf-verdict-amount { font-size: 2.2rem; font-weight: 900; margin: 0.25rem 0; direction: ltr; }
+        .pf-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        @media (max-width: 768px) { .pf-grid3 { grid-template-columns: 1fr; gap: 0; } }
         .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -0.5rem; }
         .data-table { width: 100%; border-collapse: collapse; min-width: 850px; }
         .data-table th { background: var(--gray-100); padding: 0.85rem 1rem; text-align: right; font-weight: 700; color: var(--gray-700); font-size: 0.85rem; border-bottom: 2px solid var(--gray-200); white-space: nowrap; }
@@ -282,6 +290,9 @@
                 <div class="sidebar-menu-item" data-section="reports" onclick="showSection('reports')">
                     <i class="fas fa-chart-bar"></i><span>التقارير</span>
                 </div>
+                <div class="sidebar-menu-item" data-section="purchases" onclick="showSection('purchases')">
+                    <i class="fas fa-coins"></i><span>المشتريات والأرباح</span>
+                </div>
                 <div class="sidebar-menu-item" data-section="menu" onclick="showSection('menu')">
                     <i class="fas fa-utensils"></i><span>المنيو</span>
                 </div>
@@ -342,6 +353,21 @@
                             <div class="stat-card-icon"><i class="fas fa-times-circle"></i></div>
                         </div>
                         <div class="stat-card-value" id="cancelledOrders">0</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-card-header">
+                            <div><div class="stat-card-title">إجمالي الخصومات</div><div class="stat-card-subtitle">اليوم</div></div>
+                            <div class="stat-card-icon"><i class="fas fa-percentage"></i></div>
+                        </div>
+                        <div class="stat-card-value" id="ovDiscountTotal">0 ج.م</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div><div class="stat-card-title">أكثر نوع خصم استُخدم</div><div class="stat-card-subtitle">اليوم</div></div>
+                            <div class="stat-card-icon"><i class="fas fa-ticket-alt"></i></div>
+                        </div>
+                        <div class="stat-card-value" id="ovTopDiscountMode" style="font-size:1.25rem;">—</div>
+                        <div class="stat-card-subtitle" id="ovTopDiscountSub"></div>
                     </div>
                 </div>
                 <div class="card">
@@ -414,6 +440,33 @@
 
             <!-- قسم مناطق التوصيل -->
             <div id="areasSection" class="section" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header"><h3 class="card-title">إعدادات الحد الأدنى للطلب</h3></div>
+                    <div class="card-body">
+                        <p style="color: var(--gray-600); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                            أقل قيمة أصناف (قبل التوصيل والخصم) يقدر العميل يطلبها من الموقع، وكمان لما يعدّل طلبه من صفحة التتبع. لو أوقفته أو كتبت 0 مفيش حد أدنى.
+                        </p>
+                        <form id="min-order-form">
+                            <div class="form-row" style="grid-template-columns: auto 1fr auto; align-items: end; gap: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">تفعيل</label>
+                                    <label style="display:flex; align-items:center; gap:8px; min-height:48px; cursor:pointer;">
+                                        <input type="checkbox" id="min-order-enabled" style="width:20px; height:20px; cursor:pointer;">
+                                        <span id="min-order-enabled-label" style="font-weight:700; color: var(--gray-600);">متوقف</span>
+                                    </label>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="min-order-amount">الحد الأدنى للطلب (ج.م)</label>
+                                    <input type="number" id="min-order-amount" class="form-input" placeholder="مثال: 150" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <button type="submit" class="btn btn-primary" style="min-height: 48px;">حفظ</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <div class="card mb-4">
                     <div class="card-header"><h3 class="card-title">مناطق التوصيل وأسعارها</h3></div>
                     <div class="card-body">
@@ -543,6 +596,98 @@
             </div>
 
             <!-- قسم التقارير -->
+            <!-- قسم المشتريات والأرباح -->
+            <div id="purchasesSection" class="section" style="display: none;">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">صافي الربح (الإيرادات − المشتريات)</h3></div>
+                    <div class="card-body">
+                        <div class="form-row" style="margin-bottom: 0.5rem;">
+                            <div class="form-group">
+                                <label>الفترة</label>
+                                <select class="form-select" id="pfRange" onchange="onPfRangeChange()">
+                                    <option value="all">كل الفترة</option>
+                                    <option value="today">اليوم</option>
+                                    <option value="7days">آخر 7 أيام</option>
+                                    <option value="30days">آخر 30 يوم</option>
+                                    <option value="month">هذا الشهر</option>
+                                    <option value="custom">مخصص</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="pfCustomWrap" style="display:none;">
+                                <label>من / إلى</label>
+                                <div style="display:flex; gap:0.5rem;">
+                                    <input type="date" class="form-input" id="pfStart" onchange="renderPurchases()">
+                                    <input type="date" class="form-input" id="pfEnd" onchange="renderPurchases()">
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; margin-bottom:1rem; font-size:0.9rem;">
+                            <label style="display:flex; gap:0.4rem; align-items:center; cursor:pointer;"><input type="checkbox" id="pfDeliveredOnly" onchange="renderPurchases()"> احسب الطلبات "تم التوصيل" فقط</label>
+                        </div>
+
+                        <div class="pf-verdict even" id="pfVerdict">
+                            <div class="pf-verdict-title" id="pfVerdictTitle">—</div>
+                            <div class="pf-verdict-amount" id="pfVerdictAmount">0.00 ج.م</div>
+                            <div id="pfVerdictSub" style="font-size:0.9rem;"></div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card success"><div class="stat-card-value" id="pfRevenue">0 ج.م</div><div class="stat-card-subtitle">إجمالي الإيراد (مبيعات الأصناف بدون التوصيل)</div></div>
+                            <div class="stat-card danger"><div class="stat-card-value" id="pfTotalPurchases">0 ج.م</div><div class="stat-card-subtitle">إجمالي المشتريات (شامل الأصول)</div></div>
+                            <div class="stat-card"><div class="stat-card-value" id="pfAssets">0 ج.م</div><div class="stat-card-subtitle">منها: أصول ومعدات</div></div>
+                            <div class="stat-card"><div class="stat-card-value" id="pfOperating">0 ج.م</div><div class="stat-card-subtitle">منها: مشتريات ومصروفات تشغيل</div></div>
+                            <div class="stat-card"><div class="stat-card-value" id="pfOperatingProfit">0 ج.م</div><div class="stat-card-subtitle">ربح التشغيل (قبل خصم الأصول)</div></div>
+                            <div class="stat-card"><div class="stat-card-value" id="pfRecovery">0%</div><div class="stat-card-subtitle">نسبة استرداد المشتريات من الإيراد</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title" id="pfFormTitle">إضافة مشتريات</h3></div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group"><label>اسم الصنف المشترى *</label><input type="text" class="form-input" id="pfName" placeholder="مثال: فرن / دقيق / علب تغليف"></div>
+                            <div class="form-group"><label>النوع *</label>
+                                <select class="form-select" id="pfCategory">
+                                    <option value="asset">أصول ومعدات</option>
+                                    <option value="ingredients">مواد خام وخامات</option>
+                                    <option value="packaging">تغليف</option>
+                                    <option value="operating">مصروفات تشغيل (إيجار، كهرباء، مواصلات...)</option>
+                                    <option value="other">أخرى</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pf-grid3">
+                            <div class="form-group"><label>الكمية *</label><input type="number" class="form-input" id="pfQty" min="0.01" step="any" value="1" oninput="calcPurchaseTotal()"></div>
+                            <div class="form-group"><label>سعر الوحدة (ج.م) *</label><input type="number" class="form-input" id="pfUnit" min="0" step="0.01" oninput="calcPurchaseTotal()"></div>
+                            <div class="form-group"><label>الإجمالي</label><input type="text" class="form-input" id="pfTotalField" readonly value="0.00 ج.م"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>تاريخ الشراء *</label><input type="date" class="form-input" id="pfDate"></div>
+                            <div class="form-group"><label>المورد / مكان الشراء</label><input type="text" class="form-input" id="pfSupplier" placeholder="اختياري"></div>
+                        </div>
+                        <div class="form-group"><label>ملاحظات</label><input type="text" class="form-input" id="pfNotes" placeholder="اختياري"></div>
+                        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                            <button class="btn btn-primary" id="pfSaveBtn" onclick="savePurchase()"><i class="fas fa-save"></i> حفظ</button>
+                            <button class="btn btn-outline" id="pfCancelBtn" style="display:none;" onclick="resetPurchaseForm()">إلغاء التعديل</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">سجل المشتريات (حسب الفترة المختارة)</h3></div>
+                    <div class="card-body">
+                        <div id="pfCategoryBreakdown" style="margin-bottom:1rem;"></div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead><tr><th>التاريخ</th><th>الصنف</th><th>النوع</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المورد</th><th>إجراء</th></tr></thead>
+                                <tbody id="pfTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="reportsSection" class="section" style="display: none;">
                 <div class="card">
                     <div class="card-header"><h3 class="card-title">التقارير</h3></div>
@@ -584,7 +729,10 @@
                                 <div class="stat-card-value" id="reportDelivering">0</div>
                                 <div class="stat-card-subtitle">خرجت للتوصيل (اضغط للعرض)</div>
                             </div>
+                            <div class="stat-card warning"><div class="stat-card-value" id="reportDiscountTotal">0 ج.م</div><div class="stat-card-subtitle">إجمالي الخصومات</div></div>
+                            <div class="stat-card"><div class="stat-card-value" id="reportTopDiscountMode" style="font-size:1.25rem;">—</div><div class="stat-card-subtitle" id="reportTopDiscountSub">أكثر نوع خصم استُخدم</div></div>
                         </div>
+                        <div id="reportDiscountBreakdown" style="margin-top:1.25rem;"></div>
                     </div>
                 </div>
             </div>
@@ -829,7 +977,7 @@
         let soundAlertEnabled = localStorage.getItem('soundAlertEnabled') !== 'false';
         let sharedAudioCtx = null;
         let toastTimeoutId = null;
-        let ordersUnsubscribe = null, menuUnsubscribe = null, promoUnsubscribe = null;
+        let ordersUnsubscribe = null, menuUnsubscribe = null, promoUnsubscribe = null, purchasesUnsubscribe = null, allPurchases = [], editingPurchaseId = null;
         let sizeCounter = 0;
 
         function escapeHtml(value) { return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
@@ -1042,6 +1190,7 @@
             if (ordersUnsubscribe) { ordersUnsubscribe(); ordersUnsubscribe = null; }
             if (menuUnsubscribe) { menuUnsubscribe(); menuUnsubscribe = null; }
             if (promoUnsubscribe) { promoUnsubscribe(); promoUnsubscribe = null; }
+            if (purchasesUnsubscribe) { purchasesUnsubscribe(); purchasesUnsubscribe = null; }
         }
 
         function setupRealtimeOrders(databaseInstance) {
@@ -1070,6 +1219,7 @@
                 renderOrders();
                 updateStats();
                 updateReports();
+                renderPurchases();
             }, (error) => { console.error("خطأ في جلب البيانات لحظياً: ", error); });
         }
 
@@ -1084,8 +1234,15 @@
                 renderMenu();
             }, (error) => { console.error('Menu listener error:', error); });
 
+            purchasesUnsubscribe = onValue(ref(db, 'purchases'), (snapshot) => {
+                const data = snapshot.val();
+                allPurchases = data ? Object.entries(data).map(([id, item]) => ({ id, ...item })) : [];
+                renderPurchases();
+            }, (error) => { console.error('Purchases listener error:', error); });
+
             fetchPromoCodes();
             fetchAutoDiscountSettings();
+            fetchMinOrderSettings();
             fetchDeliveryAreas();
         }
 
@@ -1155,6 +1312,36 @@
         // عمليات الخصم التلقائي على الأوردر
         document.getElementById('auto-discount-enabled').addEventListener('change', function() {
             document.getElementById('auto-discount-enabled-label').textContent = this.checked ? 'مفعّل' : 'متوقف';
+        });
+
+        function fetchMinOrderSettings() {
+            onValue(ref(db, 'settings/minOrder'), (snapshot) => {
+                const data = snapshot.val();
+                const enabled = data ? data.enabled !== false : true;
+                const amount = data ? (Number(data.amount) || 0) : 150;
+                document.getElementById('min-order-enabled').checked = enabled;
+                document.getElementById('min-order-enabled-label').textContent = enabled ? 'مفعّل' : 'متوقف';
+                document.getElementById('min-order-amount').value = amount;
+            }, (error) => { console.error('خطأ في جلب إعدادات الحد الأدنى:', error); });
+        }
+
+        document.getElementById('min-order-enabled').addEventListener('change', function() {
+            document.getElementById('min-order-enabled-label').textContent = this.checked ? 'مفعّل' : 'متوقف';
+        });
+
+        document.getElementById('min-order-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            const enabled = document.getElementById('min-order-enabled').checked;
+            const amount = parseFloat(document.getElementById('min-order-amount').value);
+            if (isNaN(amount) || amount < 0) { alert('الرجاء إدخال رقم صحيح وموجب.'); return; }
+            try {
+                await set(ref(db, 'settings/minOrder'), { enabled, amount, updatedAt: new Date().toISOString() });
+                alert('تم حفظ إعدادات الحد الأدنى للطلب بنجاح!');
+            } catch (error) {
+                console.error('خطأ في حفظ إعدادات الحد الأدنى:', error);
+                alert('حدث خطأ أثناء الحفظ.');
+            }
         });
 
         function fetchAutoDiscountSettings() {
@@ -1298,6 +1485,7 @@
             }, 0);
             
             document.getElementById('totalOrders').textContent = todayOrders.length;
+            renderOverviewDiscounts(todayOrders);
             document.getElementById('totalSales').textContent = formatMoney(todaySales);
             document.getElementById('completedOrders').textContent = allOrders.filter(o => o.status === 'delivered').length;
             document.getElementById('cancelledOrders').textContent = allOrders.filter(o => o.status === 'cancelled').length;
@@ -2058,6 +2246,220 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             catch (error) { console.error('Error deleting item:', error); alert('حدث خطأ أثناء حذف الصنف.'); }
         };
 
+        // ===== المشتريات وصافي الربح =====
+        const PURCHASE_CATEGORIES = { asset: 'أصول ومعدات', ingredients: 'مواد خام وخامات', packaging: 'تغليف', operating: 'مصروفات تشغيل', other: 'أخرى' };
+
+        function pfLocalDateStr(d) {
+            const pad = n => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+
+        function getPfRange() {
+            const range = document.getElementById('pfRange').value;
+            const now = new Date();
+            let start = null, end = null;
+            if (range === 'today') { start = new Date(now); end = new Date(now); }
+            else if (range === '7days') { start = new Date(now); start.setDate(start.getDate() - 6); end = new Date(now); }
+            else if (range === '30days') { start = new Date(now); start.setDate(start.getDate() - 29); end = new Date(now); }
+            else if (range === 'month') { start = new Date(now.getFullYear(), now.getMonth(), 1); end = new Date(now); }
+            else if (range === 'custom') {
+                const s = document.getElementById('pfStart').value, e = document.getElementById('pfEnd').value;
+                if (s) start = new Date(`${s}T00:00:00`);
+                if (e) end = new Date(`${e}T00:00:00`); else if (s) end = new Date(`${s}T00:00:00`);
+            }
+            if (start) start.setHours(0, 0, 0, 0);
+            if (end) end.setHours(23, 59, 59, 999);
+            return { start, end };
+        }
+
+        window.onPfRangeChange = function() {
+            document.getElementById('pfCustomWrap').style.display = document.getElementById('pfRange').value === 'custom' ? '' : 'none';
+            renderPurchases();
+        };
+
+        window.calcPurchaseTotal = function() {
+            const qty = parseFloat(document.getElementById('pfQty').value) || 0;
+            const unit = parseFloat(document.getElementById('pfUnit').value) || 0;
+            const total = Math.round(qty * unit * 100) / 100;
+            document.getElementById('pfTotalField').value = total.toFixed(2) + ' ج.م';
+            return total;
+        };
+
+        window.resetPurchaseForm = function() {
+            editingPurchaseId = null;
+            ['pfName', 'pfUnit', 'pfSupplier', 'pfNotes'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('pfQty').value = '1';
+            document.getElementById('pfCategory').value = 'asset';
+            document.getElementById('pfDate').value = pfLocalDateStr(new Date());
+            document.getElementById('pfFormTitle').textContent = 'إضافة مشتريات';
+            document.getElementById('pfSaveBtn').innerHTML = '<i class="fas fa-save"></i> حفظ';
+            document.getElementById('pfCancelBtn').style.display = 'none';
+            calcPurchaseTotal();
+        };
+
+        window.editPurchase = function(id) {
+            const it = allPurchases.find(p => p.id === id);
+            if (!it) return;
+            editingPurchaseId = id;
+            document.getElementById('pfName').value = it.name || '';
+            document.getElementById('pfCategory').value = PURCHASE_CATEGORIES[it.category] ? it.category : 'other';
+            document.getElementById('pfQty').value = toNumber(it.qty) || 1;
+            document.getElementById('pfUnit').value = toNumber(it.unitPrice);
+            document.getElementById('pfDate').value = it.date || pfLocalDateStr(new Date());
+            document.getElementById('pfSupplier').value = it.supplier || '';
+            document.getElementById('pfNotes').value = it.notes || '';
+            document.getElementById('pfFormTitle').textContent = 'تعديل مشتريات';
+            document.getElementById('pfSaveBtn').innerHTML = '<i class="fas fa-save"></i> حفظ التعديل';
+            document.getElementById('pfCancelBtn').style.display = '';
+            calcPurchaseTotal();
+            document.getElementById('pfName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        window.savePurchase = async function() {
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            const name = document.getElementById('pfName').value.trim();
+            const qty = parseFloat(document.getElementById('pfQty').value);
+            const unit = parseFloat(document.getElementById('pfUnit').value);
+            const date = document.getElementById('pfDate').value;
+            if (!name) { alert('اكتب اسم الصنف المشترى.'); return; }
+            if (!(qty > 0)) { alert('الكمية لازم تكون أكبر من صفر.'); return; }
+            if (isNaN(unit) || unit < 0) { alert('اكتب سعر الوحدة بشكل صحيح.'); return; }
+            if (!date) { alert('اختار تاريخ الشراء.'); return; }
+            const data = {
+                name,
+                category: document.getElementById('pfCategory').value,
+                qty,
+                unitPrice: unit,
+                total: Math.round(qty * unit * 100) / 100,
+                date,
+                supplier: document.getElementById('pfSupplier').value.trim(),
+                notes: document.getElementById('pfNotes').value.trim(),
+                updatedAt: new Date().toISOString()
+            };
+            const btn = document.getElementById('pfSaveBtn');
+            btn.disabled = true;
+            try {
+                if (editingPurchaseId) {
+                    await update(ref(db, `purchases/${editingPurchaseId}`), data);
+                } else {
+                    data.createdAt = new Date().toISOString();
+                    await set(push(ref(db, 'purchases')), data);
+                }
+                resetPurchaseForm();
+            } catch (e) {
+                console.error('Purchase save error:', e);
+                alert('حصل خطأ أثناء الحفظ. لو الخطأ متكرر، اتأكد من صلاحيات Firebase لمسار purchases.');
+            }
+            btn.disabled = false;
+        };
+
+        window.deletePurchase = async function(id) {
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            if (!confirm('هل أنت متأكد من حذف هذه المشتريات؟')) return;
+            try {
+                await set(ref(db, `purchases/${id}`), null);
+                if (editingPurchaseId === id) resetPurchaseForm();
+            } catch (e) { console.error('Purchase delete error:', e); alert('حصل خطأ أثناء الحذف.'); }
+        };
+
+        function renderPurchases() {
+            const rangeEl = document.getElementById('pfRange');
+            if (!rangeEl) return;
+            const { start, end } = getPfRange();
+            const deliveredOnly = document.getElementById('pfDeliveredOnly').checked;
+
+            // الإيراد
+            let revenue = 0;
+            allOrders.forEach(order => {
+                if (deliveredOnly ? order.status !== 'delivered' : order.status === 'cancelled') return;
+                const d = getOrderDate(order);
+                if (start && (!d || d < start)) return;
+                if (end && (!d || d > end)) return;
+                const { subtotal, discount } = getOrderTotals(order);
+                revenue += Math.max(0, toNumber(subtotal) - toNumber(discount)); // بدون رسوم التوصيل
+            });
+
+            // المشتريات
+            const sDate = start ? pfLocalDateStr(start) : null;
+            const eDate = end ? pfLocalDateStr(end) : null;
+            const list = allPurchases
+                .filter(p => {
+                    if (!sDate && !eDate) return true;
+                    if (!p.date) return false;
+                    if (sDate && p.date < sDate) return false;
+                    if (eDate && p.date > eDate) return false;
+                    return true;
+                })
+                .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+
+            const byCat = {};
+            let totalPurchases = 0;
+            list.forEach(p => {
+                const cat = PURCHASE_CATEGORIES[p.category] ? p.category : 'other';
+                const amt = toNumber(p.total);
+                byCat[cat] = (byCat[cat] || 0) + amt;
+                totalPurchases += amt;
+            });
+            const assets = byCat.asset || 0;
+            const operating = totalPurchases - assets;
+            const net = revenue - totalPurchases;
+            const opProfit = revenue - operating;
+
+            document.getElementById('pfRevenue').textContent = formatMoney(revenue);
+            document.getElementById('pfTotalPurchases').textContent = formatMoney(totalPurchases);
+            document.getElementById('pfAssets').textContent = formatMoney(assets);
+            document.getElementById('pfOperating').textContent = formatMoney(operating);
+            document.getElementById('pfOperatingProfit').textContent = formatMoney(opProfit);
+            document.getElementById('pfRecovery').textContent = totalPurchases > 0 ? Math.round((revenue / totalPurchases) * 100) + '%' : '—';
+
+            const verdict = document.getElementById('pfVerdict');
+            const title = document.getElementById('pfVerdictTitle');
+            const amount = document.getElementById('pfVerdictAmount');
+            const sub = document.getElementById('pfVerdictSub');
+            const rounded = Math.round(net * 100) / 100;
+            if (revenue === 0 && totalPurchases === 0) {
+                verdict.className = 'pf-verdict even';
+                title.textContent = 'مفيش مبيعات ولا مشتريات في الفترة دي';
+                amount.textContent = '0.00 ج.م';
+                sub.textContent = '';
+            } else if (rounded > 0) {
+                verdict.className = 'pf-verdict profit';
+                title.innerHTML = '<i class="fas fa-arrow-trend-up"></i> أنت كسبان — صافي الربح';
+                amount.textContent = formatMoney(rounded);
+                sub.textContent = 'الإيراد ' + formatMoney(revenue) + ' − المشتريات ' + formatMoney(totalPurchases);
+            } else if (rounded < 0) {
+                verdict.className = 'pf-verdict loss';
+                title.innerHTML = '<i class="fas fa-arrow-trend-down"></i> أنت خسران — صافي الخسارة';
+                amount.textContent = formatMoney(Math.abs(rounded));
+                sub.textContent = 'لسه محتاج ' + formatMoney(Math.abs(rounded)) + ' مبيعات عشان تسترد المشتريات';
+            } else {
+                verdict.className = 'pf-verdict even';
+                title.textContent = 'تعادل — لا ربح ولا خسارة';
+                amount.textContent = '0.00 ج.م';
+                sub.textContent = '';
+            }
+
+            const breakdown = Object.keys(PURCHASE_CATEGORIES).filter(k => byCat[k]).map(k =>
+                `<span style="display:inline-block; background:var(--gray-100); padding:6px 12px; border-radius:20px; margin:0 0 6px 6px; font-size:0.85rem;">${PURCHASE_CATEGORIES[k]}: <strong>${formatMoney(byCat[k])}</strong></span>`).join('');
+            document.getElementById('pfCategoryBreakdown').innerHTML = breakdown;
+
+            const body = document.getElementById('pfTableBody');
+            body.innerHTML = list.length ? list.map(p => `
+                <tr>
+                    <td>${escapeHtml(p.date || '-')}</td>
+                    <td>${escapeHtml(p.name || '')}${p.notes ? `<div style="font-size:0.8rem; color:var(--gray-500);">${escapeHtml(p.notes)}</div>` : ''}</td>
+                    <td>${escapeHtml(PURCHASE_CATEGORIES[p.category] || PURCHASE_CATEGORIES.other)}</td>
+                    <td>${escapeHtml(String(toNumber(p.qty)))}</td>
+                    <td>${formatMoney(p.unitPrice)}</td>
+                    <td><strong>${formatMoney(p.total)}</strong></td>
+                    <td>${escapeHtml(p.supplier || '-')}</td>
+                    <td style="white-space:nowrap;">
+                        <button class="btn-sm" style="background:var(--primary); color:#fff;" onclick="editPurchase('${escapeHtml(p.id)}')"><i class="fas fa-pen"></i></button>
+                        <button class="btn-sm" style="background:var(--danger); color:#fff;" onclick="deletePurchase('${escapeHtml(p.id)}')"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>`).join('') : '<tr><td colspan="8" style="text-align:center; color:var(--gray-500); padding:1.5rem;">مفيش مشتريات مسجلة في الفترة دي</td></tr>';
+        }
+
         window.showSection = function(section) {
             document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.sidebar-menu-item').forEach(el => el.classList.remove('active'));
@@ -2065,6 +2467,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 overview: { id: 'overviewSection', title: 'لوحة التحكم' },
                 orders: { id: 'ordersSection', title: 'إدارة الطلبات' },
                 reports: { id: 'reportsSection', title: 'التقارير' },
+                purchases: { id: 'purchasesSection', title: 'المشتريات والأرباح' },
                 menu: { id: 'menuSection', title: 'إدارة المنيو' },
                 areas: { id: 'areasSection', title: 'مناطق التوصيل' },
                 promo: { id: 'promoSection', title: 'أكواد الخصم' }
@@ -2077,6 +2480,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             const activeMenuItem = document.querySelector(`.sidebar-menu-item[data-section="${section}"]`);
             if (activeMenuItem) activeMenuItem.classList.add('active');
             if (section === 'reports') updateReports();
+            if (section === 'purchases') { if (!document.getElementById('pfDate').value) resetPurchaseForm(); renderPurchases(); }
 
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
@@ -2103,6 +2507,72 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             if (start > end) { alert('تاريخ البداية يجب أن يكون قبل تاريخ النهاية.'); return; }
             updateReports();
         };
+
+        // ===== إحصائيات الخصومات =====
+        function getDiscountMode(order) {
+            const { discount } = getOrderTotals(order);
+            if (!(toNumber(discount) > 0)) return null;
+            if (order.isManual || order.invoiceEditedAt) return { key: 'manual', label: 'خصم يدوي (من الأدمن)' };
+            if (order.promoCode) return { key: 'promo', label: 'كود خصم', code: String(order.promoCode).toUpperCase() };
+            return { key: 'auto', label: 'خصم تلقائي (على قيمة الطلب)' };
+        }
+
+        function computeDiscountStats(orders) {
+            const modes = {}, codes = {};
+            let total = 0, count = 0;
+            orders.forEach(order => {
+                const mode = getDiscountMode(order);
+                if (!mode) return;
+                const amount = toNumber(getOrderTotals(order).discount);
+                total += amount; count++;
+                if (!modes[mode.key]) modes[mode.key] = { key: mode.key, label: mode.label, count: 0, amount: 0 };
+                modes[mode.key].count++; modes[mode.key].amount += amount;
+                if (mode.code) {
+                    if (!codes[mode.code]) codes[mode.code] = { code: mode.code, count: 0, amount: 0 };
+                    codes[mode.code].count++; codes[mode.code].amount += amount;
+                }
+            });
+            const byUse = (a, b) => b.count - a.count || b.amount - a.amount;
+            const modeList = Object.values(modes).sort(byUse);
+            const codeList = Object.values(codes).sort(byUse);
+            return { total, count, modeList, codeList, top: modeList[0] || null };
+        }
+
+        function topModeText(stats) {
+            if (!stats.top) return { main: '—', sub: 'مفيش خصومات' };
+            let main = stats.top.label;
+            if (stats.top.key === 'promo' && stats.codeList[0]) main = 'كود خصم: ' + stats.codeList[0].code;
+            return { main, sub: stats.top.count + ' طلب — ' + formatMoney(stats.top.amount) };
+        }
+
+        function renderOverviewDiscounts(todayOrders) {
+            const stats = computeDiscountStats(todayOrders.filter(o => o.status !== 'cancelled'));
+            const t = topModeText(stats);
+            document.getElementById('ovDiscountTotal').textContent = formatMoney(stats.total);
+            document.getElementById('ovTopDiscountMode').textContent = t.main;
+            document.getElementById('ovTopDiscountSub').textContent = stats.top ? t.sub : '';
+        }
+
+        function renderReportDiscounts(salesOrders) {
+            const stats = computeDiscountStats(salesOrders);
+            const t = topModeText(stats);
+            document.getElementById('reportDiscountTotal').textContent = formatMoney(stats.total);
+            document.getElementById('reportTopDiscountMode').textContent = t.main;
+            document.getElementById('reportTopDiscountSub').textContent = stats.top ? ('أكثر نوع خصم استُخدم — ' + t.sub) : 'أكثر نوع خصم استُخدم';
+            const box = document.getElementById('reportDiscountBreakdown');
+            if (!stats.count) { box.innerHTML = ''; return; }
+            const modeRows = stats.modeList.map(m => `<tr><td>${escapeHtml(m.label)}</td><td>${m.count}</td><td>${formatMoney(m.amount)}</td><td>${stats.total ? Math.round(m.amount / stats.total * 100) : 0}%</td></tr>`).join('');
+            const codeRows = stats.codeList.map(c => `<tr><td>${escapeHtml(c.code)}</td><td>${c.count}</td><td>${formatMoney(c.amount)}</td></tr>`).join('');
+            box.innerHTML = `
+                <h4 style="color:var(--primary-dark); margin-bottom:0.6rem;">تفصيل الخصومات (${stats.count} طلب عليه خصم)</h4>
+                <div class="table-container"><table class="data-table">
+                    <thead><tr><th>نوع الخصم</th><th>عدد الطلبات</th><th>إجمالي الخصم</th><th>النسبة</th></tr></thead>
+                    <tbody>${modeRows}</tbody></table></div>
+                ${codeRows ? `<h4 style="color:var(--primary-dark); margin:1rem 0 0.6rem;">أكواد الخصم المستخدمة</h4>
+                <div class="table-container"><table class="data-table">
+                    <thead><tr><th>الكود</th><th>عدد الطلبات</th><th>إجمالي الخصم</th></tr></thead>
+                    <tbody>${codeRows}</tbody></table></div>` : ''}`;
+        }
 
         function updateReports() {
             const now = new Date();
@@ -2158,6 +2628,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             document.getElementById('reportCancelled').textContent = cancelled;
             document.getElementById('reportDelivered').textContent = delivered;
             document.getElementById('reportDelivering').textContent = delivering;
+            renderReportDiscounts(salesOrders);
         }
 
         function resetReportValues() {
@@ -2169,6 +2640,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             document.getElementById('reportCancelled').textContent = '0';
             document.getElementById('reportDelivered').textContent = '0';
             document.getElementById('reportDelivering').textContent = '0';
+            renderReportDiscounts([]);
         }
 
         document.getElementById('orderModal').addEventListener('click', function(e) { if (e.target === this) closeOrderModal(); });

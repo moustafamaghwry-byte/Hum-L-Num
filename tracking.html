@@ -467,7 +467,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const MIN_ORDER_LIMIT = 150;
+        let MIN_ORDER_LIMIT = 150;
+        onValue(ref(db, 'settings/minOrder'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) MIN_ORDER_LIMIT = data.enabled === false ? 0 : (Number(data.amount) || 0);
+        }, (error) => { console.error('Min order settings listener error:', error); });
 
         let currentOrder = null;
         window.currentOrderId = null;
@@ -1291,8 +1295,8 @@
                 const remaining = MIN_ORDER_LIMIT - subtotal;
                 warningBox.style.display = 'flex';
                 warningText.textContent = currentLang === 'en' 
-                    ? `Minimum order value is 150 EGP. Current items: ${subtotal.toFixed(2)} EGP. You need ${remaining.toFixed(2)} EGP more.`
-                    : `الحد الأدنى للطلب هو 150 ج.م. قيمة المنتجات الحالية: ${subtotal.toFixed(2)} ج.م (يتبقى لك ${remaining.toFixed(2)} ج.م).`;
+                    ? `Minimum order value is ${MIN_ORDER_LIMIT} EGP. Current items: ${subtotal.toFixed(2)} EGP. You need ${remaining.toFixed(2)} EGP more.`
+                    : `الحد الأدنى للطلب هو ${MIN_ORDER_LIMIT} ج.م. قيمة المنتجات الحالية: ${subtotal.toFixed(2)} ج.م (يتبقى لك ${remaining.toFixed(2)} ج.م).`;
                 
                 saveBtn.disabled = true;
             } else {
@@ -1321,7 +1325,7 @@
             const { subtotal, grandTotal, deliveryFee } = calculateEditableTotals();
 
             if (subtotal < MIN_ORDER_LIMIT) {
-                alert(`${t.alertMinOrderLimit} ${subtotal.toFixed(2)} ${t.currency}`);
+                alert(`${t.alertMinOrderLimit.replace('150', MIN_ORDER_LIMIT)} ${subtotal.toFixed(2)} ${t.currency}`);
                 return;
             }
 

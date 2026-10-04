@@ -969,6 +969,14 @@
             updateTotals();
         });
 
+        onValue(ref(db, 'settings/minOrder'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                CONFIG.minOrderLimit = data.enabled === false ? 0 : (Number(data.amount) || 0);
+                updateTotals();
+            }
+        }, (error) => { console.error('Min order settings listener error:', error); });
+
         window.toggleLanguage = function() {
             currentLang = currentLang === 'ar' ? 'en' : 'ar';
             applyLanguage();
@@ -1471,6 +1479,12 @@
             if (subtotal < CONFIG.minOrderLimit && cart.length > 0) {
                 const diff = CONFIG.minOrderLimit - subtotal;
                 minWarning.style.display = 'block';
+                const minTextEl = document.getElementById('minOrderText');
+                if (minTextEl) {
+                    minTextEl.setAttribute('data-ar', `الحد الأدنى للطلب ${CONFIG.minOrderLimit} ج.م`);
+                    minTextEl.setAttribute('data-en', `Minimum order ${CONFIG.minOrderLimit} EGP`);
+                    minTextEl.textContent = currentLang === 'ar' ? `الحد الأدنى للطلب ${CONFIG.minOrderLimit} ج.م` : `Minimum order ${CONFIG.minOrderLimit} EGP`;
+                }
                 remainingSpan.textContent = currentLang === 'ar' 
                     ? `فاضل ${diff.toFixed(2)} ج.م للوصول للحد الأدنى`
                     : `Add ${diff.toFixed(2)} EGP more to reach minimum order`;
