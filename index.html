@@ -1093,8 +1093,9 @@
             const isBestseller = bestsellerIds.has(item.id) || item.bestseller === true;
             const isAvailable = item.available !== false;
             const description = currentLang === 'ar' ? (item.descriptionAr || item.arDesc || item.description || '') : (item.descriptionEn || item.enDesc || item.description || '');
-            const weight = defaultSize.weight || (currentLang === 'ar' ? '400 جم' : '400g');
-            const servingsText = formatServingsRange(defaultSize.servings);
+            const weight = String(defaultSize.weight || '').trim();
+            const rawServings = (Array.isArray(item.sizes) && item.sizes.length) ? item.sizes[0].servings : item.servings;
+            const servingsText = (rawServings !== null && rawServings !== undefined && String(rawServings).trim() !== '') ? formatServingsRange(rawServings) : '';
             const priceLabel = hasMultipleSizes(item) ? `<span class="price-from-label">${currentLang === 'ar' ? 'يبدأ من' : 'From'}</span>` : '';
 
             const cartItem = cart.find(c => c.id === item.id && c.sizeWeight === defaultSize.weight);
@@ -1116,14 +1117,14 @@
                     <h3 class="menu-item-title">${name}</h3>
                     ${description ? `<p class="menu-item-description">${description}</p>` : ''}
                     <div class="menu-item-meta">
-                        <div class="menu-item-weight">
+                        ${weight ? `<div class="menu-item-weight">
                             <i class="fas fa-weight-hanging"></i>
                             <span>${weight}</span>
-                        </div>
-                        <div class="menu-item-servings">
+                        </div>` : ''}
+                        ${servingsText ? `<div class="menu-item-servings">
                             <i class="fas fa-users"></i>
                             <span>${servingsText}</span>
-                        </div>
+                        </div>` : ''}
                         ${hasPrepOptions(item) ? `<div class="menu-item-servings"><i class="fas fa-thermometer-half"></i><span>${currentLang === 'ar' ? 'فيه حالات تحضير' : 'Has prep options'}</span></div>` : ''}
                     </div>
                     
@@ -1302,9 +1303,12 @@
             document.getElementById('qv-title').textContent = currentLang === 'ar' ? 'تفاصيل الصنف' : 'Item Details';
             document.getElementById('qv-name').textContent = getItemName(item);
             document.getElementById('qv-desc').textContent = (currentLang === 'ar' ? (item.descriptionAr || item.arDesc || item.description) : (item.descriptionEn || item.enDesc || item.description)) || (currentLang === 'ar' ? 'طبق مميز ومحضر بعناية' : 'A special dish prepared with care');
-            document.getElementById('qv-weight').textContent = item.weight || (currentLang === 'ar' ? 'غير محدد' : 'N/A');
+            const qvWeight = String(getDefaultSize(item).weight || '').trim();
+            const qvWeightEl = document.getElementById('qv-weight');
+            qvWeightEl.textContent = qvWeight;
+            if (qvWeightEl.parentElement) qvWeightEl.parentElement.style.display = qvWeight ? '' : 'none';
             document.getElementById('qv-category').textContent = item.cat || item.category || (currentLang === 'ar' ? 'عام' : 'General');
-            document.getElementById('qv-price').textContent = `${getDefaultSize(item).price} ${getCurrency()}`;
+            document.getElementById('qv-price').textContent = `${hasMultipleSizes(item) ? (currentLang === 'ar' ? 'يبدأ من ' : 'From ') : ''}${getDefaultSize(item).price} ${getCurrency()}`;
             const imgEl = document.getElementById('qv-image');
             imgEl.src = item.image || '';
             imgEl.style.display = item.image ? 'block' : 'none';

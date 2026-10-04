@@ -374,6 +374,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">إدارة الطلبات</h3>
+                        <button class="btn btn-primary" style="width: auto; min-height: 38px;" onclick="openManualOrderModal()"><i class="fas fa-file-invoice"></i> طلب خاص / فاتورة يدوية</button>
                         <button class="btn" style="background: var(--danger); color: #fff; width: auto; min-height: 38px;" onclick="clearAllOrders()"><i class="fas fa-trash-alt"></i> مسح كل الطلبات وإعادة الترقيم</button>
                     </div>
                     <div class="card-body">
@@ -601,7 +602,77 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeOrderModal()">إغلاق</button>
                 <button class="btn" style="background: var(--danger); color: #fff;" onclick="deleteOrder(currentOrderId)"><i class="fas fa-trash-alt"></i> حذف الطلب</button>
+                <button class="btn btn-outline" id="editInvoiceBtn" onclick="startInvoiceEdit()"><i class="fas fa-pen"></i> تعديل الفاتورة</button>
                 <button class="btn btn-primary" onclick="saveOrderChanges()">حفظ التعديلات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Order Modal -->
+    <div class="modal-overlay" id="manualOrderModal">
+        <div class="modal" style="max-width: 760px;">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-file-invoice"></i> طلب خاص (فاتورة يدوية)</h3>
+                <button class="modal-close" onclick="closeManualOrderModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="manualFormView">
+                    <div class="form-row">
+                        <div class="form-group"><label>اسم العميل *</label><input type="text" class="form-input" id="moName" placeholder="الاسم"></div>
+                        <div class="form-group"><label>رقم الموبايل * (للتتبع)</label><input type="tel" class="form-input" id="moPhone" placeholder="01xxxxxxxxx" inputmode="numeric"></div>
+                    </div>
+                    <div class="form-group"><label>العنوان</label><input type="text" class="form-input" id="moAddress" placeholder="العنوان بالتفصيل"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>موعد التوصيل (اختياري)</label><input type="text" class="form-input" id="moDeliveryTime" placeholder="مثال: بكرة 3 العصر"></div>
+                        <div class="form-group"><label>طريقة الدفع</label>
+                            <select class="form-select" id="moPayment"><option value="cash">كاش</option><option value="card">فيزا</option></select>
+                        </div>
+                    </div>
+
+                    <h4 style="color:var(--primary-dark); margin: 0.5rem 0 0.75rem;">الأصناف</h4>
+                    <div id="moItems"></div>
+                    <button type="button" class="btn btn-outline" style="width:100%; margin-bottom:1.25rem;" onclick="addManualItemRow()"><i class="fas fa-plus"></i> إضافة صنف</button>
+
+                    <div class="form-row">
+                        <div class="form-group"><label>مصاريف التوصيل (ج.م)</label><input type="number" class="form-input" id="moDelivery" min="0" step="0.01" value="0" oninput="calcManualTotals()"></div>
+                        <div class="form-group"><label>الخصم (ج.م)</label><input type="number" class="form-input" id="moDiscount" min="0" step="0.01" value="0" oninput="calcManualTotals()"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>حالة الطلب</label>
+                            <select class="form-select" id="moStatus">
+                                <option value="received">تم الاستلام</option>
+                                <option value="preparing">جاري التحضير</option>
+                                <option value="delivering">خرج للتوصيل</option>
+                                <option value="delivered">تم التوصيل</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>ملاحظات عامة</label><input type="text" class="form-input" id="moNote" placeholder="اختياري"></div>
+                    </div>
+
+                    <div style="background:var(--gray-100); padding:1rem; border-radius:8px;">
+                        <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">سعر الأصناف: <span id="moSubtotal">0.00 ج.م</span></p>
+                        <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">الخصم: <span id="moDiscountText">-0.00 ج.م</span></p>
+                        <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">التوصيل: <span id="moDeliveryText">0.00 ج.م</span></p>
+                        <hr style="border:0; border-top:1px solid var(--gray-300); margin:0.5rem 0;">
+                        <h4 style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; color:var(--primary);">الإجمالي: <span id="moTotal">0.00 ج.م</span></h4>
+                    </div>
+                </div>
+
+                <div id="manualSuccessView" style="display:none; text-align:center;">
+                    <div style="font-size:3rem; color:var(--primary);"><i class="fas fa-check-circle"></i></div>
+                    <h3 style="margin:0.5rem 0;">تم إنشاء الطلب</h3>
+                    <div style="font-size:2.2rem; font-weight:900; color:var(--primary); margin-bottom:0.5rem;" id="moOrderNumber">#0000</div>
+                    <p style="color:var(--gray-600); margin-bottom:1rem;">العميل يقدر يتابع الطلب ويشوف الأصناف والأسعار برقم الطلب أو رقم موبايله من صفحة التتبع.</p>
+                    <input type="text" class="form-input" id="moTrackLink" readonly style="direction:ltr; text-align:left; margin-bottom:0.75rem;">
+                    <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-outline" style="flex:1; min-width:140px;" onclick="copyManualTrackLink()"><i class="fas fa-copy"></i> نسخ الرابط</button>
+                        <button type="button" class="btn btn-primary" style="flex:1; min-width:140px;" onclick="sendManualOrderWhatsApp()"><i class="fab fa-whatsapp"></i> إرسال للعميل واتساب</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="manualFooter">
+                <button class="btn btn-outline" onclick="closeManualOrderModal()">إلغاء</button>
+                <button class="btn btn-primary" id="moSaveBtn" onclick="saveManualOrder()"><i class="fas fa-save"></i> حفظ وإنشاء رقم طلب</button>
             </div>
         </div>
     </div>
@@ -736,7 +807,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, onValue, push, update, set, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, onValue, push, update, set, remove, get, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -1303,6 +1374,8 @@
             const order = allOrders.find(o => o.id === orderId);
             if (!order) return;
             currentOrderId = orderId;
+            invoiceEditMode = false;
+            { const eb = document.getElementById('editInvoiceBtn'); if (eb) eb.style.display = ''; }
             document.getElementById('modalOrderNumber').textContent = String(order.orderNumber || 'N/A');
             
             const cust = getCustomerDetails(order);
@@ -1338,7 +1411,7 @@
                     <p><strong>طريقة الدفع:</strong> ${escapeHtml(payMethodVal)}</p>
                     ${order.orderNote || order.note ? `<p style="margin-top:0.25rem; color:var(--primary-light);"><strong>ملاحظات عامة:</strong> ${escapeHtml(order.orderNote || order.note)}</p>` : ''}
                 </div>
-                <div style="margin-bottom:1.5rem;"><h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">الأصناف</h4>${itemsList}</div>
+                <div id="orderItemsBlock" style="margin-bottom:1.5rem;"><h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">الأصناف</h4>${itemsList}</div>
                 <div style="margin-bottom:1.5rem;">
                     <h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">حالة الطلب</h4>
                     <select class="form-select" id="orderStatusSelect">
@@ -1349,7 +1422,7 @@
                         <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>ملغي</option>
                     </select>
                 </div>
-                <div class="order-details-summary" style="background:var(--gray-100); padding:1rem; border-radius:8px;">
+                <div id="orderSummaryBlock" class="order-details-summary" style="background:var(--gray-100); padding:1rem; border-radius:8px;">
                     <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">سعر المنتجات: <span id="orderSubtotalText">${subtotal.toFixed(2)} ج.م</span></p>
                     <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">الخصم: <span id="orderDiscountText" class="text-danger">-${discount.toFixed(2)} ج.م</span></p>
                     <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">التوصيل: ${(order.deliveryArea && order.deliveryArea.pending) ? `<span id="orderDeliveryText" style="display:flex; align-items:center; gap:6px;"><input type="number" id="orderDeliveryFeeInput" class="form-input" min="0" step="0.01" placeholder="حدد السعر" style="width:120px; min-height:36px; padding:4px 8px;"> ج.م</span>` : `<span id="orderDeliveryText">${delivery.toFixed(2)} ج.م</span>`}</p>
@@ -1360,12 +1433,320 @@
             document.getElementById('orderModal').classList.add('active'); document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
         };
 
-        window.closeOrderModal = function() { document.getElementById('orderModal').classList.remove('active'); document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open'); currentOrderId = null; };
+        // ===== تعديل الفاتورة (أصناف / كميات / أسعار / خصم / توصيل) =====
+        let invoiceEditMode = false;
+
+        function invoiceRowHtml(idx, name, qty, price, notes, sizeWeight) {
+            return `<div class="ie-row" data-idx="${idx}" style="background:var(--gray-50); border-radius:8px; padding:0.75rem; margin-bottom:0.6rem;">
+                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+                    <input type="text" class="form-input ie-name" placeholder="اسم الصنف" style="flex:1;" value="${escapeHtml(String(name))}">
+                    <button type="button" class="btn-sm" style="background:var(--danger); color:#fff; flex:0 0 40px;" onclick="removeInvoiceRow(this)"><i class="fas fa-trash-alt"></i></button>
+                </div>
+                ${sizeWeight ? `<div style="font-size:0.8rem; color:var(--gray-500); margin-bottom:0.4rem;">الحجم: ${escapeHtml(String(sizeWeight))}</div>` : ''}
+                <div style="display:grid; grid-template-columns: 1fr 1fr 2fr; gap:0.5rem;">
+                    <input type="number" class="form-input ie-qty" placeholder="الكمية" min="1" step="1" value="${qty}" oninput="calcInvoiceEdit()">
+                    <input type="number" class="form-input ie-price" placeholder="سعر الوحدة" min="0" step="0.01" value="${price}" oninput="calcInvoiceEdit()">
+                    <input type="text" class="form-input ie-notes" placeholder="ملاحظات الصنف" value="${escapeHtml(String(notes))}">
+                </div>
+            </div>`;
+        }
+
+        window.startInvoiceEdit = function() {
+            const order = allOrders.find(o => o.id === currentOrderId);
+            if (!order) return;
+            invoiceEditMode = true;
+            const rawItems = order.items;
+            const items = Array.isArray(rawItems) ? rawItems : (rawItems ? Object.values(rawItems) : []);
+            const t = getOrderTotals(order);
+            const rows = items.map((it, i) => invoiceRowHtml(i, it.ar || it.name || it.nameAr || '', toNumber(it.qty || it.quantity || 1), toNumber(it.price), it.notes || '', it.sizeWeight)).join('');
+
+            document.getElementById('orderItemsBlock').innerHTML = `
+                <h4 style="color:var(--primary-dark); margin-bottom:0.75rem;">الأصناف (وضع التعديل)</h4>
+                <div id="ieItems">${rows}</div>
+                <button type="button" class="btn btn-outline" style="width:100%;" onclick="addInvoiceRow()"><i class="fas fa-plus"></i> إضافة صنف</button>`;
+
+            document.getElementById('orderSummaryBlock').innerHTML = `
+                <div class="form-row" style="margin-bottom:0.75rem;">
+                    <div><label style="font-size:0.85rem; font-weight:700;">الخصم (ج.م) — خليه 0 لإزالته</label><input type="number" class="form-input" id="ieDiscount" min="0" step="0.01" value="${toNumber(t.discount)}" oninput="calcInvoiceEdit()"></div>
+                    <div><label style="font-size:0.85rem; font-weight:700;">مصاريف التوصيل (ج.م)</label><input type="number" class="form-input" id="ieDelivery" min="0" step="0.01" value="${toNumber(t.deliveryFee)}" oninput="calcInvoiceEdit()"></div>
+                </div>
+                <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">سعر الأصناف: <span id="ieSubtotal">0.00 ج.م</span></p>
+                <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">الخصم: <span id="ieDiscountText" class="text-danger">-0.00 ج.م</span></p>
+                <p style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">التوصيل: <span id="ieDeliveryText">0.00 ج.م</span></p>
+                <hr style="border:0; border-top:1px solid var(--gray-300); margin:0.5rem 0;">
+                <h4 style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; color:var(--primary);">الإجمالي النهائي: <span id="ieTotal">0.00 ج.م</span></h4>
+                <button type="button" class="btn btn-outline" style="width:100%; margin-top:0.75rem;" onclick="viewOrder(currentOrderId)"><i class="fas fa-undo"></i> إلغاء التعديل</button>`;
+
+            document.getElementById('editInvoiceBtn').style.display = 'none';
+            calcInvoiceEdit();
+        };
+
+        window.addInvoiceRow = function() {
+            document.getElementById('ieItems').insertAdjacentHTML('beforeend', invoiceRowHtml(-1, '', 1, '', '', ''));
+            calcInvoiceEdit();
+        };
+
+        window.removeInvoiceRow = function(btn) {
+            if (document.querySelectorAll('#ieItems .ie-row').length <= 1) { alert('لازم يفضل صنف واحد على الأقل.'); return; }
+            btn.closest('.ie-row').remove();
+            calcInvoiceEdit();
+        };
+
+        function readInvoiceRows() {
+            return Array.from(document.querySelectorAll('#ieItems .ie-row')).map(r => ({
+                idx: parseInt(r.dataset.idx, 10),
+                name: r.querySelector('.ie-name').value.trim(),
+                qty: parseFloat(r.querySelector('.ie-qty').value) || 0,
+                price: parseFloat(r.querySelector('.ie-price').value),
+                notes: r.querySelector('.ie-notes').value.trim()
+            }));
+        }
+
+        window.calcInvoiceEdit = function() {
+            const rows = readInvoiceRows();
+            const subtotal = rows.reduce((sum, r) => sum + r.qty * (isNaN(r.price) ? 0 : r.price), 0);
+            const delivery = Math.max(0, parseFloat(document.getElementById('ieDelivery').value) || 0);
+            const discount = Math.min(Math.max(0, parseFloat(document.getElementById('ieDiscount').value) || 0), subtotal);
+            const total = subtotal - discount + delivery;
+            document.getElementById('ieSubtotal').textContent = subtotal.toFixed(2) + ' ج.م';
+            document.getElementById('ieDiscountText').textContent = '-' + discount.toFixed(2) + ' ج.م';
+            document.getElementById('ieDeliveryText').textContent = delivery.toFixed(2) + ' ج.م';
+            document.getElementById('ieTotal').textContent = total.toFixed(2) + ' ج.م';
+            return { subtotal, delivery, discount, total };
+        };
+
+        async function saveInvoiceEdit(statusValue) {
+            const ord = allOrders.find(o => o.id === currentOrderId);
+            if (!ord) { closeOrderModal(); return; }
+            const rows = readInvoiceRows();
+            for (const r of rows) {
+                if (!r.name) { alert('اكتب اسم كل صنف.'); return; }
+                if (r.qty <= 0) { alert('الكمية لازم تكون أكبر من صفر.'); return; }
+                if (isNaN(r.price) || r.price < 0) { alert('اكتب سعر صحيح لكل صنف.'); return; }
+            }
+            const rawItems = ord.items;
+            const oldItems = Array.isArray(rawItems) ? rawItems : (rawItems ? Object.values(rawItems) : []);
+            const newItems = rows.map(r => {
+                const orig = r.idx >= 0 ? (oldItems[r.idx] || {}) : { isCustom: true };
+                const item = { ...orig, ar: r.name, qty: r.qty, price: r.price };
+                if ('name' in orig) item.name = r.name;
+                if ('nameAr' in orig) item.nameAr = r.name;
+                const oldName = orig.ar || orig.name || orig.nameAr || '';
+                if (r.idx >= 0 && oldName !== r.name) { delete item.en; delete item.nameEn; }
+                if ('quantity' in orig) item.quantity = r.qty;
+                if (r.notes) item.notes = r.notes; else delete item.notes;
+                return item;
+            });
+            const t = calcInvoiceEdit();
+            const updates = {
+                status: statusValue,
+                updatedAt: new Date().toISOString(),
+                invoiceEditedAt: new Date().toISOString(),
+                items: newItems,
+                'totals/subtotal': t.subtotal,
+                'totals/discount': t.discount,
+                'totals/deliveryFee': t.delivery,
+                'totals/grandTotal': t.total,
+                'totals/deliveryFeePending': false
+            };
+            if (ord.deliveryArea) { updates['deliveryArea/fee'] = t.delivery; updates['deliveryArea/pending'] = false; }
+            if (ord.subtotal !== undefined) updates.subtotal = t.subtotal;
+            if (ord.discount !== undefined) updates.discount = t.discount;
+            if (ord.deliveryFee !== undefined) updates.deliveryFee = t.delivery;
+            if (ord.total !== undefined) updates.total = t.total;
+            try {
+                await update(ref(db, `orders/${currentOrderId}`), updates);
+                alert('تم تعديل الفاتورة بنجاح.');
+                closeOrderModal();
+            } catch (e) { console.error('Invoice edit error:', e); alert('حصل خطأ أثناء حفظ التعديل.'); }
+        }
+
+        // ===== طلب خاص / فاتورة يدوية =====
+        let lastManualOrder = null;
+
+        async function getNextManualOrderNumber() {
+            try {
+                const freedSnap = await get(ref(db, 'freedOrderNumbers'));
+                const freedData = freedSnap.val();
+                if (freedData) {
+                    const freeNumbers = Object.keys(freedData).map(n => parseInt(n, 10)).filter(n => !isNaN(n)).sort((a, b) => a - b);
+                    for (const num of freeNumbers) {
+                        const result = await runTransaction(ref(db, `freedOrderNumbers/${num}`), (current) => {
+                            if (current === true) return null;
+                            return;
+                        });
+                        if (result.committed) return num;
+                    }
+                }
+            } catch (e) { console.error('Error checking freed order numbers:', e); }
+            let nextNum = 1000;
+            await runTransaction(ref(db, 'orderCounter'), (current) => {
+                nextNum = (current || 1000) + 1;
+                return nextNum;
+            });
+            return nextNum;
+        }
+
+        window.addManualItemRow = function(name = '', qty = 1, price = '', notes = '') {
+            const row = document.createElement('div');
+            row.className = 'mo-item-row';
+            row.style.cssText = 'background:var(--gray-50); border-radius:8px; padding:0.75rem; margin-bottom:0.6rem;';
+            row.innerHTML = `
+                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+                    <input type="text" class="form-input mo-name" placeholder="اسم الصنف (اكتبه بإيدك)" style="flex:1;" value="${escapeHtml(String(name))}">
+                    <button type="button" class="btn-sm" style="background:var(--danger); color:#fff; flex:0 0 40px;" onclick="removeManualItemRow(this)"><i class="fas fa-trash-alt"></i></button>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 2fr; gap:0.5rem;">
+                    <input type="number" class="form-input mo-qty" placeholder="الكمية" min="1" step="1" value="${qty}" oninput="calcManualTotals()">
+                    <input type="number" class="form-input mo-price" placeholder="سعر الوحدة" min="0" step="0.01" value="${price}" oninput="calcManualTotals()">
+                    <input type="text" class="form-input mo-notes" placeholder="ملاحظات الصنف (اختياري)" value="${escapeHtml(String(notes))}">
+                </div>`;
+            document.getElementById('moItems').appendChild(row);
+            calcManualTotals();
+        };
+
+        window.removeManualItemRow = function(btn) {
+            const rows = document.querySelectorAll('#moItems .mo-item-row');
+            if (rows.length <= 1) { alert('لازم يكون في صنف واحد على الأقل.'); return; }
+            btn.closest('.mo-item-row').remove();
+            calcManualTotals();
+        };
+
+        function readManualItems() {
+            return Array.from(document.querySelectorAll('#moItems .mo-item-row')).map(r => ({
+                name: r.querySelector('.mo-name').value.trim(),
+                qty: parseFloat(r.querySelector('.mo-qty').value) || 0,
+                price: parseFloat(r.querySelector('.mo-price').value),
+                notes: r.querySelector('.mo-notes').value.trim()
+            }));
+        }
+
+        window.calcManualTotals = function() {
+            const items = readManualItems();
+            const subtotal = items.reduce((sum, i) => sum + (i.qty * (isNaN(i.price) ? 0 : i.price)), 0);
+            const delivery = Math.max(0, parseFloat(document.getElementById('moDelivery').value) || 0);
+            const discount = Math.min(Math.max(0, parseFloat(document.getElementById('moDiscount').value) || 0), subtotal);
+            const total = subtotal - discount + delivery;
+            document.getElementById('moSubtotal').textContent = subtotal.toFixed(2) + ' ج.م';
+            document.getElementById('moDiscountText').textContent = '-' + discount.toFixed(2) + ' ج.م';
+            document.getElementById('moDeliveryText').textContent = delivery.toFixed(2) + ' ج.م';
+            document.getElementById('moTotal').textContent = total.toFixed(2) + ' ج.م';
+            return { subtotal, delivery, discount, total };
+        };
+
+        window.openManualOrderModal = function() {
+            ['moName','moPhone','moAddress','moDeliveryTime','moNote'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('moDelivery').value = '0';
+            document.getElementById('moDiscount').value = '0';
+            document.getElementById('moPayment').value = 'cash';
+            document.getElementById('moStatus').value = 'received';
+            document.getElementById('moItems').innerHTML = '';
+            addManualItemRow();
+            document.getElementById('manualFormView').style.display = '';
+            document.getElementById('manualSuccessView').style.display = 'none';
+            document.getElementById('manualFooter').style.display = '';
+            document.getElementById('moSaveBtn').disabled = false;
+            lastManualOrder = null;
+            calcManualTotals();
+            document.getElementById('manualOrderModal').classList.add('active');
+            document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
+        };
+
+        window.closeManualOrderModal = function() {
+            document.getElementById('manualOrderModal').classList.remove('active');
+            document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open');
+        };
+
+        window.saveManualOrder = async function() {
+            const name = document.getElementById('moName').value.trim();
+            const phone = document.getElementById('moPhone').value.trim();
+            const address = document.getElementById('moAddress').value.trim();
+            if (!name) { alert('اكتب اسم العميل.'); return; }
+            if (!/^(\+?20|0)?1[0125]\d{8}$/.test(phone.replace(/[\s-]/g, ''))) { alert('رقم الموبايل غير صحيح (لازم رقم مصري صحيح عشان العميل يتابع بيه).'); return; }
+
+            const items = readManualItems();
+            for (const it of items) {
+                if (!it.name) { alert('اكتب اسم كل صنف.'); return; }
+                if (it.qty <= 0) { alert('الكمية لازم تكون أكبر من صفر.'); return; }
+                if (isNaN(it.price) || it.price < 0) { alert('اكتب سعر صحيح لكل صنف.'); return; }
+            }
+
+            const t = calcManualTotals();
+            const btn = document.getElementById('moSaveBtn');
+            btn.disabled = true;
+            try {
+                const orderNumber = await getNextManualOrderNumber();
+                const order = {
+                    orderNumber,
+                    createdAt: serverTimestamp(),
+                    customer: { name, phone, address: address || '-' },
+                    paymentMethod: document.getElementById('moPayment').value,
+                    items: items.map(i => ({ ar: i.name, name: i.name, qty: i.qty, price: i.price, ...(i.notes ? { notes: i.notes } : {}), isCustom: true })),
+                    totals: { subtotal: t.subtotal, deliveryFee: t.delivery, discount: t.discount, grandTotal: t.total, deliveryFeePending: false },
+                    status: document.getElementById('moStatus').value,
+                    isManual: true,
+                    source: 'whatsapp'
+                };
+                const dt = document.getElementById('moDeliveryTime').value.trim();
+                const note = document.getElementById('moNote').value.trim();
+                if (dt) order.deliveryTime = dt;
+                if (note) order.orderNote = note;
+
+                const newRef = push(ref(db, 'orders'));
+                // منع صوت/إشعار "أوردر جديد" للأوردر اللي أنا بعمله
+                if (knownOrderIds) knownOrderIds.add(newRef.key);
+                await set(newRef, order);
+
+                lastManualOrder = { orderNumber, name, phone, items, totals: t };
+                const link = new URL('tracking.html?id=' + orderNumber, window.location.href).href;
+                document.getElementById('moOrderNumber').textContent = '#' + orderNumber;
+                document.getElementById('moTrackLink').value = link;
+                document.getElementById('manualFormView').style.display = 'none';
+                document.getElementById('manualSuccessView').style.display = '';
+                document.getElementById('manualFooter').style.display = 'none';
+            } catch (e) {
+                console.error('Manual order error:', e);
+                alert('حصل خطأ أثناء حفظ الطلب، حاول تاني.');
+                btn.disabled = false;
+            }
+        };
+
+        window.copyManualTrackLink = function() {
+            const input = document.getElementById('moTrackLink');
+            input.select();
+            (navigator.clipboard ? navigator.clipboard.writeText(input.value) : Promise.reject()).catch(() => document.execCommand('copy'));
+            alert('تم نسخ الرابط.');
+        };
+
+        window.sendManualOrderWhatsApp = function() {
+            if (!lastManualOrder) return;
+            const o = lastManualOrder;
+            let p = o.phone.replace(/[^\d]/g, '');
+            if (p.startsWith('0')) p = '20' + p.slice(1);
+            else if (!p.startsWith('20')) p = '20' + p;
+            const lines = [
+                `أهلاً ${o.name} 🌸`,
+                `تم تأكيد طلبك من هَم النَّم — رقم الطلب: #${o.orderNumber}`,
+                '',
+                ...o.items.map(i => `• ${i.name} × ${i.qty} = ${(i.qty * i.price).toFixed(2)} ج.م`),
+                '',
+                ...(o.totals.discount > 0 ? [`الخصم: -${o.totals.discount.toFixed(2)} ج.م`] : []),
+                ...(o.totals.delivery > 0 ? [`التوصيل: ${o.totals.delivery.toFixed(2)} ج.م`] : []),
+                `*الإجمالي: ${o.totals.total.toFixed(2)} ج.م*`,
+                '',
+                'تقدر تتابع طلبك وتشوف التفاصيل من هنا:',
+                document.getElementById('moTrackLink').value
+            ];
+            window.open(`https://wa.me/${p}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
+        };
+
+        window.closeOrderModal = function() { document.getElementById('orderModal').classList.remove('active'); document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open'); currentOrderId = null; invoiceEditMode = false; };
 
         window.saveOrderChanges = async function() {
             if (!currentOrderId) { closeOrderModal(); return; }
             const select = document.getElementById('orderStatusSelect');
             if (!select) { closeOrderModal(); return; }
+            if (invoiceEditMode) { return saveInvoiceEdit(select.value); }
             try {
                 const updates = { status: select.value, updatedAt: new Date().toISOString() };
                 const feeInput = document.getElementById('orderDeliveryFeeInput');

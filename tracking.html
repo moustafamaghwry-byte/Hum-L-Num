@@ -549,6 +549,8 @@
                 notes: "ملاحظات",
                 qty: "الكمية",
                 currency: "ج.م",
+                choosePrepOption: "اختر حالة التحضير",
+                prepRequired: "من فضلك اختار حالة التحضير الأول",
                 alertEnterInput: "من فضلك أدخل رقم الطلب أو رقم الموبايل",
                 alertSaved: "تم حفظ التعديلات بنجاح!",
                 alertSaveError: "حدث خطأ أثناء حفظ التعديلات",
@@ -627,6 +629,8 @@
                 notes: "Notes",
                 qty: "Qty",
                 currency: "EGP",
+                choosePrepOption: "Choose preparation",
+                prepRequired: "Please choose a preparation option first",
                 alertEnterInput: "Please enter an order number or phone number",
                 alertSaved: "Changes saved successfully!",
                 alertSaveError: "An error occurred while saving changes",
@@ -1131,7 +1135,7 @@
             if (Array.isArray(item.prepOptions) && item.prepOptions.length > 0) {
                 const t = i18n[currentLang];
                 prepSelect.style.display = 'block';
-                prepSelect.innerHTML = item.prepOptions.map((opt, idx) => {
+                prepSelect.innerHTML = `<option value="">${t.choosePrepOption}</option>` + item.prepOptions.map((opt, idx) => {
                     const label = (PREP_LABELS[opt.key] && PREP_LABELS[opt.key][currentLang]) || opt.label || opt.key;
                     const extra = Number(opt.extraPrice) || 0;
                     return `<option value="${idx}">${label}${extra > 0 ? ' (+' + extra + ' ' + t.currency + ')' : ''}</option>`;
@@ -1162,7 +1166,11 @@
             let prepLabel = '';
             if (Array.isArray(item.prepOptions) && item.prepOptions.length > 0) {
                 const prepVal = document.getElementById('menuPrepSelect').value;
-                const opt = item.prepOptions[parseInt(prepVal, 10)] || item.prepOptions[0];
+                if (prepVal === '' || isNaN(parseInt(prepVal, 10))) {
+                    alert(i18n[currentLang].prepRequired);
+                    return;
+                }
+                const opt = item.prepOptions[parseInt(prepVal, 10)];
                 if (opt) {
                     prepKey = opt.key;
                     prepLabel = (PREP_LABELS[opt.key] && PREP_LABELS[opt.key][currentLang]) || opt.label || opt.key;

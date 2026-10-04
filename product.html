@@ -1522,6 +1522,7 @@
                     <span id="choosePrepTitle">اختر حالة التحضير</span>
                 </h3>
                 <div class="prep-options-group" id="prepOptionsGroup"></div>
+                <p id="prepError" style="display:none; color:#c0392b; font-weight:700; font-size:0.9rem; margin-top:0.6rem;"></p>
             </div>
 
             <div class="ingredients-section" id="ingredientsSection" style="display: none;">
@@ -2402,6 +2403,7 @@
                 priceLabel: "السعر:",
                 servesLabel: "يكفي:",
                 choosePrepTitle: "اختر حالة التحضير",
+                prepRequired: "من فضلك اختار حالة التحضير الأول",
                 customizeBtnText: "✍️ تخصيص الطلب (إضافة ملاحظة)",
                 customizeLabelText: "تعديلاتك أو ملاحظاتك على الصنف:",
                 customizePlaceholder: "مثال: بدون بصل، صوص زيادة، تسوية متوسطة...",
@@ -2443,6 +2445,7 @@
                 priceLabel: "Price:",
                 servesLabel: "Serves:",
                 choosePrepTitle: "Choose Preparation",
+                prepRequired: "Please choose a preparation option first",
                 customizeBtnText: "✍️ Customize Order (Add Note)",
                 customizeLabelText: "Your customizations or notes for this item:",
                 customizePlaceholder: "e.g., No onions, extra sauce, medium well...",
@@ -2709,6 +2712,8 @@
 
         window.selectPrepOption = function(key) {
             selectedPrepKey = key || null;
+            const prepErr = document.getElementById('prepError');
+            if (prepErr) prepErr.style.display = 'none';
             refreshPriceDisplay();
         };
 
@@ -2724,7 +2729,7 @@
                 return;
             }
 
-            const previousKey = options.some(o => o.key === selectedPrepKey) ? selectedPrepKey : options[0].key;
+            const previousKey = options.some(o => o.key === selectedPrepKey) ? selectedPrepKey : null;
             selectedPrepKey = previousKey;
 
             section.style.display = 'block';
@@ -2879,6 +2884,18 @@
 
         window.addToCart = function() {
             if (!currentProduct || currentProduct.available === false) return;
+
+            const hasPrep = Array.isArray(currentProduct.prepOptions) && currentProduct.prepOptions.some(o => o && o.key);
+            if (hasPrep && !selectedPrepKey) {
+                const err = document.getElementById('prepError');
+                if (err) {
+                    err.textContent = translations[currentLang].prepRequired;
+                    err.style.display = 'block';
+                }
+                const sec = document.getElementById('prepSelection');
+                if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
 
             const size = (Array.isArray(currentProduct.sizes) && currentProduct.sizes[selectedSizeIndex])
                 ? currentProduct.sizes[selectedSizeIndex]
