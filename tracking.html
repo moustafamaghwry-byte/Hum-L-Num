@@ -1255,7 +1255,8 @@
             
             const subtotal = editableItems.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.qty || 1)), 0);
             const deliveryFee = Number(currentDeliveryFee) || 0;
-            const grandTotal = subtotal + deliveryFee;
+            const discount = Number(currentOrder?.totals?.discount ?? currentOrder?.discount ?? 0) || 0;
+            const grandTotal = Math.max(0, subtotal - discount + deliveryFee);
 
             document.getElementById('editableSubtotalVal').textContent = `${subtotal.toFixed(2)} ${t.currency}`;
 
@@ -1316,11 +1317,21 @@
                 return;
             }
 
+            const discount = Number(currentOrder?.totals?.discount ?? currentOrder?.discount ?? 0) || 0;
+
             const updates = {
                 items: editableItems,
                 subtotal: subtotal,
+                discount: discount,
                 total: grandTotal,
                 deliveryFee: deliveryFee,
+                totals: {
+                    ...(currentOrder.totals || {}),
+                    subtotal: subtotal,
+                    discount: discount,
+                    deliveryFee: deliveryFee,
+                    grandTotal: grandTotal
+                },
                 customerPhone: document.getElementById('editPhone').value,
                 customerAddress: document.getElementById('editAddress').value,
                 deliveryTimeTarget: document.getElementById('editDeliveryTime').value,
