@@ -666,6 +666,16 @@
                             <div class="form-group"><label>تاريخ الشراء *</label><input type="date" class="form-input" id="pfDate"></div>
                             <div class="form-group"><label>المورد / مكان الشراء</label><input type="text" class="form-input" id="pfSupplier" placeholder="اختياري"></div>
                         </div>
+                        <div class="form-group"><label>مصدر الفلوس *</label>
+                            <select class="form-select" id="pfFundSource" onchange="onFundSourceChange()">
+                                <option value="business">من إيراد المشروع</option>
+                                <option value="personal">من جيبي الشخصي</option>
+                                <option value="partner">من شريك</option>
+                                <option value="loan">قرض / سلفة</option>
+                                <option value="other">أخرى</option>
+                            </select>
+                            <input type="text" class="form-input" id="pfPartnerName" placeholder="اسم الشريك" style="display:none; margin-top:0.5rem;">
+                        </div>
                         <div class="form-group"><label>ملاحظات</label><input type="text" class="form-input" id="pfNotes" placeholder="اختياري"></div>
                         <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
                             <button class="btn btn-primary" id="pfSaveBtn" onclick="savePurchase()"><i class="fas fa-save"></i> حفظ</button>
@@ -680,7 +690,7 @@
                         <div id="pfCategoryBreakdown" style="margin-bottom:1rem;"></div>
                         <div class="table-container">
                             <table class="data-table">
-                                <thead><tr><th>التاريخ</th><th>الصنف</th><th>النوع</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المورد</th><th>إجراء</th></tr></thead>
+                                <thead><tr><th>التاريخ</th><th>الصنف</th><th>النوع</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المورد</th><th>مصدر الفلوس</th><th>إجراء</th></tr></thead>
                                 <tbody id="pfTableBody"></tbody>
                             </table>
                         </div>
@@ -773,7 +783,7 @@
                     <div class="form-row">
                         <div class="form-group"><label>موعد التوصيل (اختياري)</label><input type="text" class="form-input" id="moDeliveryTime" placeholder="مثال: بكرة 3 العصر"></div>
                         <div class="form-group"><label>طريقة الدفع</label>
-                            <select class="form-select" id="moPayment"><option value="cash">كاش</option><option value="card">فيزا</option></select>
+                            <select class="form-select" id="moPayment"><option value="cash">كاش</option><option value="instapay">إنستاباي</option></select>
                         </div>
                     </div>
 
@@ -1569,7 +1579,7 @@
             const cust = getCustomerDetails(order);
             const totals = getOrderTotals(order);
             const deliveryTimeVal = formatDeliveryAppointment(order);
-            const payMethodVal = (order.paymentMethod || order.payMethod) === 'card' ? 'فيزا' : 'كاش';
+            const payMethodVal = ['cash','كاش'].includes(order.paymentMethod || order.payMethod) ? 'كاش' : 'إنستاباي';
 
             const rawItems = order.items;
             const orderItems = Array.isArray(rawItems) ? rawItems : (rawItems ? Object.values(rawItems) : []);
@@ -2247,6 +2257,18 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
         };
 
         // ===== المشتريات وصافي الربح =====
+        const FUND_SOURCES = { business: 'من إيراد المشروع', personal: 'من جيبي الشخصي', partner: 'من شريك', loan: 'قرض / سلفة', other: 'أخرى' };
+        function fundSourceLabel(p) {
+            const base = FUND_SOURCES[p.fundSource];
+            if (!base) return '-';
+            return (p.fundSource === 'partner' && p.partnerName) ? base + ': ' + p.partnerName : base;
+        }
+        window.onFundSourceChange = function() {
+            const isPartner = document.getElementById('pfFundSource').value === 'partner';
+            const inp = document.getElementById('pfPartnerName');
+            inp.style.display = isPartner ? '' : 'none';
+            if (!isPartner) inp.value = '';
+        };
         const PURCHASE_CATEGORIES = { asset: 'أصول ومعدات', ingredients: 'مواد خام وخامات', packaging: 'تغليف', operating: 'مصروفات تشغيل', other: 'أخرى' };
 
         function pfLocalDateStr(d) {
@@ -2290,6 +2312,9 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             ['pfName', 'pfUnit', 'pfSupplier', 'pfNotes'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('pfQty').value = '1';
             document.getElementById('pfCategory').value = 'asset';
+            document.getElementById('pfFundSource').value = 'business';
+            document.getElementById('pfPartnerName').value = '';
+            onFundSourceChange();
             document.getElementById('pfDate').value = pfLocalDateStr(new Date());
             document.getElementById('pfFormTitle').textContent = 'إضافة مشتريات';
             document.getElementById('pfSaveBtn').innerHTML = '<i class="fas fa-save"></i> حفظ';
@@ -2307,6 +2332,9 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             document.getElementById('pfUnit').value = toNumber(it.unitPrice);
             document.getElementById('pfDate').value = it.date || pfLocalDateStr(new Date());
             document.getElementById('pfSupplier').value = it.supplier || '';
+            document.getElementById('pfFundSource').value = FUND_SOURCES[it.fundSource] ? it.fundSource : 'business';
+            onFundSourceChange();
+            document.getElementById('pfPartnerName').value = it.partnerName || '';
             document.getElementById('pfNotes').value = it.notes || '';
             document.getElementById('pfFormTitle').textContent = 'تعديل مشتريات';
             document.getElementById('pfSaveBtn').innerHTML = '<i class="fas fa-save"></i> حفظ التعديل';
@@ -2325,6 +2353,9 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             if (!(qty > 0)) { alert('الكمية لازم تكون أكبر من صفر.'); return; }
             if (isNaN(unit) || unit < 0) { alert('اكتب سعر الوحدة بشكل صحيح.'); return; }
             if (!date) { alert('اختار تاريخ الشراء.'); return; }
+            const fundSource = document.getElementById('pfFundSource').value;
+            const partnerName = document.getElementById('pfPartnerName').value.trim();
+            if (fundSource === 'partner' && !partnerName) { alert('اكتب اسم الشريك.'); return; }
             const data = {
                 name,
                 category: document.getElementById('pfCategory').value,
@@ -2333,6 +2364,8 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 total: Math.round(qty * unit * 100) / 100,
                 date,
                 supplier: document.getElementById('pfSupplier').value.trim(),
+                fundSource,
+                partnerName: fundSource === 'partner' ? partnerName : '',
                 notes: document.getElementById('pfNotes').value.trim(),
                 updatedAt: new Date().toISOString()
             };
@@ -2393,11 +2426,13 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
 
             const byCat = {};
+            const bySrc = {};
             let totalPurchases = 0;
             list.forEach(p => {
                 const cat = PURCHASE_CATEGORIES[p.category] ? p.category : 'other';
                 const amt = toNumber(p.total);
                 byCat[cat] = (byCat[cat] || 0) + amt;
+                if (FUND_SOURCES[p.fundSource]) { const k = fundSourceLabel(p); bySrc[k] = (bySrc[k] || 0) + amt; }
                 totalPurchases += amt;
             });
             const assets = byCat.asset || 0;
@@ -2441,7 +2476,9 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
 
             const breakdown = Object.keys(PURCHASE_CATEGORIES).filter(k => byCat[k]).map(k =>
                 `<span style="display:inline-block; background:var(--gray-100); padding:6px 12px; border-radius:20px; margin:0 0 6px 6px; font-size:0.85rem;">${PURCHASE_CATEGORIES[k]}: <strong>${formatMoney(byCat[k])}</strong></span>`).join('');
-            document.getElementById('pfCategoryBreakdown').innerHTML = breakdown;
+            const srcBreakdown = Object.keys(bySrc).map(k =>
+                `<span style="display:inline-block; background:rgba(124,58,237,0.08); padding:6px 12px; border-radius:20px; margin:0 0 6px 6px; font-size:0.85rem;"><i class="fas fa-wallet"></i> ${escapeHtml(k)}: <strong>${formatMoney(bySrc[k])}</strong></span>`).join('');
+            document.getElementById('pfCategoryBreakdown').innerHTML = breakdown + (srcBreakdown ? '<div style="margin-top:0.5rem;">' + srcBreakdown + '</div>' : '');
 
             const body = document.getElementById('pfTableBody');
             body.innerHTML = list.length ? list.map(p => `
@@ -2453,11 +2490,12 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                     <td>${formatMoney(p.unitPrice)}</td>
                     <td><strong>${formatMoney(p.total)}</strong></td>
                     <td>${escapeHtml(p.supplier || '-')}</td>
+                    <td>${escapeHtml(fundSourceLabel(p))}</td>
                     <td style="white-space:nowrap;">
                         <button class="btn-sm" style="background:var(--primary); color:#fff;" onclick="editPurchase('${escapeHtml(p.id)}')"><i class="fas fa-pen"></i></button>
                         <button class="btn-sm" style="background:var(--danger); color:#fff;" onclick="deletePurchase('${escapeHtml(p.id)}')"><i class="fas fa-trash-alt"></i></button>
                     </td>
-                </tr>`).join('') : '<tr><td colspan="8" style="text-align:center; color:var(--gray-500); padding:1.5rem;">مفيش مشتريات مسجلة في الفترة دي</td></tr>';
+                </tr>`).join('') : '<tr><td colspan="9" style="text-align:center; color:var(--gray-500); padding:1.5rem;">مفيش مشتريات مسجلة في الفترة دي</td></tr>';
         }
 
         window.showSection = function(section) {
