@@ -413,7 +413,7 @@
     <!-- بانر التنويه الثابت -->
     <div class="announcement-bar" id="announcementBar">
         <i class="fas fa-clock"></i>
-        <span data-ar="الحجز المسبق قبل 48 ساعة لضمان جودة التحضير" data-en="Orders must be placed at least 48 hours before delivery to ensure quality">الأوردر لازم يتحجز قبل ميعاد التسليم بـ 48 ساعة على الأقل لضمان جودة التحضير</span>
+        <span id="sched-announce-text" data-ar="الحجز المسبق قبل 48 ساعة لضمان جودة التحضير" data-en="Orders must be placed at least 48 hours before delivery to ensure quality">الأوردر لازم يتحجز قبل ميعاد التسليم بـ 48 ساعة على الأقل لضمان جودة التحضير</span>
     </div>
 
     <!-- Floating Social Sidebar -->
@@ -686,8 +686,8 @@
                 <!-- قسم تحديد ميعاد والتاريخ والتوصيل -->
                 <div class="delivery-container">
                   <div class="delivery-info-banner">
-    📌 <span data-ar="التوصيل بعد 48 ساعة | متوفر من 1 إلى 9 مساءً" data-en="Delivery after 48 hours | Available from 1 PM to 9 PM">التوصيل بعد 48 ساعة | متوفر يومياً من 1 إلى 9 مساءً</span><br>
-    <small style="font-weight: normal; font-size: 0.85rem;" data-ar="(التجمع الخامس - وباقي المناطق قريباً)" data-en="(Fifth Settlement - other areas coming soon)">(التجمع الخامس - وباقي المناطق قريباً)</small>
+    📌 <span id="sched-banner-text" data-ar="التوصيل بعد 48 ساعة | متوفر من 1 إلى 9 مساءً" data-en="Delivery after 48 hours | Available from 1 PM to 9 PM">التوصيل بعد 48 ساعة | متوفر يومياً من 1 إلى 9 مساءً</span><br>
+    <small id="sched-note-text" style="font-weight: normal; font-size: 0.85rem;" data-ar="(التجمع الخامس - وباقي المناطق قريباً)" data-en="(Fifth Settlement - other areas coming soon)">(التجمع الخامس - وباقي المناطق قريباً)</small>
 </div>
 
                   <div class="form-row">
@@ -695,7 +695,7 @@
                     <div class="input-group">
                       <label for="delivery-date">
                           <span data-ar="تاريخ التوصيل" data-en="Delivery Date">تاريخ التوصيل</span> 
-                          <span style="color:var(--danger); font-size:0.75rem;" data-ar="(بعد 48 ساعة)" data-en="(after 48 hours)">(بعد 48 ساعة)</span>
+                          <span id="sched-lead-label" style="color:var(--danger); font-size:0.75rem;" data-ar="(بعد 48 ساعة)" data-en="(after 48 hours)">(بعد 48 ساعة)</span>
                       </label>
                       <input type="date" id="delivery-date" name="deliveryDate" required>
                     </div>
@@ -717,6 +717,7 @@
                       </select>
                     </div>
                   </div>
+                  <div id="schedule-hint" style="color:var(--danger); font-size:0.82rem; font-weight:700; margin-top:6px; min-height:1.2em;"></div>
                 </div>
 
                 <div class="form-group">
@@ -845,6 +846,186 @@
             currencyAr: "ج.م",
             currencyEn: "EGP"
         };
+
+        // ===== مواعيد الطلب والتوصيل (بتتحدد من الأدمن: settings/deliverySchedule) =====
+        const SCHEDULE_DEFAULTS = { ordersOpen: true, pauseMessageAr: '', pauseMessageEn: '', minHoursAhead: 48, startHour: 13, endHour: 21, closedWeekdays: [], closedDates: [] };
+        let SCHEDULE = { ...SCHEDULE_DEFAULTS };
+        const WEEKDAY_NAMES = {
+            ar: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+            en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        };
+
+        function toList(v) { return Array.isArray(v) ? v : (v && typeof v === 'object' ? Object.values(v) : []); }
+
+        function normalizeSchedule(d) {
+            d = d || {};
+            const num = (v, def, min, max) => {
+                const n = Number(v);
+                return (v === undefined || v === null || v === '' || !Number.isFinite(n)) ? def : Math.min(max, Math.max(min, n));
+            };
+            const s = {
+                ordersOpen: d.ordersOpen !== false,
+                pauseMessageAr: String(d.pauseMessageAr || '').trim(),
+                pauseMessageEn: String(d.pauseMessageEn || '').trim(),
+                bannerAr: String(d.bannerAr || '').trim(),
+                bannerEn: String(d.bannerEn || '').trim(),
+                noteAr: d.noteAr === undefined || d.noteAr === null ? '(التجمع الخامس - وباقي المناطق قريباً)' : String(d.noteAr).trim(),
+                noteEn: d.noteEn === undefined || d.noteEn === null ? '(Fifth Settlement - other areas coming soon)' : String(d.noteEn).trim(),
+                minHoursAhead: num(d.minHoursAhead, 48, 0, 720),
+                startHour: Math.round(num(d.startHour, 13, 0, 23)),
+                endHour: Math.round(num(d.endHour, 21, 0, 23)),
+                closedWeekdays: toList(d.closedWeekdays).map(Number).filter(n => n >= 0 && n <= 6),
+                closedDates: toList(d.closedDates).map(String).filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x))
+            };
+            if (s.endHour < s.startHour) { s.startHour = 13; s.endHour = 21; }
+            return s;
+        }
+
+        function hourLabel(h, lang) {
+            if (lang === 'en') return `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`;
+            if (h === 0) return '12 منتصف الليل';
+            if (h < 12) return `${h} صباحاً`;
+            if (h === 12) return '12 ظهراً';
+            return `${h - 12} مساءً`;
+        }
+
+        function hourRangeText(lang) {
+            const s = SCHEDULE.startHour, e = SCHEDULE.endHour;
+            if (lang === 'en') {
+                if ((s < 12) === (e < 12)) return `from ${s % 12 || 12} to ${e % 12 || 12} ${e < 12 ? 'AM' : 'PM'}`;
+                return `from ${hourLabel(s, 'en')} to ${hourLabel(e, 'en')}`;
+            }
+            if (s > 12 && e > 12) return `من ${s - 12} إلى ${e - 12} مساءً`;
+            return `من ${hourLabel(s, 'ar')} إلى ${hourLabel(e, 'ar')}`;
+        }
+
+        function dateToStr(d) { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; }
+        function parseDateStr(str) { const [y, m, d] = String(str).split('-').map(Number); return new Date(y, (m || 1) - 1, d || 1); }
+        function earliestDelivery() { return new Date(Date.now() + SCHEDULE.minHoursAhead * 3600000); }
+        function isDayClosed(str) { return SCHEDULE.closedWeekdays.includes(parseDateStr(str).getDay()) || SCHEDULE.closedDates.includes(str); }
+
+        function isSlotAvailable(str, h) {
+            if (!str || isDayClosed(str)) return false;
+            if (h < SCHEDULE.startHour || h > SCHEDULE.endHour) return false;
+            const d = parseDateStr(str);
+            d.setHours(h, 0, 0, 0);
+            return d >= earliestDelivery();
+        }
+
+        function getAvailableHours(str) {
+            const out = [];
+            if (!str) return out;
+            for (let h = SCHEDULE.startHour; h <= SCHEDULE.endHour; h++) if (isSlotAvailable(str, h)) out.push(h);
+            return out;
+        }
+
+        function findNextOpenDate(fromStr) {
+            const d = parseDateStr(fromStr);
+            for (let i = 0; i < 180; i++) {
+                const s = dateToStr(d);
+                if (getAvailableHours(s).length) return s;
+                d.setDate(d.getDate() + 1);
+            }
+            return '';
+        }
+
+        function pauseMessage(lang) {
+            lang = lang || currentLang;
+            return lang === 'ar'
+                ? (SCHEDULE.pauseMessageAr || 'استقبال الطلبات متوقف مؤقتاً، جرّب بعد شوية')
+                : (SCHEDULE.pauseMessageEn || 'Orders are temporarily paused, please try again later');
+        }
+
+        function setBilingualText(el, ar, en) {
+            if (!el) return;
+            el.setAttribute('data-ar', ar);
+            el.setAttribute('data-en', en);
+            el.textContent = currentLang === 'ar' ? ar : en;
+        }
+
+        function applyScheduleTexts() {
+            const n = SCHEDULE.minHoursAhead;
+            const days = SCHEDULE.closedWeekdays.slice().sort((a, b) => a - b);
+            const closedAr = days.map(i => WEEKDAY_NAMES.ar[i]).join('، ');
+            const closedEn = days.map(i => WEEKDAY_NAMES.en[i]).join(', ');
+            const leadAr = n > 0 ? `التوصيل بعد ${n} ساعة` : 'التوصيل في أقرب ميعاد متاح';
+            const leadEn = n > 0 ? `Delivery after ${n} hours` : 'Delivery at the earliest available time';
+            const autoBannerAr = `${leadAr} | متوفر ${days.length ? '' : 'يومياً '}${hourRangeText('ar')}${closedAr ? ' | إجازة: ' + closedAr : ''}`;
+            const autoBannerEn = `${leadEn} | Available ${days.length ? '' : 'daily '}${hourRangeText('en')}${closedEn ? ' | Closed: ' + closedEn : ''}`;
+            setBilingualText(document.getElementById('sched-banner-text'), SCHEDULE.bannerAr || autoBannerAr, SCHEDULE.bannerEn || autoBannerEn);
+            setBilingualText(document.getElementById('sched-note-text'), SCHEDULE.noteAr, SCHEDULE.noteEn);
+            setBilingualText(document.getElementById('sched-lead-label'),
+                n > 0 ? `(بعد ${n} ساعة)` : '', n > 0 ? `(after ${n} hours)` : '');
+            setBilingualText(document.getElementById('sched-announce-text'),
+                n > 0 ? `الأوردر لازم يتحجز قبل ميعاد التسليم بـ ${n} ساعة على الأقل لضمان جودة التحضير` : 'اختار ميعاد التوصيل المناسب ليك',
+                n > 0 ? `Orders must be placed at least ${n} hours before delivery to ensure quality` : 'Choose the delivery time that suits you');
+            if (typeof adjustAnnouncementHeight === 'function') adjustAnnouncementHeight();
+        }
+
+        function showScheduleHint(msg) {
+            const el = document.getElementById('schedule-hint');
+            if (el) el.textContent = msg || '';
+        }
+
+        function renderDeliveryTimeOptions() {
+            const select = document.getElementById('delivery-time');
+            const dateInput = document.getElementById('delivery-date');
+            if (!select || !dateInput) return;
+            const prev = select.selectedOptions[0] ? select.selectedOptions[0].dataset.hour : undefined;
+            const hours = getAvailableHours(dateInput.value);
+            select.innerHTML = '';
+            const ph = document.createElement('option');
+            ph.value = ''; ph.disabled = true; ph.selected = true;
+            ph.setAttribute('data-ar', 'اختر الوقت المناسب');
+            ph.setAttribute('data-en', 'Select convenient time');
+            ph.textContent = currentLang === 'ar' ? 'اختر الوقت المناسب' : 'Select convenient time';
+            select.appendChild(ph);
+            hours.forEach(h => {
+                const o = document.createElement('option');
+                o.value = hourLabel(h, 'ar');
+                o.dataset.hour = String(h);
+                o.setAttribute('data-ar', hourLabel(h, 'ar'));
+                o.setAttribute('data-en', hourLabel(h, 'en'));
+                o.textContent = hourLabel(h, currentLang);
+                select.appendChild(o);
+            });
+            if (prev !== undefined && hours.map(String).includes(prev)) select.value = hourLabel(Number(prev), 'ar');
+        }
+
+        let scheduleDateListenerBound = false;
+        function setupDeliverySchedule() {
+            const input = document.getElementById('delivery-date');
+            if (!input) return;
+            showScheduleHint('');
+            const minStr = dateToStr(earliestDelivery());
+            input.min = minStr;
+            if (!input.value || input.value < minStr || !getAvailableHours(input.value).length) {
+                const next = findNextOpenDate(!input.value || input.value < minStr ? minStr : input.value);
+                if (next) input.value = next;
+                else showScheduleHint(currentLang === 'ar' ? 'مفيش مواعيد توصيل متاحة حالياً' : 'No delivery slots are available right now');
+            }
+            if (!scheduleDateListenerBound) {
+                scheduleDateListenerBound = true;
+                input.addEventListener('change', () => {
+                    const min = dateToStr(earliestDelivery());
+                    let v = input.value;
+                    if (!v) { showScheduleHint(''); renderDeliveryTimeOptions(); return; }
+                    if (v < min) v = min;
+                    if (!getAvailableHours(v).length) {
+                        const next = findNextOpenDate(v);
+                        showScheduleHint(currentLang === 'ar'
+                            ? 'التوصيل مش متاح في اليوم ده، اخترنالك أقرب يوم متاح'
+                            : 'Delivery is not available on that day, we picked the nearest available day');
+                        input.value = next || v;
+                    } else {
+                        showScheduleHint('');
+                        input.value = v;
+                    }
+                    renderDeliveryTimeOptions();
+                });
+            }
+            renderDeliveryTimeOptions();
+        }
 
         // ===== مناطق التوصيل (بتتحدد من الأدمن) =====
         const OTHER_AREA_ID = '__other';
@@ -976,6 +1157,15 @@
                 updateTotals();
             }
         }, (error) => { console.error('Min order settings listener error:', error); });
+
+        onValue(ref(db, 'settings/deliverySchedule'), (snapshot) => {
+            SCHEDULE = normalizeSchedule(snapshot.val());
+            applyScheduleTexts();
+            const modal = document.getElementById('checkoutModal');
+            if (modal && modal.classList.contains('open')) setupDeliverySchedule();
+            updateTotals();
+        }, (error) => { console.error('Delivery schedule listener error:', error); });
+
 
         window.toggleLanguage = function() {
             currentLang = currentLang === 'ar' ? 'en' : 'ar';
@@ -1490,8 +1680,14 @@
                     : `Add ${diff.toFixed(2)} EGP more to reach minimum order`;
                 checkoutBtn.disabled = true;
             } else {
-                minWarning.style.display = 'none';
-                checkoutBtn.disabled = cart.length === 0;
+                if (!SCHEDULE.ordersOpen && cart.length > 0) {
+                    minWarning.style.display = 'block';
+                    setBilingualText(document.getElementById('minOrderText'), pauseMessage('ar'), pauseMessage('en'));
+                    remainingSpan.textContent = '';
+                } else {
+                    minWarning.style.display = 'none';
+                }
+                checkoutBtn.disabled = cart.length === 0 || !SCHEDULE.ordersOpen;
             }
         }
 
@@ -1675,19 +1871,8 @@
             const { subtotal } = computeTotals();
             if (subtotal < CONFIG.minOrderLimit) return;
             
-            // ضبط تاريخ التوصيل الافتراضي والحد الأدنى (بعد 48 ساعة من الآن)
-            const deliveryDateInput = document.getElementById('delivery-date');
-            if (deliveryDateInput) {
-                const minDate = new Date();
-                minDate.setDate(minDate.getDate() + 2); // إضافة يومين (48 ساعة)
-                const pad = (n) => String(n).padStart(2, '0');
-                const minDateStr = `${minDate.getFullYear()}-${pad(minDate.getMonth() + 1)}-${pad(minDate.getDate())}`;
-                
-                deliveryDateInput.min = minDateStr;
-                if (!deliveryDateInput.value || deliveryDateInput.value < minDateStr) {
-                    deliveryDateInput.value = minDateStr;
-                }
-            }
+            if (!SCHEDULE.ordersOpen) return;
+            setupDeliverySchedule();
 
             const savedCustomer = loadCustomerFromStorage();
             if (savedCustomer) {
@@ -1731,16 +1916,19 @@
             if (!deliveryDate) { errBox.textContent = currentLang === 'ar' ? 'من فضلك اختر تاريخ التوصيل' : 'Please select delivery date'; return; }
             if (!deliveryTimeSelect) { errBox.textContent = currentLang === 'ar' ? 'من فضلك اختر ساعة التوصيل' : 'Please select delivery time'; return; }
 
-            // Validation: التأكد من أن التاريخ المدخل لا يقل عن 48 ساعة (بعد يومين)
-            const chosenDate = new Date(deliveryDate);
-            chosenDate.setHours(0,0,0,0);
-            
-            const minAllowedDate = new Date();
-            minAllowedDate.setDate(minAllowedDate.getDate() + 2);
-            minAllowedDate.setHours(0,0,0,0);
+            if (!SCHEDULE.ordersOpen) { errBox.textContent = pauseMessage(); return; }
 
-            if (chosenDate < minAllowedDate) {
-                errBox.textContent = currentLang === 'ar' ? 'التوصيل متاح بعد 48 ساعة على الأقل (بعد يومين من اليوم)' : 'Delivery must be at least 48 hours ahead';
+            // التحقق من مواعيد الطلب والتوصيل (حسب إعدادات الأدمن)
+            const selectedTimeOpt = document.getElementById('delivery-time').selectedOptions[0];
+            const slotHour = selectedTimeOpt && selectedTimeOpt.dataset.hour !== undefined ? Number(selectedTimeOpt.dataset.hour) : NaN;
+            if (isDayClosed(deliveryDate)) {
+                errBox.textContent = currentLang === 'ar' ? 'التوصيل مش متاح في اليوم ده، من فضلك اختر يوم تاني' : 'Delivery is not available on that day, please choose another day';
+                return;
+            }
+            if (isNaN(slotHour) || !isSlotAvailable(deliveryDate, slotHour)) {
+                errBox.textContent = currentLang === 'ar'
+                    ? (SCHEDULE.minHoursAhead > 0 ? `الميعاد ده مش متاح. الحجز لازم يكون قبل التسليم بـ ${SCHEDULE.minHoursAhead} ساعة على الأقل وفي ساعات التوصيل المتاحة` : 'الميعاد ده مش متاح، من فضلك اختر ميعاد تاني')
+                    : (SCHEDULE.minHoursAhead > 0 ? `This time is not available. Orders need at least ${SCHEDULE.minHoursAhead} hours notice, within delivery hours` : 'This time is not available, please choose another');
                 return;
             }
 
