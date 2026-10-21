@@ -299,7 +299,7 @@
                     <i class="fas fa-utensils"></i><span>المنيو</span>
                 </div>
                 <div class="sidebar-menu-item" data-section="areas" onclick="showSection('areas')">
-                    <i class="fas fa-map-marker-alt"></i><span>مناطق التوصيل</span>
+                    <i class="fas fa-map-marker-alt"></i><span>مناطق ومواعيد التوصيل</span>
                 </div>
                 <!-- الزر الجديد للبرومو كود -->
                 <div class="sidebar-menu-item" data-section="promo" onclick="showSection('promo')">
@@ -442,6 +442,85 @@
 
             <!-- قسم مناطق التوصيل -->
             <div id="areasSection" class="section" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header"><h3 class="card-title">مواعيد الطلب والتوصيل</h3></div>
+                    <div class="card-body">
+                        <p style="color: var(--gray-600); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                            تتحكم هنا في الحجز المسبق وساعات وأيام التوصيل. الإعدادات دي بتظهر للعميل في صفحة الـ index وصفحة المنتج (الـ Checkout) وبتتطبق فوراً بعد الحفظ.
+                        </p>
+                        <form id="schedule-form">
+                            <div class="form-row" style="grid-template-columns: auto 1fr; align-items: end; gap: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label">استقبال الطلبات</label>
+                                    <label style="display:flex; align-items:center; gap:8px; min-height:48px; cursor:pointer;">
+                                        <input type="checkbox" id="schedule-orders-open" style="width:20px; height:20px; cursor:pointer;" checked>
+                                        <span id="schedule-orders-open-label" style="font-weight:700; color: var(--gray-600);">مفتوح</span>
+                                    </label>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="schedule-min-hours">الحجز المسبق قبل ميعاد التوصيل (بالساعات)</label>
+                                    <input type="number" id="schedule-min-hours" class="form-input" placeholder="مثال: 48 (اكتب 0 لو مفيش حجز مسبق)" min="0" max="720" step="1" required>
+                                </div>
+                            </div>
+                            <div class="form-row" style="grid-template-columns: 1fr 1fr; align-items: end; gap: 1rem; margin-top: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="schedule-start-hour">بداية ساعات التوصيل</label>
+                                    <select id="schedule-start-hour" class="form-input"></select>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="schedule-end-hour">آخر ساعة توصيل</label>
+                                    <select id="schedule-end-hour" class="form-input"></select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label class="form-label">أيام الإجازة الأسبوعية (مفيش توصيل فيها)</label>
+                                <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="6"> السبت</label>
+                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="0"> الأحد</label>
+                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="1"> الاثنين</label>
+                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="2"> الثلاثاء</label>
+                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="3"> الأربعاء</label>
+                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="4"> الخميس</label>
+                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="5"> الجمعة</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="schedule-closed-date-input">إجازات بتواريخ محددة (أعياد، ظروف...)</label>
+                                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                                    <input type="date" id="schedule-closed-date-input" class="form-input" style="max-width:220px;">
+                                    <button type="button" class="btn btn-primary" style="width:auto; min-height:48px;" onclick="addScheduleClosedDate()"><i class="fas fa-plus"></i> إضافة</button>
+                                </div>
+                                <div id="schedule-closed-dates" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+                            </div>
+                            <div class="form-group" style="margin-top: 1.25rem;">
+                                <label class="form-label">رسالة التوصيل اللي بتظهر للعميل (اتركها فاضية = تتكتب تلقائياً من المواعيد اللي فوق)</label>
+                                <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <input type="text" id="schedule-banner-ar" class="form-input" placeholder="مثال: التوصيل بعد 48 ساعة | متوفر من 6 إلى 9 مساءً | إجازة: الجمعة">
+                                    <input type="text" id="schedule-banner-en" class="form-input" dir="ltr" placeholder="e.g. Delivery after 48 hours | Available from 6 to 9 PM | Closed: Friday">
+                                </div>
+                                <label class="form-label" style="margin-top: 0.75rem;">السطر الصغير تحت الرسالة (اتركه فاضي لو مش عايزه)</label>
+                                <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <input type="text" id="schedule-note-ar" class="form-input" placeholder="(التجمع الخامس - وباقي المناطق قريباً)">
+                                    <input type="text" id="schedule-note-en" class="form-input" dir="ltr" placeholder="(Fifth Settlement - other areas coming soon)">
+                                </div>
+                            </div>
+                            <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="schedule-pause-ar">رسالة إيقاف الطلبات (عربي) - اختياري</label>
+                                    <input type="text" id="schedule-pause-ar" class="form-input" placeholder="مثال: إحنا في إجازة وهنرجع الأسبوع الجاي">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label class="form-label" for="schedule-pause-en">رسالة إيقاف الطلبات (English) - اختياري</label>
+                                    <input type="text" id="schedule-pause-en" class="form-input" dir="ltr" placeholder="e.g. We are on vacation and will be back soon">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 1.25rem; margin-bottom: 0;">
+                                <button type="submit" class="btn btn-primary" style="min-height: 48px;"><i class="fas fa-save"></i> حفظ المواعيد</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <div class="card mb-4">
                     <div class="card-header"><h3 class="card-title">إعدادات الحد الأدنى للطلب</h3></div>
                     <div class="card-body">
@@ -1307,7 +1386,112 @@
             fetchAutoDiscountSettings();
             fetchMinOrderSettings();
             fetchDeliveryAreas();
+            fetchScheduleSettings();
         }
+
+        // ===== مواعيد الطلب والتوصيل =====
+        let scheduleClosedDates = [];
+
+        function scheduleHourLabel(h) {
+            if (h === 0) return '12 منتصف الليل';
+            if (h < 12) return h + ' صباحاً';
+            if (h === 12) return '12 ظهراً';
+            return (h - 12) + ' مساءً';
+        }
+
+        (function buildScheduleHourSelects() {
+            [['schedule-start-hour', 13], ['schedule-end-hour', 21]].forEach(([id, def]) => {
+                const sel = document.getElementById(id);
+                if (!sel) return;
+                sel.innerHTML = Array.from({ length: 24 }, (_, h) => `<option value="${h}">${scheduleHourLabel(h)}</option>`).join('');
+                sel.value = String(def);
+            });
+        })();
+
+        function renderScheduleClosedDates() {
+            const box = document.getElementById('schedule-closed-dates');
+            if (!box) return;
+            if (!scheduleClosedDates.length) {
+                box.innerHTML = '<span style="color: var(--gray-500); font-size:0.85rem;">مفيش إجازات محددة بتواريخ</span>';
+                return;
+            }
+            box.innerHTML = scheduleClosedDates.slice().sort().map(d => {
+                let label = d;
+                try { label = new Date(d + 'T00:00:00').toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) {}
+                return `<span style="display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:50px; background:var(--gray-100); font-size:0.85rem; font-weight:700;">${escapeHtml(label)}
+                    <button type="button" onclick="removeScheduleClosedDate('${escapeHtml(d)}')" style="background:none; border:none; cursor:pointer; color:var(--danger); font-size:1.1rem; line-height:1;" title="حذف">&times;</button></span>`;
+            }).join('');
+        }
+
+        window.addScheduleClosedDate = function() {
+            const input = document.getElementById('schedule-closed-date-input');
+            if (!input || !input.value) { alert('اختر التاريخ الأول.'); return; }
+            if (!scheduleClosedDates.includes(input.value)) scheduleClosedDates.push(input.value);
+            input.value = '';
+            renderScheduleClosedDates();
+        };
+
+        window.removeScheduleClosedDate = function(d) {
+            scheduleClosedDates = scheduleClosedDates.filter(x => x !== d);
+            renderScheduleClosedDates();
+        };
+
+        function fetchScheduleSettings() {
+            onValue(ref(db, 'settings/deliverySchedule'), (snapshot) => {
+                const d = snapshot.val() || {};
+                const toArr = v => Array.isArray(v) ? v : (v && typeof v === 'object' ? Object.values(v) : []);
+                const open = d.ordersOpen !== false;
+                document.getElementById('schedule-orders-open').checked = open;
+                document.getElementById('schedule-orders-open-label').textContent = open ? 'مفتوح' : 'متوقف';
+                document.getElementById('schedule-min-hours').value = (d.minHoursAhead ?? 48);
+                document.getElementById('schedule-start-hour').value = String(d.startHour ?? 13);
+                document.getElementById('schedule-end-hour').value = String(d.endHour ?? 21);
+                const closedDays = toArr(d.closedWeekdays).map(Number);
+                document.querySelectorAll('.schedule-closed-day').forEach(cb => { cb.checked = closedDays.includes(Number(cb.value)); });
+                scheduleClosedDates = toArr(d.closedDates).map(String);
+                renderScheduleClosedDates();
+                document.getElementById('schedule-pause-ar').value = d.pauseMessageAr || '';
+                document.getElementById('schedule-pause-en').value = d.pauseMessageEn || '';
+                document.getElementById('schedule-banner-ar').value = d.bannerAr || '';
+                document.getElementById('schedule-banner-en').value = d.bannerEn || '';
+                document.getElementById('schedule-note-ar').value = d.noteAr ?? '(التجمع الخامس - وباقي المناطق قريباً)';
+                document.getElementById('schedule-note-en').value = d.noteEn ?? '(Fifth Settlement - other areas coming soon)';
+            }, (error) => { console.error('خطأ في جلب مواعيد الطلب والتوصيل:', error); });
+        }
+
+        document.getElementById('schedule-orders-open').addEventListener('change', function() {
+            document.getElementById('schedule-orders-open-label').textContent = this.checked ? 'مفتوح' : 'متوقف';
+        });
+
+        document.getElementById('schedule-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            const ordersOpen = document.getElementById('schedule-orders-open').checked;
+            const minHoursAhead = parseFloat(document.getElementById('schedule-min-hours').value);
+            const startHour = parseInt(document.getElementById('schedule-start-hour').value, 10);
+            const endHour = parseInt(document.getElementById('schedule-end-hour').value, 10);
+            const closedWeekdays = Array.from(document.querySelectorAll('.schedule-closed-day:checked')).map(cb => Number(cb.value));
+            if (isNaN(minHoursAhead) || minHoursAhead < 0) { alert('اكتب عدد ساعات الحجز المسبق (0 أو أكتر).'); return; }
+            if (endHour < startHour) { alert('آخر ساعة توصيل لازم تكون بعد (أو تساوي) ساعة البداية.'); return; }
+            if (closedWeekdays.length === 7) { alert('مينفعش تقفل كل أيام الأسبوع. لو عايز توقف الطلبات استخدم خيار "استقبال الطلبات".'); return; }
+            try {
+                await set(ref(db, 'settings/deliverySchedule'), {
+                    ordersOpen, minHoursAhead, startHour, endHour, closedWeekdays,
+                    closedDates: scheduleClosedDates.slice().sort(),
+                    pauseMessageAr: document.getElementById('schedule-pause-ar').value.trim(),
+                    pauseMessageEn: document.getElementById('schedule-pause-en').value.trim(),
+                    bannerAr: document.getElementById('schedule-banner-ar').value.trim(),
+                    bannerEn: document.getElementById('schedule-banner-en').value.trim(),
+                    noteAr: document.getElementById('schedule-note-ar').value.trim(),
+                    noteEn: document.getElementById('schedule-note-en').value.trim(),
+                    updatedAt: new Date().toISOString()
+                });
+                alert('تم حفظ مواعيد الطلب والتوصيل بنجاح!');
+            } catch (error) {
+                console.error('خطأ في حفظ مواعيد الطلب والتوصيل:', error);
+                alert('حدث خطأ أثناء الحفظ.');
+            }
+        });
 
         // ===== مناطق التوصيل =====
         let deliveryAreas = [];
@@ -2722,7 +2906,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 reports: { id: 'reportsSection', title: 'التقارير' },
                 purchases: { id: 'purchasesSection', title: 'المشتريات والأرباح' },
                 menu: { id: 'menuSection', title: 'إدارة المنيو' },
-                areas: { id: 'areasSection', title: 'مناطق التوصيل' },
+                areas: { id: 'areasSection', title: 'مناطق ومواعيد التوصيل' },
                 promo: { id: 'promoSection', title: 'أكواد الخصم' }
             };
             const config = sectionMap[section];
