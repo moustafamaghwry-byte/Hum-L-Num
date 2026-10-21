@@ -108,6 +108,8 @@
         .pf-verdict.even { background: var(--gray-100); color: var(--gray-700); border-color: var(--gray-300); }
         .pf-verdict .pf-verdict-title { font-size: 1.1rem; font-weight: 800; }
         .pf-verdict .pf-verdict-amount { font-size: 2.2rem; font-weight: 900; margin: 0.25rem 0; direction: ltr; }
+        .pf-explain { background: var(--gray-50); border: 1px dashed var(--gray-300); border-radius: 12px; padding: 0.85rem 1rem; margin-top: 1rem; font-size: 0.85rem; line-height: 1.9; color: var(--gray-700); }
+        .pf-pay-msg { margin-top: 0.75rem; padding: 0.75rem 1rem; border-radius: 10px; background: #d3f9d8; color: #2b8a3e; font-weight: 700; display: none; }
         .pf-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
         @media (max-width: 768px) { .pf-grid3 { grid-template-columns: 1fr; gap: 0; } }
         .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -0.5rem; }
@@ -297,7 +299,7 @@
                     <i class="fas fa-utensils"></i><span>المنيو</span>
                 </div>
                 <div class="sidebar-menu-item" data-section="areas" onclick="showSection('areas')">
-                    <i class="fas fa-map-marker-alt"></i><span>مناطق ومواعيد التوصيل</span>
+                    <i class="fas fa-map-marker-alt"></i><span>مناطق التوصيل</span>
                 </div>
                 <!-- الزر الجديد للبرومو كود -->
                 <div class="sidebar-menu-item" data-section="promo" onclick="showSection('promo')">
@@ -440,85 +442,6 @@
 
             <!-- قسم مناطق التوصيل -->
             <div id="areasSection" class="section" style="display: none;">
-                <div class="card mb-4">
-                    <div class="card-header"><h3 class="card-title">مواعيد الطلب والتوصيل</h3></div>
-                    <div class="card-body">
-                        <p style="color: var(--gray-600); font-size: 0.88rem; margin-bottom: 1.25rem;">
-                            تتحكم هنا في الحجز المسبق وساعات وأيام التوصيل. الإعدادات دي بتظهر للعميل في صفحة الـ index وصفحة المنتج (الـ Checkout) وبتتطبق فوراً بعد الحفظ.
-                        </p>
-                        <form id="schedule-form">
-                            <div class="form-row" style="grid-template-columns: auto 1fr; align-items: end; gap: 1rem;">
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label">استقبال الطلبات</label>
-                                    <label style="display:flex; align-items:center; gap:8px; min-height:48px; cursor:pointer;">
-                                        <input type="checkbox" id="schedule-orders-open" style="width:20px; height:20px; cursor:pointer;" checked>
-                                        <span id="schedule-orders-open-label" style="font-weight:700; color: var(--gray-600);">مفتوح</span>
-                                    </label>
-                                </div>
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label" for="schedule-min-hours">الحجز المسبق قبل ميعاد التوصيل (بالساعات)</label>
-                                    <input type="number" id="schedule-min-hours" class="form-input" placeholder="مثال: 48 (اكتب 0 لو مفيش حجز مسبق)" min="0" max="720" step="1" required>
-                                </div>
-                            </div>
-                            <div class="form-row" style="grid-template-columns: 1fr 1fr; align-items: end; gap: 1rem; margin-top: 1rem;">
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label" for="schedule-start-hour">بداية ساعات التوصيل</label>
-                                    <select id="schedule-start-hour" class="form-input"></select>
-                                </div>
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label" for="schedule-end-hour">آخر ساعة توصيل</label>
-                                    <select id="schedule-end-hour" class="form-input"></select>
-                                </div>
-                            </div>
-                            <div class="form-group" style="margin-top: 1rem;">
-                                <label class="form-label">أيام الإجازة الأسبوعية (مفيش توصيل فيها)</label>
-                                <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="6"> السبت</label>
-                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="0"> الأحد</label>
-                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="1"> الاثنين</label>
-                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="2"> الثلاثاء</label>
-                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="3"> الأربعاء</label>
-                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="4"> الخميس</label>
-                                    <label style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid #ddd; border-radius:50px; cursor:pointer;"><input type="checkbox" class="schedule-closed-day" value="5"> الجمعة</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="schedule-closed-date-input">إجازات بتواريخ محددة (أعياد، ظروف...)</label>
-                                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                                    <input type="date" id="schedule-closed-date-input" class="form-input" style="max-width:220px;">
-                                    <button type="button" class="btn btn-primary" style="width:auto; min-height:48px;" onclick="addScheduleClosedDate()"><i class="fas fa-plus"></i> إضافة</button>
-                                </div>
-                                <div id="schedule-closed-dates" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
-                            </div>
-                            <div class="form-group" style="margin-top: 1.25rem;">
-                                <label class="form-label">رسالة التوصيل اللي بتظهر للعميل (اتركها فاضية = تتكتب تلقائياً من المواعيد اللي فوق)</label>
-                                <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                    <input type="text" id="schedule-banner-ar" class="form-input" placeholder="مثال: التوصيل بعد 48 ساعة | متوفر من 6 إلى 9 مساءً | إجازة: الجمعة">
-                                    <input type="text" id="schedule-banner-en" class="form-input" dir="ltr" placeholder="e.g. Delivery after 48 hours | Available from 6 to 9 PM | Closed: Friday">
-                                </div>
-                                <label class="form-label" style="margin-top: 0.75rem;">السطر الصغير تحت الرسالة (اتركه فاضي لو مش عايزه)</label>
-                                <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                    <input type="text" id="schedule-note-ar" class="form-input" placeholder="(التجمع الخامس - وباقي المناطق قريباً)">
-                                    <input type="text" id="schedule-note-en" class="form-input" dir="ltr" placeholder="(Fifth Settlement - other areas coming soon)">
-                                </div>
-                            </div>
-                            <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label" for="schedule-pause-ar">رسالة إيقاف الطلبات (عربي) - اختياري</label>
-                                    <input type="text" id="schedule-pause-ar" class="form-input" placeholder="مثال: إحنا في إجازة وهنرجع الأسبوع الجاي">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label class="form-label" for="schedule-pause-en">رسالة إيقاف الطلبات (English) - اختياري</label>
-                                    <input type="text" id="schedule-pause-en" class="form-input" dir="ltr" placeholder="e.g. We are on vacation and will be back soon">
-                                </div>
-                            </div>
-                            <div class="form-group" style="margin-top: 1.25rem; margin-bottom: 0;">
-                                <button type="submit" class="btn btn-primary" style="min-height: 48px;"><i class="fas fa-save"></i> حفظ المواعيد</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
                 <div class="card mb-4">
                     <div class="card-header"><h3 class="card-title">إعدادات الحد الأدنى للطلب</h3></div>
                     <div class="card-body">
@@ -717,6 +640,50 @@
                             <div class="stat-card"><div class="stat-card-value" id="pfOperating">0 ج.م</div><div class="stat-card-subtitle">منها: مشتريات ومصروفات تشغيل</div></div>
                             <div class="stat-card"><div class="stat-card-value" id="pfOperatingProfit">0 ج.م</div><div class="stat-card-subtitle">ربح التشغيل (قبل خصم الأصول)</div></div>
                             <div class="stat-card"><div class="stat-card-value" id="pfRecovery">0%</div><div class="stat-card-subtitle">نسبة استرداد المشتريات من الإيراد</div></div>
+                            <div class="stat-card warning"><div class="stat-card-value" id="pfPartnerPaid">0 ج.م</div><div class="stat-card-subtitle">سددته للشركاء (في الفترة)</div></div>
+                            <div class="stat-card danger"><div class="stat-card-value" id="pfPartnerOwed">0 ج.م</div><div class="stat-card-subtitle">لسه عليك للشركاء (إجمالي)</div></div>
+                            <div class="stat-card success"><div class="stat-card-value" id="pfCashLeft">0 ج.م</div><div class="stat-card-subtitle">المتبقي معاك من الإيراد (بعد المشتريات التشغيلية بدون الأصول، وسداد الشركاء)</div></div>
+                        </div>
+                        <div class="pf-explain">
+                            <strong>إزاي بنحسب؟</strong><br>
+                            • <b>صافي الربح</b> = الإيراد − كل المشتريات (بغض النظر مين دفعها).<br>
+                            • <b>سداد الشريك</b> مش مصروف ومش بينقص الربح — ده بس بيسدد الفلوس اللي الشريك دفعها عنك.<br>
+                            • <b>المتبقي معاك</b> = الإيراد − المشتريات التشغيلية اللي اتدفعت من إيراد المشروع (<b>بدون الأصول والمعدات</b>) − اللي سددته للشركاء <b>من إيراد المشروع</b> (السداد من جيبك الشخصي مبينقصش منه).
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">حساب الشركاء (اللي دفعوه واللي سددته)</h3></div>
+                    <div class="card-body">
+                        <div class="table-container" style="margin-bottom:1rem;">
+                            <table class="data-table" style="min-width:600px;">
+                                <thead><tr><th>الشريك</th><th>دفعه عنك (مشتريات)</th><th>سددتله</th><th>المتبقي له</th><th>إجراء</th></tr></thead>
+                                <tbody id="pfPartnerBody"></tbody>
+                            </table>
+                        </div>
+                        <h4 style="margin:0 0 0.75rem; font-size:1rem;">تسجيل سداد للشريك</h4>
+                        <div class="pf-grid3">
+                            <div class="form-group"><label>اسم الشريك *</label><select class="form-select" id="ppPartner"><option value="">— اختار الشريك —</option></select></div>
+                            <div class="form-group"><label>المبلغ اللي سددته (ج.م) *</label><input type="number" class="form-input" id="ppAmount" min="0.01" step="0.01"></div>
+                            <div class="form-group"><label>تاريخ السداد *</label><input type="date" class="form-input" id="ppDate"></div>
+                        </div>
+                        <div class="form-group"><label>سددت من *</label>
+                            <select class="form-select" id="ppFrom">
+                                <option value="business">من إيراد المشروع</option>
+                                <option value="personal">من جيبي الشخصي</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>ملاحظات</label><input type="text" class="form-input" id="ppNotes" placeholder="اختياري (مثال: تحويل / كاش / دفعة أولى)"></div>
+                        <button class="btn btn-primary" id="ppSaveBtn" onclick="savePartnerPayment()"><i class="fas fa-hand-holding-dollar"></i> تسجيل السداد</button>
+                        <div class="pf-pay-msg" id="ppMsg"></div>
+
+                        <h4 style="margin:1.5rem 0 0.75rem; font-size:1rem;">سجل السداد</h4>
+                        <div class="table-container">
+                            <table class="data-table" style="min-width:600px;">
+                                <thead><tr><th>التاريخ</th><th>العملية</th><th>ملاحظات</th><th>إجراء</th></tr></thead>
+                                <tbody id="ppTableBody"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -769,7 +736,7 @@
                         <div id="pfCategoryBreakdown" style="margin-bottom:1rem;"></div>
                         <div class="table-container">
                             <table class="data-table">
-                                <thead><tr><th>التاريخ</th><th>الصنف</th><th>النوع</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المورد</th><th>مصدر الفلوس</th><th>إجراء</th></tr></thead>
+                                <thead><tr><th>التاريخ</th><th>الصنف</th><th>النوع</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المورد</th><th>مصدر الفلوس</th><th>حالة السداد</th><th>إجراء</th></tr></thead>
                                 <tbody id="pfTableBody"></tbody>
                             </table>
                         </div>
@@ -1066,7 +1033,7 @@
         let soundAlertEnabled = localStorage.getItem('soundAlertEnabled') !== 'false';
         let sharedAudioCtx = null;
         let toastTimeoutId = null;
-        let ordersUnsubscribe = null, menuUnsubscribe = null, promoUnsubscribe = null, purchasesUnsubscribe = null, allPurchases = [], editingPurchaseId = null;
+        let ordersUnsubscribe = null, menuUnsubscribe = null, promoUnsubscribe = null, purchasesUnsubscribe = null, allPurchases = [], editingPurchaseId = null, partnerPaymentsUnsubscribe = null, allPartnerPayments = [];
         let sizeCounter = 0;
 
         function escapeHtml(value) { return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
@@ -1280,6 +1247,7 @@
             if (menuUnsubscribe) { menuUnsubscribe(); menuUnsubscribe = null; }
             if (promoUnsubscribe) { promoUnsubscribe(); promoUnsubscribe = null; }
             if (purchasesUnsubscribe) { purchasesUnsubscribe(); purchasesUnsubscribe = null; }
+            if (partnerPaymentsUnsubscribe) { partnerPaymentsUnsubscribe(); partnerPaymentsUnsubscribe = null; }
         }
 
         function setupRealtimeOrders(databaseInstance) {
@@ -1329,116 +1297,17 @@
                 renderPurchases();
             }, (error) => { console.error('Purchases listener error:', error); });
 
+            partnerPaymentsUnsubscribe = onValue(ref(db, 'partnerPayments'), (snapshot) => {
+                const data = snapshot.val();
+                allPartnerPayments = data ? Object.entries(data).map(([id, item]) => ({ id, ...item })) : [];
+                renderPurchases();
+            }, (error) => { console.error('Partner payments listener error:', error); });
+
             fetchPromoCodes();
             fetchAutoDiscountSettings();
             fetchMinOrderSettings();
             fetchDeliveryAreas();
-            fetchScheduleSettings();
         }
-
-        // ===== مواعيد الطلب والتوصيل =====
-        let scheduleClosedDates = [];
-
-        function scheduleHourLabel(h) {
-            if (h === 0) return '12 منتصف الليل';
-            if (h < 12) return h + ' صباحاً';
-            if (h === 12) return '12 ظهراً';
-            return (h - 12) + ' مساءً';
-        }
-
-        (function buildScheduleHourSelects() {
-            [['schedule-start-hour', 13], ['schedule-end-hour', 21]].forEach(([id, def]) => {
-                const sel = document.getElementById(id);
-                if (!sel) return;
-                sel.innerHTML = Array.from({ length: 24 }, (_, h) => `<option value="${h}">${scheduleHourLabel(h)}</option>`).join('');
-                sel.value = String(def);
-            });
-        })();
-
-        function renderScheduleClosedDates() {
-            const box = document.getElementById('schedule-closed-dates');
-            if (!box) return;
-            if (!scheduleClosedDates.length) {
-                box.innerHTML = '<span style="color: var(--gray-500); font-size:0.85rem;">مفيش إجازات محددة بتواريخ</span>';
-                return;
-            }
-            box.innerHTML = scheduleClosedDates.slice().sort().map(d => {
-                let label = d;
-                try { label = new Date(d + 'T00:00:00').toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) {}
-                return `<span style="display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:50px; background:var(--gray-100); font-size:0.85rem; font-weight:700;">${escapeHtml(label)}
-                    <button type="button" onclick="removeScheduleClosedDate('${escapeHtml(d)}')" style="background:none; border:none; cursor:pointer; color:var(--danger); font-size:1.1rem; line-height:1;" title="حذف">&times;</button></span>`;
-            }).join('');
-        }
-
-        window.addScheduleClosedDate = function() {
-            const input = document.getElementById('schedule-closed-date-input');
-            if (!input || !input.value) { alert('اختر التاريخ الأول.'); return; }
-            if (!scheduleClosedDates.includes(input.value)) scheduleClosedDates.push(input.value);
-            input.value = '';
-            renderScheduleClosedDates();
-        };
-
-        window.removeScheduleClosedDate = function(d) {
-            scheduleClosedDates = scheduleClosedDates.filter(x => x !== d);
-            renderScheduleClosedDates();
-        };
-
-        function fetchScheduleSettings() {
-            onValue(ref(db, 'settings/deliverySchedule'), (snapshot) => {
-                const d = snapshot.val() || {};
-                const toArr = v => Array.isArray(v) ? v : (v && typeof v === 'object' ? Object.values(v) : []);
-                const open = d.ordersOpen !== false;
-                document.getElementById('schedule-orders-open').checked = open;
-                document.getElementById('schedule-orders-open-label').textContent = open ? 'مفتوح' : 'متوقف';
-                document.getElementById('schedule-min-hours').value = (d.minHoursAhead ?? 48);
-                document.getElementById('schedule-start-hour').value = String(d.startHour ?? 13);
-                document.getElementById('schedule-end-hour').value = String(d.endHour ?? 21);
-                const closedDays = toArr(d.closedWeekdays).map(Number);
-                document.querySelectorAll('.schedule-closed-day').forEach(cb => { cb.checked = closedDays.includes(Number(cb.value)); });
-                scheduleClosedDates = toArr(d.closedDates).map(String);
-                renderScheduleClosedDates();
-                document.getElementById('schedule-pause-ar').value = d.pauseMessageAr || '';
-                document.getElementById('schedule-pause-en').value = d.pauseMessageEn || '';
-                document.getElementById('schedule-banner-ar').value = d.bannerAr || '';
-                document.getElementById('schedule-banner-en').value = d.bannerEn || '';
-                document.getElementById('schedule-note-ar').value = d.noteAr ?? '(التجمع الخامس - وباقي المناطق قريباً)';
-                document.getElementById('schedule-note-en').value = d.noteEn ?? '(Fifth Settlement - other areas coming soon)';
-            }, (error) => { console.error('خطأ في جلب مواعيد الطلب والتوصيل:', error); });
-        }
-
-        document.getElementById('schedule-orders-open').addEventListener('change', function() {
-            document.getElementById('schedule-orders-open-label').textContent = this.checked ? 'مفتوح' : 'متوقف';
-        });
-
-        document.getElementById('schedule-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
-            const ordersOpen = document.getElementById('schedule-orders-open').checked;
-            const minHoursAhead = parseFloat(document.getElementById('schedule-min-hours').value);
-            const startHour = parseInt(document.getElementById('schedule-start-hour').value, 10);
-            const endHour = parseInt(document.getElementById('schedule-end-hour').value, 10);
-            const closedWeekdays = Array.from(document.querySelectorAll('.schedule-closed-day:checked')).map(cb => Number(cb.value));
-            if (isNaN(minHoursAhead) || minHoursAhead < 0) { alert('اكتب عدد ساعات الحجز المسبق (0 أو أكتر).'); return; }
-            if (endHour < startHour) { alert('آخر ساعة توصيل لازم تكون بعد (أو تساوي) ساعة البداية.'); return; }
-            if (closedWeekdays.length === 7) { alert('مينفعش تقفل كل أيام الأسبوع. لو عايز توقف الطلبات استخدم خيار "استقبال الطلبات".'); return; }
-            try {
-                await set(ref(db, 'settings/deliverySchedule'), {
-                    ordersOpen, minHoursAhead, startHour, endHour, closedWeekdays,
-                    closedDates: scheduleClosedDates.slice().sort(),
-                    pauseMessageAr: document.getElementById('schedule-pause-ar').value.trim(),
-                    pauseMessageEn: document.getElementById('schedule-pause-en').value.trim(),
-                    bannerAr: document.getElementById('schedule-banner-ar').value.trim(),
-                    bannerEn: document.getElementById('schedule-banner-en').value.trim(),
-                    noteAr: document.getElementById('schedule-note-ar').value.trim(),
-                    noteEn: document.getElementById('schedule-note-en').value.trim(),
-                    updatedAt: new Date().toISOString()
-                });
-                alert('تم حفظ مواعيد الطلب والتوصيل بنجاح!');
-            } catch (error) {
-                console.error('خطأ في حفظ مواعيد الطلب والتوصيل:', error);
-                alert('حدث خطأ أثناء الحفظ.');
-            }
-        });
 
         // ===== مناطق التوصيل =====
         let deliveryAreas = [];
@@ -2442,6 +2311,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
 
         // ===== المشتريات وصافي الربح =====
         const FUND_SOURCES = { business: 'من إيراد المشروع', personal: 'من جيبي الشخصي', partner: 'من شريك', loan: 'قرض / سلفة', other: 'أخرى' };
+        const pKeyN = n => String(n || '').trim().toLowerCase().replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').replace(/\s+/g, ' ');
         function fundSourceLabel(p) {
             const base = FUND_SOURCES[p.fundSource];
             if (!base) return '-';
@@ -2579,6 +2449,58 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             } catch (e) { console.error('Purchase delete error:', e); alert('حصل خطأ أثناء الحذف.'); }
         };
 
+        window.prefillPartnerPayment = function(name, remaining) {
+            document.getElementById('ppPartner').value = pKeyN(name);
+            document.getElementById('ppAmount').value = remaining > 0 ? remaining : '';
+            if (!document.getElementById('ppDate').value) document.getElementById('ppDate').value = pfLocalDateStr(new Date());
+            document.getElementById('ppAmount').focus();
+        };
+
+        window.savePartnerPayment = async function() {
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            const selEl = document.getElementById('ppPartner');
+            const k = selEl.value;
+            const partnerName = k ? selEl.options[selEl.selectedIndex].text.trim() : '';
+            const amount = Math.round(parseFloat(document.getElementById('ppAmount').value) * 100) / 100;
+            const date = document.getElementById('ppDate').value;
+            if (!partnerName) { alert('اختار الشريك.'); return; }
+            if (!(amount > 0)) { alert('اكتب مبلغ السداد بشكل صحيح.'); return; }
+            if (!date) { alert('اختار تاريخ السداد.'); return; }
+
+            const funded = allPurchases.filter(p => p.fundSource === 'partner' && pKeyN(p.partnerName) === k).reduce((a, p) => a + toNumber(p.total), 0);
+            const paid = allPartnerPayments.filter(x => pKeyN(x.partnerName) === k).reduce((a, x) => a + toNumber(x.amount), 0);
+            const remainingBefore = Math.round((funded - paid) * 100) / 100;
+            if (amount > remainingBefore && !confirm(`المبلغ (${formatMoney(amount)}) أكبر من المتبقي للشريك (${formatMoney(Math.max(0, remainingBefore))}). تكمل التسجيل؟`)) return;
+
+            const btn = document.getElementById('ppSaveBtn');
+            btn.disabled = true;
+            try {
+                await set(push(ref(db, 'partnerPayments')), {
+                    partnerName, amount, date,
+                    paidFrom: document.getElementById('ppFrom').value,
+                    notes: document.getElementById('ppNotes').value.trim(),
+                    createdAt: new Date().toISOString()
+                });
+                const remainingAfter = Math.round((remainingBefore - amount) * 100) / 100;
+                const msg = document.getElementById('ppMsg');
+                msg.textContent = `✓ سددت ${formatMoney(amount)} للشريك ${partnerName} ${document.getElementById('ppFrom').value === 'personal' ? '(من جيبي الشخصي)' : '(من إيراد المشروع)'} — كان له ${formatMoney(remainingBefore)}` + (remainingAfter > 0 ? ` وأصبح المتبقي له ${formatMoney(remainingAfter)}` : remainingAfter === 0 ? ' — الحساب خالص' : ` — دفعت له زيادة ${formatMoney(Math.abs(remainingAfter))}`);
+                msg.style.display = 'block';
+                document.getElementById('ppAmount').value = '';
+                document.getElementById('ppNotes').value = '';
+            } catch (e) {
+                console.error('Partner payment save error:', e);
+                alert('حصل خطأ أثناء الحفظ. لو الخطأ متكرر، اتأكد من صلاحيات Firebase لمسار partnerPayments.');
+            }
+            btn.disabled = false;
+        };
+
+        window.deletePartnerPayment = async function(id) {
+            if (!currentUser) { alert('يجب تسجيل الدخول أولاً.'); return; }
+            if (!confirm('هل أنت متأكد من حذف عملية السداد دي؟ المتبقي للشريك هيزيد بنفس المبلغ.')) return;
+            try { await set(ref(db, `partnerPayments/${id}`), null); }
+            catch (e) { console.error('Partner payment delete error:', e); alert('حصل خطأ أثناء الحذف.'); }
+        };
+
         function renderPurchases() {
             const rangeEl = document.getElementById('pfRange');
             if (!rangeEl) return;
@@ -2664,6 +2586,114 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 `<span style="display:inline-block; background:rgba(124,58,237,0.08); padding:6px 12px; border-radius:20px; margin:0 0 6px 6px; font-size:0.85rem;"><i class="fas fa-wallet"></i> ${escapeHtml(k)}: <strong>${formatMoney(bySrc[k])}</strong></span>`).join('');
             document.getElementById('pfCategoryBreakdown').innerHTML = breakdown + (srcBreakdown ? '<div style="margin-top:0.5rem;">' + srcBreakdown + '</div>' : '');
 
+            // ===== حساب الشركاء والمتبقي =====
+            const pKey = pKeyN;
+            const paymentsInRange = allPartnerPayments.filter(x => (!sDate || (x.date && x.date >= sDate)) && (!eDate || (x.date && x.date <= eDate)));
+            const paidInRange = paymentsInRange.reduce((a, x) => a + toNumber(x.amount), 0);
+            const businessFunded = list.filter(p => p.category !== 'asset' && (p.fundSource === 'business' || !FUND_SOURCES[p.fundSource])).reduce((a, p) => a + toNumber(p.total), 0);
+            const paidFromBusinessInRange = paymentsInRange.filter(x => x.paidFrom !== 'personal').reduce((a, x) => a + toNumber(x.amount), 0);
+            const cashLeft = revenue - businessFunded - paidFromBusinessInRange;
+
+            const partners = {};
+            allPurchases.filter(p => p.fundSource === 'partner' && p.partnerName).forEach(p => {
+                const k = pKey(p.partnerName);
+                partners[k] = partners[k] || { name: p.partnerName.trim(), funded: 0, paid: 0 };
+                partners[k].funded += toNumber(p.total);
+            });
+            allPartnerPayments.forEach(x => {
+                const k = pKey(x.partnerName);
+                partners[k] = partners[k] || { name: String(x.partnerName || '').trim(), funded: 0, paid: 0 };
+                partners[k].paid += toNumber(x.amount);
+            });
+            const pList = Object.values(partners);
+            // توزيع السداد على مشتريات كل شريك من الأقدم للأحدث
+            const alloc = {};
+            Object.keys(partners).forEach(k => {
+                let pool = partners[k].paid;
+                allPurchases.filter(p => p.fundSource === 'partner' && pKey(p.partnerName) === k)
+                    .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')) || String(a.createdAt || '').localeCompare(String(b.createdAt || '')))
+                    .forEach(p => {
+                        const total = toNumber(p.total);
+                        const paidPart = Math.min(total, Math.max(0, pool));
+                        pool -= paidPart;
+                        alloc[p.id] = { paid: Math.round(paidPart * 100) / 100, remaining: Math.round((total - paidPart) * 100) / 100 };
+                    });
+            });
+            // شرائح مصدر الفلوس: الشريك بيظهر بالمتبقي له بعد السداد
+            const srcMap = {};
+            list.forEach(p => {
+                if (!FUND_SOURCES[p.fundSource]) return;
+                if (p.fundSource === 'partner' && p.partnerName) {
+                    const k = 'partner:' + pKey(p.partnerName);
+                    srcMap[k] = srcMap[k] || { partner: true, name: p.partnerName.trim(), total: 0, remaining: 0 };
+                    srcMap[k].total += toNumber(p.total);
+                    srcMap[k].remaining += alloc[p.id] ? alloc[p.id].remaining : toNumber(p.total);
+                } else {
+                    const lbl = fundSourceLabel(p);
+                    srcMap[lbl] = srcMap[lbl] || { partner: false, name: lbl, total: 0 };
+                    srcMap[lbl].total += toNumber(p.total);
+                }
+            });
+            // سداد الشركاء بيتحسب على مصدره (جيبك الشخصي أو إيراد المشروع)
+            [['personal', paymentsInRange.filter(x => x.paidFrom === 'personal')], ['business', paymentsInRange.filter(x => x.paidFrom !== 'personal')]].forEach(([src, arr]) => {
+                const amt = arr.reduce((a, x) => a + toNumber(x.amount), 0);
+                if (amt <= 0) return;
+                const lbl = FUND_SOURCES[src];
+                srcMap[lbl] = srcMap[lbl] || { partner: false, name: lbl, total: 0 };
+                srcMap[lbl].total += amt;
+                srcMap[lbl].extra = amt;
+            });
+            const srcChips = Object.values(srcMap).map(x => {
+                if (!x.partner) return `<span style="display:inline-block; background:rgba(124,58,237,0.08); padding:6px 12px; border-radius:20px; margin:0 0 6px 6px; font-size:0.85rem;"><i class="fas fa-wallet"></i> ${escapeHtml(x.name)}: <strong>${formatMoney(x.total)}</strong>${x.extra ? ` <span style="font-size:0.78rem; color:var(--gray-600);">(منها ${formatMoney(x.extra)} سداد للشركاء)</span>` : ''}</span>`;
+                const rem = Math.round(x.remaining * 100) / 100, tot = Math.round(x.total * 100) / 100;
+                const done = rem <= 0;
+                const detail = rem < tot ? ` <span style="font-size:0.78rem; color:var(--gray-600);">(من أصل ${formatMoney(tot)}، سددت ${formatMoney(tot - rem)})</span>` : '';
+                return `<span style="display:inline-block; background:${done ? '#d3f9d8' : 'rgba(124,58,237,0.08)'}; padding:6px 12px; border-radius:20px; margin:0 0 6px 6px; font-size:0.85rem;"><i class="fas fa-wallet"></i> من شريك: ${escapeHtml(x.name)}: ${done ? '<strong>خالص ✓</strong>' : 'متبقي له <strong>' + formatMoney(rem) + '</strong>'}${detail}</span>`;
+            }).join('');
+            document.getElementById('pfCategoryBreakdown').innerHTML = breakdown + (srcChips ? '<div style="margin-top:0.5rem;">' + srcChips + '</div>' : '');
+
+            const settleCell = p => {
+                if (p.fundSource !== 'partner') return '<span style="color:var(--gray-500);">—</span>';
+                const a = alloc[p.id];
+                if (!a) return '-';
+                if (a.remaining <= 0) return '<span class="status-badge status-delivered">مسدد بالكامل ✓</span>';
+                if (a.paid > 0) return `<span class="status-badge status-preparing">مسدد ${formatMoney(a.paid)}</span><div style="font-size:0.8rem; color:var(--danger); margin-top:3px;">متبقي ${formatMoney(a.remaining)}</div>`;
+                return '<span class="status-badge status-cancelled">غير مسدد</span>';
+            };
+            const totalOwed = pList.reduce((a, x) => a + Math.max(0, x.funded - x.paid), 0);
+
+            document.getElementById('pfPartnerPaid').textContent = formatMoney(paidInRange);
+            document.getElementById('pfPartnerOwed').textContent = formatMoney(totalOwed);
+            document.getElementById('pfCashLeft').textContent = formatMoney(cashLeft);
+
+            const sel = document.getElementById('ppPartner');
+            if (sel) {
+                const cur = sel.value;
+                sel.innerHTML = '<option value="">— اختار الشريك —</option>' + Object.entries(partners).filter(([k, x]) => x.funded > 0).map(([k, x]) => `<option value="${escapeHtml(k)}">${escapeHtml(x.name)}</option>`).join('');
+                sel.value = cur;
+            }
+            const pBody = document.getElementById('pfPartnerBody');
+            if (pBody) pBody.innerHTML = pList.length ? pList.map(x => {
+                const rem = Math.round((x.funded - x.paid) * 100) / 100;
+                const remCell = rem > 0 ? `<strong style="color:var(--danger);">${formatMoney(rem)}</strong>`
+                    : rem < 0 ? `<strong style="color:#f08c00;">${formatMoney(Math.abs(rem))} (دفعت له زيادة)</strong>`
+                    : '<strong style="color:#2b8a3e;">خالص ✓</strong>';
+                return `<tr><td><strong>${escapeHtml(x.name)}</strong></td><td>${formatMoney(x.funded)}</td><td>${formatMoney(x.paid)}</td><td>${remCell}</td>
+                    <td><button class="btn-sm" style="background:var(--primary); color:#fff;" onclick="prefillPartnerPayment('${escapeHtml(x.name).replace(/'/g, '&#039;')}', ${Math.max(0, rem)})"><i class="fas fa-hand-holding-dollar"></i> سدد</button></td></tr>`;
+            }).join('') : '<tr><td colspan="5" style="text-align:center; color:var(--gray-500); padding:1.5rem;">مفيش شركاء لسه — اختار "من شريك" في مصدر الفلوس وانت بتضيف مشتريات</td></tr>';
+
+            const ppBody = document.getElementById('ppTableBody');
+            if (ppBody) {
+                const sorted = [...allPartnerPayments].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+                ppBody.innerHTML = sorted.length ? sorted.map(x => `
+                    <tr>
+                        <td>${escapeHtml(x.date || '-')}</td>
+                        <td><strong>سددت ${formatMoney(x.amount)} للشريك ${escapeHtml(x.partnerName || '')}</strong><div style="font-size:0.8rem; color:var(--gray-500);">${x.paidFrom === 'personal' ? 'من جيبي الشخصي' : 'من إيراد المشروع'}</div></td>
+                        <td>${escapeHtml(x.notes || '-')}</td>
+                        <td><button class="btn-sm" style="background:var(--danger); color:#fff;" onclick="deletePartnerPayment('${escapeHtml(x.id)}')"><i class="fas fa-trash-alt"></i></button></td>
+                    </tr>`).join('') : '<tr><td colspan="4" style="text-align:center; color:var(--gray-500); padding:1.5rem;">لسه ما سجلتش أي سداد</td></tr>';
+            }
+
             const body = document.getElementById('pfTableBody');
             body.innerHTML = list.length ? list.map(p => `
                 <tr>
@@ -2675,11 +2705,12 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                     <td><strong>${formatMoney(p.total)}</strong></td>
                     <td>${escapeHtml(p.supplier || '-')}</td>
                     <td>${escapeHtml(fundSourceLabel(p))}</td>
+                    <td>${settleCell(p)}</td>
                     <td style="white-space:nowrap;">
                         <button class="btn-sm" style="background:var(--primary); color:#fff;" onclick="editPurchase('${escapeHtml(p.id)}')"><i class="fas fa-pen"></i></button>
                         <button class="btn-sm" style="background:var(--danger); color:#fff;" onclick="deletePurchase('${escapeHtml(p.id)}')"><i class="fas fa-trash-alt"></i></button>
                     </td>
-                </tr>`).join('') : '<tr><td colspan="9" style="text-align:center; color:var(--gray-500); padding:1.5rem;">مفيش مشتريات مسجلة في الفترة دي</td></tr>';
+                </tr>`).join('') : '<tr><td colspan="10" style="text-align:center; color:var(--gray-500); padding:1.5rem;">مفيش مشتريات مسجلة في الفترة دي</td></tr>';
         }
 
         window.showSection = function(section) {
@@ -2691,7 +2722,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
                 reports: { id: 'reportsSection', title: 'التقارير' },
                 purchases: { id: 'purchasesSection', title: 'المشتريات والأرباح' },
                 menu: { id: 'menuSection', title: 'إدارة المنيو' },
-                areas: { id: 'areasSection', title: 'مناطق ومواعيد التوصيل' },
+                areas: { id: 'areasSection', title: 'مناطق التوصيل' },
                 promo: { id: 'promoSection', title: 'أكواد الخصم' }
             };
             const config = sectionMap[section];
@@ -2702,7 +2733,7 @@ window.addSizeField = function(weight = '', price = '', servings = '') {
             const activeMenuItem = document.querySelector(`.sidebar-menu-item[data-section="${section}"]`);
             if (activeMenuItem) activeMenuItem.classList.add('active');
             if (section === 'reports') updateReports();
-            if (section === 'purchases') { if (!document.getElementById('pfDate').value) resetPurchaseForm(); renderPurchases(); }
+            if (section === 'purchases') { if (!document.getElementById('pfDate').value) resetPurchaseForm(); const ppd = document.getElementById('ppDate'); if (ppd && !ppd.value) ppd.value = pfLocalDateStr(new Date()); renderPurchases(); }
 
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
